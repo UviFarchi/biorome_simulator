@@ -1,0 +1,218 @@
+#app {
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+:root {
+  --color-primary: #00bcd4;
+  --color-accent: #cde4cf;
+  --color-warning: #ffd600;
+  --color-dark: #333;
+  --radius: 7px;
+}
+
+.menu-panel {
+  border: 2px solid var(--color-accent);
+  border-radius: 10px;
+  background: #e0f7fa;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  padding-right: 0.5em;
+}
+
+.card {
+  background: #adf0fd;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px #0001;
+  padding: 0.7em 0.8em;
+  display: flex;
+  flex-direction: column;
+}
+
+.card--horizontal {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.4em 0.8em;
+}
+
+.card--vertical {
+  align-items: center;
+  gap: 0.5em;
+  justify-content: space-between;
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn--buy {
+  background: var(--color-accent);
+  color: var(--color-dark);
+}
+.btn--buy:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+.btn--buy:disabled {
+  background: #ddd;
+  color: #888;
+  cursor: not-allowed;
+  border: 1px solid #bbb;
+}
+
+.btn--return {
+  background: #80deea;
+  color: #2c2c2c;
+  padding: 0.39em 1.1em;
+  box-shadow: 0 2px 4px #0001;
+}
+.btn--return:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn--new {
+  background: var(--color-warning);
+  margin-right: 0.8em;
+  padding: 0.35em 1.2em;
+}
+.btn--new:hover {
+  background: #ffb300;
+  color: #333;
+}
+
+.btn--close {
+  background: none;
+  color: #aaa;
+}
+.btn--close:hover {
+  color: #222;
+}
+
+.btn--save {
+  background: var(--color-warning);
+  color: var(--color-dark);
+  padding: 0.58em 1.8em;
+}
+.btn--save:hover {
+  background: #ffb300;
+}
+.btn--save:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.btn--add {
+  background: #c8e6c9;
+  color: #388e3c;
+  padding: 0.23em 0.85em;
+}
+.btn--add:hover {
+  background: #a5d6a7;
+  color: #1b5e20;
+}
+.btn--add:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.btn--sell {
+  background: #e0e0e0;
+  color: #37474f;
+  padding: 0.23em 0.85em;
+}
+.btn--sell:hover {
+  background: #cfd8dc;
+  color: #263238;
+}
+.btn--sell:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+
+.btn-error {
+  display: block;
+  grid-column: 1 / -1;
+  grid-row: auto !important;
+  white-space: nowrap;
+  margin: 0.25em 0 0;
+}
+.action-area {
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(120, 140, 180, 0.06);
+  margin-bottom: 1.25em;
+  padding: 1.15em 1.4em 1.1em 1.4em;
+  border: 1px solid #e3e8ee;
+  transition: box-shadow 0.2s;
+  position: relative;
+}
+
+.action-area:not(:last-child) {
+  margin-bottom: 2em;
+}
+
+.action-area:hover, .action-area:focus-within {
+  box-shadow: 0 3px 14px rgba(60, 105, 170, 0.08);
+  border-color: #b0bec5;
+}
+
+.action-area h4, .action-area h5 {
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  font-size: 1.17em;
+  font-weight: 600;
+  color: #3d4853;
+  letter-spacing: 0.01em;
+}
+
+.action-area button {
+  background: linear-gradient(90deg, #e0f2fe 0%, #b2ebf2 100%);
+  color: #37474f;
+  border: none;
+  border-radius: 7px;
+  padding: 0.36em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(100,120,130,0.06);
+  margin-right: 0.6em;
+  margin-bottom: 0.18em;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.action-area button:last-child {
+  margin-right: 0;
+}
+
+.action-area button:hover, .action-area button:focus {
+  background: linear-gradient(90deg, #b2ebf2 0%, #80deea 100%);
+  color: #01579b;
+  box-shadow: 0 3px 7px rgba(30,130,200,0.07);
+  outline: none;
+}
+
+.action-area button:disabled {
+  background: gray;
+  color: black;
+  outline: none;
+  cursor: not-allowed;
+}
