@@ -1,10 +1,10 @@
 <script setup>
 import eventBus from '@/eventBus.js'
 
-import {eventsStore} from "/src/stores/events.js";
+import {eventsStore} from '/src/stores/events.js';
 import StartingScreen from '/src/components/areas/startingScreen/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
-import Map from "/src/components/areas/map/Map.vue";
+import Map from '/src/components/areas/map/Map.vue';
 
 
 
@@ -18,7 +18,7 @@ function handleNav(area) {
 
 
 function logEvent(content) {
-  console.log("Event log", content)
+  console.log('Event log', content)
   events.log.push(content)
 
 }

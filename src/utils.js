@@ -1,4 +1,4 @@
-import {requirements} from "/src/stores/requirements.js"
+import {requirements} from '/src/stores/requirements.js'
 
 
 function assemblyMeetsRequirements(assembly, requirementType, requirementName) {
@@ -43,7 +43,7 @@ function getAdjacentTiles(tile, tilesGrid) {
 }
 
 function canAssemblyMoveAlone(assembly){
-   return assembly.modules.filter(module => module.type === "transport").length > 0
+   return assembly.modules.filter(module => module.type === 'transport').length > 0
 }
 
 export {

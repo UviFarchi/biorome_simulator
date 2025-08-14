@@ -6,7 +6,7 @@ import {marketStore} from '/src/stores/market.js'
 import {plantsStore} from '/src//stores/plants.js'
 import {v4 as uuidv4} from 'uuid'
 import {computed, onMounted, ref} from 'vue'
-import {mapStore} from "/src/stores/map.js";
+import {mapStore} from '/src/stores/map.js';
 
 const market = marketStore()
 

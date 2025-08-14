@@ -41,7 +41,7 @@ function startGame() {
   gameState.difficulty = payload.difficulty
 
   eventBus.emit('nav', 'map')
-  eventBus.emit('log', {engine:"analytics", msg: "Game started"})
+  eventBus.emit('log', {engine:'analytics', msg: 'Game started'})
 }
 
 onMounted(
