@@ -21,9 +21,11 @@ const collapsed = ref({ control: false, weather: false, player: false, resources
 const gameState = gameStore()
 
 async function handlePhaseChange () {
-  if (gameState.turnPhase < 0) { eventBus.emit('nav', 'start'); return }
+ }
   gameState.turnPhase++
-  if (gameState.turnPhase > 2) gameState.turnPhase = 0
+  if (gameState.turnPhase > 2) {
+    gameState.turnPhase = 0
+  }
   switch (gameState.turnPhase) {
     case 0:
       gameState.currentDay++
@@ -72,6 +74,7 @@ function handleRestart () {
 onMounted(() => {
   eventBus.on('menu', toggleMenu)
   eventBus.on('phase', handlePhaseChange)
+  handlePhaseChange()
 })
 onBeforeUnmount(() => {
   eventBus.off('menu', toggleMenu)

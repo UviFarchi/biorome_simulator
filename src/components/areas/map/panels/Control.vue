@@ -1,12 +1,12 @@
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue'
-import { gameStore } from '@/stores/game.js'
+import { gameStore } from '/src/stores/game.js'
 
 const props = defineProps({ collapsed: { type: Boolean, default: false } })
 const emit = defineEmits(['panel', 'restart', 'show-log', 'show-analytics', 'next-phase'])
 
 const gameState = gameStore()
-const phaseLabel = computed(() => gameState.engines[gameState.turnPhase])
+const phaseLabel = computed(() => gameState)
 function togglePanel() { emit('panel', { id: 'control', collapsed: !props.collapsed }) }
 </script>
 
