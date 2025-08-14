@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
-import AnimalsMenu from '@/components/menus/optimizations/AnimalsMenu.vue';
+import AnimalsMenu from '@/components/areas/map/menus/optimizations/AnimalsMenu.vue';
 
 describe('AnimalsMenu.vue', () => {
   it('mounts', () => {

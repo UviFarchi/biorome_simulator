@@ -79,11 +79,19 @@ const userAvatar = computed(() => gameState.userAvatar)
 // Gold
 const gold = computed(() => resource.gold)
 
+
+function restartGame(){
+  localStorage.removeItem('bioromeUser');
+  eventBus.emit('nav', 'start');
+  window.location.reload();
+}
+
+
 </script>
 
 <template>
   <div id="statusBarWrapper">
-    <div id="restart" class="statusBarCell" @click="eventBus.emit('nav', 'start')">
+    <div id="restart" class="statusBarCell" @click="restartGame">
       Restart
     </div>
     <div id="showLog" class="statusBarCell" @click="eventBus.emit('menu', {target:'log'})">
@@ -130,7 +138,7 @@ const gold = computed(() => resource.gold)
   width: 100%;
   justify-content: flex-start;
   margin: 0;
-  max-height: 30px;
+
 }
 
 #gameLogo img {

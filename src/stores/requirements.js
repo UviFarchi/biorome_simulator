@@ -1,6 +1,4 @@
 import {defineStore} from 'pinia'
-import {ref, watch} from 'vue'
-import {mapStore} from "@/stores/map.js";
 
 export const requirementsStore =
     defineStore('requirementsStore', () => {

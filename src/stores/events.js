@@ -129,7 +129,7 @@ export const eventsStore = defineStore('eventsStore', () => {
         // FERTILITY & SOIL
         fertilizer: {
             property: 'fertility',
-            delta: 1, // or set per animal/plant
+            delta: 1,
             description: 'Increases soil fertility'
         },
         soil_loosen: {
@@ -141,14 +141,14 @@ export const eventsStore = defineStore('eventsStore', () => {
         // WATER
         water_consumption: {
             property: 'water',
-            delta: -1, // Consumed per turn by plant/animal
+            delta: -1,
             description: 'Reduces soil water'
         },
 
         // PEST CONTROL
         pest_control: {
             property: 'pests',
-            delta: -1, // Or set to -effect.strength
+            delta: -1,
             description: 'Reduces pests on this tile and nearby map'
         },
 
@@ -195,12 +195,12 @@ export const eventsStore = defineStore('eventsStore', () => {
         },
         ph_up: {
             property: 'ph',
-            delta: 0.2,  // Increases soil pH (less acidic)
+            delta: 0.2,
             description: 'Raises soil pH'
         },
         ph_down: {
             property: 'ph',
-            delta: -0.2, // Decreases soil pH (more acidic)
+            delta: -0.2,
             description: 'Lowers soil pH'
         },
     }

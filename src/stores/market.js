@@ -6,7 +6,7 @@ export const marketStore = defineStore('marketStore', () => {
         // Example data; should be generated dynamically
         {
             id: 'contract-1',
-            productType: 'wheat',
+            productType: 'wheat_grain',
             quantity: 20,
             dueDate: '2025-08-01',
             pricePerUnit: 5,
@@ -31,7 +31,7 @@ export const marketStore = defineStore('marketStore', () => {
     const openMarketOffers = ref([
         {
             id: 'offer-1',
-            productType: 'Tomato',
+            productType: 'tomato_fruit',
             quantity: 5,
             pricePerUnit: 7,
             expiryDate: '2025-07-30',
@@ -42,7 +42,7 @@ export const marketStore = defineStore('marketStore', () => {
 
     const harvestedProducts = ref([])
 
-
+    const notifications = ref([])
     const extraBuyables = ref([
         {type: 'feed', basePrice: 2, icon: '🍽️', shelfLife: 30},
         {type: 'fertilizer', basePrice: 2, icon: '💩', shelfLife: 30},
@@ -60,6 +60,7 @@ export const marketStore = defineStore('marketStore', () => {
         openMarketOffers,
         harvestedProducts,
         extraBuyables,
-        utilityPrices
+        utilityPrices,
+        notifications
     }
 })

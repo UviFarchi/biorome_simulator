@@ -1,7 +1,7 @@
 <script setup>
 import eventBus from '@/eventBus.js'
 
-import TileModal from '/src/areas/components/map/modals/TileModal.vue'
+import TileModal from '/src/modals/TileModal.vue'
 import { mapStore } from '/src/stores/map.js'
 import { computed, ref } from 'vue'
 
