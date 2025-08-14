@@ -1,11 +1,43 @@
-import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { createPinia } from 'pinia';
-import Map from '@/components/areas/map/Map.vue';
+// tests/components/areas/map/panels/Control.test.js
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { setActivePinia, createPinia } from 'pinia'
+import { mount } from '@vue/test-utils'
+import Control from '@/components/areas/map/panels/Control.vue'
+import { gameStore } from '@/stores/game.js'
+vi.mock('@/eventBus.js', () => ({ default: { emit: vi.fn() } }))
+import eventBus from '@/eventBus.js'
 
-describe('Map.vue', () => {
-  it('mounts', () => {
-    const wrapper = mount(Map, { global: { plugins: [createPinia()] } });
-    expect(wrapper.exists()).toBe(true);
-  });
-});
+describe('Control panel', () => {
+  beforeEach(() => { setActivePinia(createPinia()); vi.clearAllMocks() })
+
+  it('shows next phase label from store', () => {
+    const game = gameStore()
+    game.turnPhase = -1
+    const wrapper = mount(Control, { props: { collapsed: false }, attachTo: document.body })
+    const expected = game.engines[(game.turnPhase + 1) % game.engines.length]
+    expect(wrapper.find('#nextPhase').text()).toContain(expected)
+  })
+
+  it('header click emits panel toggle', async () => {
+    const wrapper = mount(Control, { props: { collapsed: false } })
+    await wrapper.find('.panel-header').trigger('click')
+    expect(eventBus.emit).toHaveBeenCalledWith('panel', { target: 'control' })
+  })
+
+  it('collapses body when collapsed=true', async () => {
+    const wrapper = mount(Control, { props: { collapsed: true }, attachTo: document.body })
+    expect(wrapper.find('.panel-body').isVisible()).toBe(false)
+    await wrapper.setProps({ collapsed: false })
+    expect(wrapper.find('.panel-body').isVisible()).toBe(true)
+  })
+
+  it('forwards control actions via bus', async () => {
+    const wrapper = mount(Control, { props: { collapsed: false } })
+    await wrapper.find('#showLog').trigger('click')
+    expect(eventBus.emit).toHaveBeenCalledWith('menu', { target: 'log' })
+    await wrapper.find('#showAnalytics').trigger('click')
+    expect(eventBus.emit).toHaveBeenCalledWith('menu', { target: 'analytics' })
+    await wrapper.find('#nextPhase').trigger('click')
+    expect(eventBus.emit).toHaveBeenCalledWith('phase', {})
+  })
+})
