@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import {gameStore} from "@/stores/game.js";
+import {gameStore} from '@/stores/game.js';
 
 export const resourceStore = defineStore('resourceStore', () => {
 const game =gameStore()
