@@ -1,12 +1,12 @@
 <script setup>
 import eventBus from '@/eventBus.js'
-import {animalsStore} from '/src/stores/animals.js'
-import {gameStore} from '/src/stores/game.js'
-import {marketStore} from '/src/stores/market.js'
-import {plantsStore} from '/src/stores/plants.js'
+import {animalsStore} from '@/stores/animals.js'
+import {gameStore} from '@/stores/game.js'
+import {marketStore} from '@/stores/market.js'
+import {plantsStore} from '@/stores/plants.js'
 import {v4 as uuidv4} from 'uuid'
 import {computed, onMounted, ref} from 'vue'
-import {mapStore} from '/src/stores/map.js';
+import {mapStore} from '@/stores/map.js';
 
 const market = marketStore()
 

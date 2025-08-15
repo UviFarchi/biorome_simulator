@@ -6,7 +6,7 @@ export const mapStore = defineStore('mapStore', () => {
     const gameState = gameStore()
 
     const size = computed(() => {
-        console.log("difficulty", gameState.difficulty);
+        console.log('difficulty', gameState.difficulty);
         return 6 * (gameState.difficulty);
     })
     const topographyConstraints = {
@@ -14,7 +14,7 @@ export const mapStore = defineStore('mapStore', () => {
         neighborCap: 6,   // max Δelev meters between neighbors
         cellSize: 100
     }
-    console.log("difficulty", gameState.difficulty, "size:", size.value);
+    console.log('difficulty', gameState.difficulty, 'size:', size.value);
     const tiles = ref(
         Array.from({length: size.value}, (_, row) =>
             Array.from({length: size.value}, (_, col) => ({

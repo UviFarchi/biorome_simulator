@@ -1,4 +1,4 @@
-import {assemblyRequirementsStore} from '/src/stores/assemblyRequirements.js'
+import {assemblyRequirementsStore} from '@/stores/assemblyRequirements.js'
 import {gameStore} from '@/stores/game.js'
 import {mapStore} from '@/stores/map.js'
 import {eventsStore} from '@/stores/events.js'
@@ -6,8 +6,8 @@ import {marketStore} from '@/stores/market.js'
 import {resourceStore} from '@/stores/resources.js'
 import {weatherStore} from '@/stores/weather.js'
 import {modulesStore} from '@/stores/modules.js'
-import {ref, watch} from "vue";
-import eventBus from "@/eventBus.js";
+import {ref, watch} from 'vue';
+import eventBus from '@/eventBus.js';
 
 const piniaReady = ref(false)
 

@@ -1,4 +1,4 @@
-// tests/components/areas/map/Map.test.js
+// tests/components/map/Map.test.js
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'

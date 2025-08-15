@@ -1,6 +1,6 @@
 // src/calc/generateTerrain.js
 import { mapStore } from '@/stores/map.js'
-import eventBus from "@/eventBus.js";
+import eventBus from '@/eventBus.js';
 
 // ---- tiny PRNG + FBM value noise (no prepasses) ----
 function xmur3(str) {

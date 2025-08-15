@@ -1,4 +1,4 @@
-// tests/components/areas/map/panels/PlayerPanel.test.js
+// tests/components/panels/Player.test.js
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
