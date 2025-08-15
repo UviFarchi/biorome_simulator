@@ -1,7 +1,6 @@
-// tests/stores/requirements.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { requirementsStore } from '@/stores/requirements.js';
+import { actionRequirementsStore } from '@/stores/actionRequirements.js';
 
 const onlyTypeSubtype = (obj) => {
   const keys = Object.keys(obj);
@@ -14,7 +13,7 @@ describe('requirements store', () => {
   });
 
   it('initializes and exposes top-level sections', () => {
-    const r = requirementsStore();
+    const r = actionRequirementsStore();
     expect(r).toBeDefined();
     for (const k of ['harvest', 'sowing', 'animal', 'assemblies']) {
       expect(typeof r[k]).toBe('object');
@@ -22,7 +21,7 @@ describe('requirements store', () => {
   });
 
   it('harvest dictionary contains known products with arrays of requirements', () => {
-    const { harvest } = requirementsStore();
+    const { harvest } = actionRequirementsStore();
     for (const k of ['honey', 'wool']) {            // sample canonical keys
       expect(Array.isArray(harvest[k])).toBe(true);
       expect(harvest[k].length).toBeGreaterThan(0);
@@ -34,7 +33,7 @@ describe('requirements store', () => {
   }); // :contentReference[oaicite:0]{index=0}
 
   it('sowing actions expose seed, seedling, fertilize with arrays of {type, subtype?}', () => {
-    const { sowing } = requirementsStore();
+    const { sowing } = actionRequirementsStore();
     for (const k of ['seed', 'seedling', 'fertilize']) {
       expect(Array.isArray(sowing[k])).toBe(true);
       expect(sowing[k].length).toBeGreaterThan(0);
@@ -46,7 +45,7 @@ describe('requirements store', () => {
   }); // :contentReference[oaicite:1]{index=1}
 
   it('animal actions expose move, collar, feed with arrays of {type, subtype?}', () => {
-    const { animal } = requirementsStore();
+    const { animal } = actionRequirementsStore();
     for (const k of ['move', 'collar', 'feed']) {
       expect(Array.isArray(animal[k])).toBe(true);
       expect(animal[k].length).toBeGreaterThan(0);
@@ -58,7 +57,7 @@ describe('requirements store', () => {
   }); // :contentReference[oaicite:2]{index=2}
 
   it('assemblies expose transportAssembly and buildAssembly with valid entries', () => {
-    const { assemblies } = requirementsStore();
+    const { assemblies } = actionRequirementsStore();
     expect(Array.isArray(assemblies.transportAssembly)).toBe(true);
     expect(assemblies.transportAssembly.length).toBeGreaterThan(0);
     assemblies.transportAssembly.forEach(req => {
@@ -71,23 +70,3 @@ describe('requirements store', () => {
     expect(assemblies.buildAssembly.some(x => x.type === 'tool')).toBe(true);
   }); // :contentReference[oaicite:3]{index=3}
 });
-
-it('exposes stageRequirements with arrays of descriptors', () => {
-  const { stageRequirements } = requirementsStore()
-  expect(stageRequirements).toBeTruthy()
-  expect(Array.isArray(stageRequirements.discovery)).toBe(true)
-  expect(Array.isArray(stageRequirements.design)).toBe(true)
-  for (const req of stageRequirements.discovery) {
-    expect(typeof req.type).toBe('string')
-    expect(typeof req.condition).toBe('string')
-  }
-})
-
-it('exposes stageRestrictions with correct booleans per stage', () => {
-  const { stageRestrictions } = requirementsStore()
-  expect(stageRestrictions.discovery.analytics).toBe(true)
-  expect(stageRestrictions.discovery.optimizations).toBe(false)
-  expect(stageRestrictions.discovery.operations).toBe(false)
-  expect(stageRestrictions.design.optimizations).toBe(true)
-  expect(stageRestrictions.deployment.operations).toBe(true)
-})

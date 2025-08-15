@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-vi.mock('@/stores/requirements.js', () => ({ requirements: {} }), { virtual: true });
+vi.mock('@/stores/actionRequirements.js', () => ({ requirements: {} }), { virtual: true });
 import { getAdjacentTiles } from '@/utils.js';
 
 describe('utils', () => {

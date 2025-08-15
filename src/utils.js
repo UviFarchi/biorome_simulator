@@ -1,4 +1,4 @@
-import {requirements} from '/src/stores/requirements.js'
+import {requirements} from '/src/stores/actionRequirements.js'
 
 
 function assemblyMeetsRequirements(assembly, requirementType, requirementName) {

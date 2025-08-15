@@ -1,7 +1,8 @@
 import {defineStore} from 'pinia'
 
-export const requirementsStore = defineStore('requirementsStore', () => {
+export const actionRequirementsStore = defineStore('actionRequirementsStore', () => {
     return {
+
         harvest: {
             // plant products
             hay: [{type: 'transport'}, {type: 'battery'}, {type: 'cutter', subtype: 'rotating'}],
@@ -185,20 +186,23 @@ export const requirementsStore = defineStore('requirementsStore', () => {
             'horse': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'donkey': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'bee': [{type: 'transport'}, {type: 'battery'}, {type: 'box', subtype: 'hive'}]
-        }, sowing: {
+        },
+        sowing: {
             seed: [{type: 'transport'}, {type: 'arm'}, {type: 'seeder'}, {type: 'borer'}],
             seedling: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'gripper'}],
             fertilize: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
                 type: 'tool', subtype: 'pitchfork'
             }, {type: 'battery'}]
-        }, animal: {
+        },
+        animal: {
             move: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'alarm', subtype: 'electric'}],
             collar: [{type: 'collar'}, {type: 'alarm', subtype: 'electric'}, {
                 type: 'alarm',
                 subtype: 'sound'
             }, {type: 'battery'}, {type: 'gps'},],
             feed: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'tank'}, {type: 'valve'}, {type: 'battery'}]
-        }, assemblies: {
+        },
+        assemblies: {
             transportAssembly: [{type: 'transport'}, {type: 'battery'}, {type: 'cart'}, {
                 type: 'arm',
                 subtype: 'heavy'
@@ -210,21 +214,6 @@ export const requirementsStore = defineStore('requirementsStore', () => {
                 type: 'tool',
                 subtype: 'grader'
             }, {type: 'tool', subtype: 'anchor_driver'}]
-        }, stage: {
-            discovery: {
-                milestones: [{type: 'analytics', condition: 'daily_report_run', atLeast: 1}, {
-                    type: 'map',
-                    condition: 'tiles_surveyed',
-                    atLeast: 20
-                },], restrictions: {actionsAllowed: ['survey', 'measure']}
-            }, design: {
-                milestones: [{
-                    type: 'optimizations', condition: 'placements_made', atLeast: 1
-                }],
-                restrictions: {actionsAllowed: ['survey', 'measure', 'sow', 'move', 'fertilize', 'feed', 'flatten', 'breakGround', 'build', 'transport', 'dig']}
-            }, // deployment is terminal; no further stage requirements here
-            deployment: { milestones: [],
-                restrictions: {actionsAllowed: ['survey', 'measure', 'sow', 'move', 'fertilize', 'feed', 'flatten', 'breakGround', 'build', 'transport', 'dig', 'harvestPlant', 'harvestAnimal', 'harvestPlantProduct', 'harvestAnimalProduct', 'generatePower', 'collectWater', 'produceFertilizer']}}
-        }
+        },
     }
 })
