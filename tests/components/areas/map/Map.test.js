@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import MapView from '@/components/areas/map/Map.vue'
+import MapView from '@/components/map/Map.vue'
 import { gameStore } from '@/stores/game.js'
 
 // functional event bus mock

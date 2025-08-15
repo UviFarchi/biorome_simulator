@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
-import AssembliesMenu from '@/components/areas/map/menus/operations/AssembliesMenu.vue';
+import AssembliesMenu from '@/components/menus/operations/AssembliesMenu.vue';
 
 describe('AssembliesMenu.vue', () => {
   it('mounts', () => {

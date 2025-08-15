@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
-import FarmGate from '@/components/areas/map/menus/operations/FarmGate.vue';
+import FarmGate from '@/components/menus/operations/FarmGate.vue';
 
 describe('FarmGate.vue', () => {
   it('mounts', () => {

@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
-import Resources from '@/components/areas/map/panels/Resources.vue'
+import Resources from '@/components/panels/Resources.vue'
 import { resourceStore } from '@/stores/resources.js'
 vi.mock('@/eventBus.js', () => ({ default: { emit: vi.fn() } }))
 import eventBus from '@/eventBus.js'

@@ -1,65 +1,63 @@
 <script setup>
 import eventBus from '@/eventBus.js'
-import { gameStore } from '/src/stores/game.js'
-import {nextTick, onMounted, ref} from 'vue'
+import { gameStore } from '@/stores/game.js'
+import generateTerrain from '@/calc/generateTerrain.js'
+import { loadAllStores, saveAllStores } from '@/utils.js'
+import { ref, onMounted } from 'vue'
 
-const gameState = gameStore()
+const game = gameStore()
+
 const name = ref('')
 const avatarOptions = [
-  { emoji: '😀', label: 'Smiling Face' },
-  { emoji: '😎', label: 'Cool Face' },
-  { emoji: '🤖', label: 'Robot' },
-  { emoji: '👽', label: 'Alien' },
-  { emoji: '🦊', label: 'Fox' },
-  { emoji: '🐸', label: 'Frog' },
-  { emoji: '🐵', label: 'Monkey' },
-  { emoji: '🐙', label: 'Octopus' },
-  { emoji: '🍕', label: 'Pizza' },
-  { emoji: '🌵', label: 'Cactus' }
+  {emoji: '😀', label: 'Smiling Face'},
+  {emoji: '😎', label: 'Cool Face'},
+  {emoji: '🤖', label: 'Robot'},
+  {emoji: '👽', label: 'Alien'},
+  {emoji: '🦊', label: 'Fox'},
+  {emoji: '🐸', label: 'Frog'},
+  {emoji: '🐵', label: 'Monkey'},
+  {emoji: '🐙', label: 'Octopus'},
+  {emoji: '🍕', label: 'Pizza'},
+  {emoji: '🌵', label: 'Cactus'}
 ]
 const avatar = ref(avatarOptions[0].emoji)
-
 const difficultyOptions = [
-  { value: 1, label: 'Easy' },
-  { value: 2, label: 'Medium' },
-  { value: 3, label: 'High' }
+  {value: 1, label: 'Easy'},
+  {value: 2, label: 'Medium'},
+  {value: 3, label: 'Hard'},
 ]
 const difficulty = ref(1)
 
+const terrainLoading = ref(false);
 
-
-function startGame() {
-  const payload = {
-    userName: name.value?.trim(),
-    userAvatar: avatar.value?.trim(),
-    difficulty: [1, 2, 3].includes(+difficulty.value) ? +difficulty.value : 1
-  }
-  // write first so other stores read correct difficulty on first use
-  localStorage.setItem('bioromeUser', JSON.stringify(payload))
-  gameState.userName = payload.userName
-  gameState.userAvatar = payload.userAvatar
-  gameState.difficulty = payload.difficulty
-
-  eventBus.emit('nav', 'map')
-  eventBus.emit('log', {engine:'analytics', msg: 'Game started'})
-}
-
-onMounted(
-    ()=>{
-      const userData = localStorage.getItem('bioromeUser');
-      if(userData){
-       nextTick(()=>{eventBus.emit('nav', 'map')})
-      }
-
+onMounted(() => {
+  // resume path
+  Promise.resolve().then(() => {
+    if (loadAllStores()) {
+      eventBus.emit('nav', 'map')
     }
-)
+  })
+})
+
+
+function startGame () {
+  game.userName   = name.value?.trim() || ''
+  game.userAvatar = avatar.value?.trim() || ''
+  game.difficulty = [1,2,3].includes(+difficulty.value) ? +difficulty.value : 1
+
+  // new game bootstrap
+  generateTerrain()      // builds map tiles using current game.difficulty
+  saveAllStores()        // persist fresh state
+  eventBus.emit('nav', 'map')
+}
 </script>
+
 
 <template>
   <form @submit.prevent="startGame" class="start-form">
     <div>
       <label for="userName">Your Name:</label>
-      <input id="userName" type="text" v-model="name" autocomplete="off" />
+      <input id="userName" type="text" v-model="name" autocomplete="off"/>
     </div>
 
     <div>
@@ -80,11 +78,13 @@ onMounted(
               name="difficulty"
               :value="option.value"
               v-model="difficulty"
+
           />
           {{ option.label }}
         </label>
       </div>
     </div>
+    <div v-if="terrainLoading" class="terrain-overlay">Generating terrain…</div>
 
     <button type="submit" class="btn start-btn" :disabled="!name">Start</button>
   </form>
@@ -98,13 +98,16 @@ onMounted(
   flex-direction: column;
   gap: 1.2rem;
 }
+
 .start-form label {
   font-weight: bold;
 }
+
 .difficulty-options {
   display: flex;
   gap: 1.2rem;
 }
+
 .start-btn {
   margin-top: 1rem;
   font-size: 1.1em;
@@ -112,10 +115,12 @@ onMounted(
   background: #82c91e;
   color: #fff;
 }
+
 .start-btn:disabled {
   background: grey;
   cursor: not-allowed;
 }
+
 .start-btn:hover {
   background: #5c940d;
 }

@@ -16,9 +16,12 @@ const collapsed = toRef(props, 'collapsed')
 <template>
   <div id="playerPanel" class="panel">
     <div class="panel-header" @click="eventBus.emit('panel', { target: 'player' })">Player</div>
-    <div id="player" class="panel-body statusBarCell" v-show="!collapsed">{{ userName }} {{ userAvatar }}</div>
+    <div id="player" class="panel-body statusBarCell" v-show="!collapsed">{{ userName }} {{ userAvatar }}
+      <br/>
     <span id="stage"> Bioromization Stage {{ stageLabel }}</span>
-
+      <br/>
+      <span>Difficulty: {{gameState.difficulty}}</span>
+  </div>
   </div>
 </template>
 

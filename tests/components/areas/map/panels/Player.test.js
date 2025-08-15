@@ -4,7 +4,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
 vi.mock('@/eventBus.js', () => ({ default: { emit: vi.fn() } }))
 import eventBus from '@/eventBus.js'
-import PlayerPanel from '@/components/areas/map/panels/Player.vue'
+import PlayerPanel from '@/components/panels/Player.vue'
 import { gameStore } from '@/stores/game.js'
 
 describe('PlayerPanel', () => {

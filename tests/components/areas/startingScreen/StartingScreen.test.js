@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
-import StartingScreen from '@/components/areas/startingScreen/StartingScreen.vue'
+import StartingScreen from '@/components/StartingScreen.vue'
 import { gameStore } from '@/stores/game.js'
 
 vi.mock('@/eventBus.js', () => ({ default: { emit: vi.fn() } }))

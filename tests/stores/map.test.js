@@ -2,23 +2,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { mapStore } from '@/stores/map.js';
-
-const expectTile = (t, r, c) => {
-  expect(t.row).toBe(r);
-  expect(t.col).toBe(c);
-  expect(t.surveyed).toBe(false);
-  expect(t.soil).toEqual({
-    health: 100, water: 0, fertility: 0, recoveryRate: 5, compaction: 0, ph: 7
-  });
-  expect(t.plant).toBeNull();
-  expect(t.animal).toBeNull();
-  expect(t.pests).toBe(0);
-  expect(t.weeds).toBe(0);
-  expect(t.pollination).toBe(0);
-  expect(t.defense).toBe(0);
-  expect(Array.isArray(t.assemblies)).toBe(true);
-  expect(t.assemblies.length).toBe(0);
-};
+function expectMeas(field, envVal) {
+  expect(field).toEqual({ env: envVal, measured: { value: undefined } })
+}
+function expectTile(tile, r, c) {
+  expect(tile.row).toBe(r)
+  expect(tile.col).toBe(c)
+}
 
 describe('map store', () => {
   beforeEach(() => {
@@ -45,10 +35,48 @@ describe('map store', () => {
     expectTile(m.tiles[11][11], 11, 11);
   }); // :contentReference[oaicite:1]{index=1}
 
-  it('exposes gate and selectedSubject with correct defaults', () => {
+  it('exposes gate and selectedTile with correct defaults', () => {
     const m = mapStore();
     expect(m.gate).toEqual({ animals: [], plants: [], extras: [] });
-    expect(typeof m.selectedSubject).toBe('object');
-    expect(Object.keys(m.selectedSubject).length).toBe(0);
+    expect(typeof m.selectedTile).toBe('object');
+    expect(Object.keys(m.selectedTile).length).toBe(0);
   }); // :contentReference[oaicite:2]{index=2}
 });
+
+it('initializes measurement-shaped fields for topo, soil, and env', () => {
+  const m = mapStore()
+  const t = m.tiles[0][0]
+
+  // topo
+  expectMeas(t.topo.elevation, 0)
+  expectMeas(t.topo.slopeDeg, 0)
+  expectMeas(t.topo.aspectDeg, 0)
+  expectMeas(t.topo.waterTable, 0)
+  expectMeas(t.topo.drainageIndex, 0)
+
+  // soil
+  expectMeas(t.soil.health, 100)
+  expectMeas(t.soil.water, 0)
+  expectMeas(t.soil.fertility, 0)
+  expectMeas(t.soil.recoveryRate, 5)
+  expectMeas(t.soil.compaction, 0)
+  expectMeas(t.soil.ph, 7)
+
+  // env
+  expectMeas(t.env.moisturePct, 0)
+  expectMeas(t.env.tempC, 0)
+  expectMeas(t.env.nutrients.N, 0)
+  expectMeas(t.env.nutrients.P, 0)
+  expectMeas(t.env.nutrients.K, 0)
+  expectMeas(t.env.salinityDsM, 0)
+  expectMeas(t.env.ph, 7)
+  expectMeas(t.env.ec, 0)
+})
+
+it('keeps non-measurement fields intact', () => {
+  const m = mapStore()
+  const t = m.tiles[0][0]
+  expect(t.plant).toBeNull()
+  expect(t.animal).toBeNull()
+  expect(Array.isArray(t.assemblies)).toBe(true)
+})

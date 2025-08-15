@@ -17,19 +17,6 @@ export const gameStore = defineStore('gameStore', () => {
 
     const difficulty = ref(1)
 
-    if (localStorage.getItem('bioromeUser')) {
-        const data = JSON.parse(localStorage.getItem('bioromeUser'))
-        userName.value = data.userName || ''
-        userAvatar.value = data.userAvatar || ''
-        difficulty.value = data.difficulty || 1
-    }
-    watch([userName, userAvatar, difficulty], () => {
-        localStorage.setItem('bioromeUser', JSON.stringify({
-            userName: userName.value,
-            userAvatar: userAvatar.value,
-            difficulty: difficulty.value
-        }))
-    })
 
     return {
         startDate,

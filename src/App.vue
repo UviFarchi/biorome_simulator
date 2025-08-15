@@ -2,9 +2,9 @@
 import eventBus from '@/eventBus.js'
 
 import {eventsStore} from '/src/stores/events.js';
-import StartingScreen from '/src/components/areas/startingScreen/StartingScreen.vue'
+import StartingScreen from '/src/components/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
-import Map from '/src/components/areas/map/Map.vue';
+import Map from '/src/components/map/Map.vue';
 
 
 

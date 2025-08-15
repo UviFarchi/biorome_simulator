@@ -9,7 +9,6 @@ const events = eventsStore()
 
 <template>
 <div class="logModal">
-  EventLog {{events.log}}
   <div v-for="event in events.log">
     <p :class="event.engine">{{event}}</p>
   </div>
