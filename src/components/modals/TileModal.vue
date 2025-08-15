@@ -1,5 +1,5 @@
 <script setup>
-import {mapStore} from "@/stores/map.js";
+import {mapStore} from '@/stores/map.js';
 const map = mapStore()
 
 </script>

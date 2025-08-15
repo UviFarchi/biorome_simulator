@@ -1,4 +1,4 @@
-// tests/components/areas/startingScreen/StartingScreen.test.js
+// tests/components/StartingScreen.test.js
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'

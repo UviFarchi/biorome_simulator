@@ -552,7 +552,7 @@ export const modulesStore = defineStore('modulesStore', () => {
                 { type: 'tool', subtype: 'seeder' },
                 { type: 'tool', subtype: 'borer' }
             ],
-            name: "Seed Planter",
+            name: 'Seed Planter',
             deployed: false,
             built: false,
             moves: 1,

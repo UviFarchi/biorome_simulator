@@ -17,8 +17,8 @@ import AssembliesMenu from '@/components/menus/operations/AssembliesMenu.vue'
 import AnimalsMenu from '@/components/menus/optimizations/AnimalsMenu.vue'
 import PlantsMenu from '@/components/menus/optimizations/PlantsMenu.vue'
 import FarmGate from '@/components/menus/operations/FarmGate.vue'
-import TilesGrid from "@/components/map/TilesGrid.vue";
-import TileModal from "@/components/modals/TileModal.vue";
+import TilesGrid from '@/components/map/TilesGrid.vue';
+import TileModal from '@/components/modals/TileModal.vue';
 import {saveAllStores, loadAllStores} from '@/utils.js'
 
 const show = ref({
@@ -92,7 +92,7 @@ function toggleModal(modal) {
 
 function handleTileClick(tile) {
   map.selectedTile.value = tile;
-  toggleModal({target: "tileModal", show: "true"})
+  toggleModal({target: 'tileModal', show: 'true'})
 }
 
 
