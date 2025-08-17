@@ -3,6 +3,7 @@ import {recalculateTileValues} from "@/calc/recalculateTileValues.js";
 import {produceReport} from "@/calc/produceReport.js";
 import {gameStore} from "@/stores/game.js";
 import generateWeather from "@/calc/generateWeather.js";
+import {marketFlux} from "@/calc/marketFlux.js";
 
 
 export default function () {
@@ -35,5 +36,6 @@ export default function () {
     generateWeather();
     recalculateTileValues();
     produceReport();
+    marketFlux();
     saveAllStores();
 }
