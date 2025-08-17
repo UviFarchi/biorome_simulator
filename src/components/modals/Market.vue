@@ -1,9 +1,9 @@
 <script setup>
 import eventBus from '@/eventBus.js'
-import {animalsStore} from '@/stores/animals.js'
+import {animalsStore} from '@/stores/animal.js'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-import {plantsStore} from '@/stores/plants.js'
+import {plantsStore} from '@/stores/plant.js'
 import {v4 as uuidv4} from 'uuid'
 import {computed, onMounted, ref} from 'vue'
 import {mapStore} from '@/stores/map.js';
@@ -12,7 +12,7 @@ const market = marketStore()
 
 const animals = animalsStore()
 const plants = plantsStore()
-const gameState = gameStore()
+const game = gameStore()
 const tiles = mapStore()
 
 const activeContracts = computed(() =>
@@ -41,7 +41,7 @@ const filteredOpenOffers = computed(() =>
 )
 const latestNotifications = computed(() => market.notifications.slice(-5).reverse())
 const newsForToday = computed(() =>
-    gameState.eventLog.filter(n => n.day === gameState.day)
+    game.eventLog.filter(n => n.day === game.day)
 )
 
 const buyQuantities = ref({})
@@ -56,11 +56,11 @@ function buyExtra(type) {
   const totalCost = item.basePrice * qty
 
   if (!item) return
-  if (gameState.gold < totalCost) {
+  if (game.gold < totalCost) {
     addNotification('Not enough gold!')
     return
   }
-  gameState.gold -= totalCost
+  game.gold -= totalCost
   for (let i = 0; i < qty; i++) {
     tiles.gate.extras.push({...item})
   }
@@ -193,7 +193,7 @@ function fulfillContract(id) {
   }
   const mod = getPriceModifier(contract.productType)
   const earned = contract.quantity * contract.pricePerUnit * mod
-  gameState.gold += earned
+  game.gold += earned
   addNotification(`Fulfilled contract for ${earned} gold.`)
   if (contract.type === 'recurring') {
     const next = new Date(contract.dueDate)
@@ -220,7 +220,7 @@ function sellToOpenMarket(id) {
   }
   const mod = getPriceModifier(offer.productType)
   const earned = offer.quantity * offer.pricePerUnit * mod
-  gameState.gold += earned
+  game.gold += earned
   offer.status = 'sold'
   addNotification(`Sold ${offer.quantity} ${offer.productType} for ${earned} gold.`)
 }
@@ -259,7 +259,7 @@ function canSell(o) {
       <div v-else class="ticker-inner">No news today.</div>
     </div>
     <h1>Market</h1>
-    <div class="gold">Gold: {{ gameState.gold }}</div>
+    <div class="gold">Gold: {{ game.gold }}</div>
     <button class="btn btn--return return-btn" @click="eventBus.emit('nav', 'main')">Back to Map</button>
     <section class="market-buy-extras">
       <h2>Buy Farm Inputs</h2>

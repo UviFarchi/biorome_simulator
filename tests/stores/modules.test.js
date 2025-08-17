@@ -1,7 +1,7 @@
 // tests/stores/modules.test.js
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { modulesStore } from '@/stores/modules.js'
+import { moduleStore } from '@/stores/module.js'
 
 beforeEach(() => {
   setActivePinia(createPinia())
@@ -9,12 +9,12 @@ beforeEach(() => {
 
 describe('modules store', () => {
   it('initializes', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     expect(s).toBeDefined()
   })
 
   it('exposes constants with battery spec', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     expect(s.constants?.units?.electricity).toBe('kWh')
     expect(s.constants?.battery?.moduleKey).toBe('battery')
     expect(typeof s.constants?.battery?.kWhPerPack).toBe('number')
@@ -22,7 +22,7 @@ describe('modules store', () => {
   })
 
   it('has available modules with normalized shape and unique keys', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     const list = s.availableModules
     expect(Array.isArray(list)).toBe(true)
     expect(list.length).toBeGreaterThan(0)
@@ -44,7 +44,7 @@ describe('modules store', () => {
   })
 
   it('premade assemblies reference known module types', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     const defs = s.availableModules
     const premade = s.premadeAssemblies
     expect(Array.isArray(premade)).toBe(true)
@@ -64,7 +64,7 @@ describe('modules store', () => {
   })
 
   it('active assemblies reference known module types and have control fields', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     const defs = s.availableModules
     const active = s.activeAssemblies
     expect(Array.isArray(active)).toBe(true)
@@ -89,7 +89,7 @@ describe('modules store', () => {
   })
 
   it('exposes currentAssembly as an array for the UI workflow', () => {
-    const s = modulesStore()
+    const s = moduleStore()
     expect(Array.isArray(s.currentAssembly)).toBe(true)
   })
 })

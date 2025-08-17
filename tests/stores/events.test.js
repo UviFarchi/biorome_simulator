@@ -1,7 +1,7 @@
 // tests/stores/events.test.js
 import { describe, it, expect } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { eventsStore } from '@/stores/events.js';
+import { eventsStore } from '@/stores/event.js';
 
 describe('events store', () => {
   it('initializes', () => {

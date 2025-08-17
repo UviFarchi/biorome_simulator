@@ -1,8 +1,5 @@
 <script setup>
-import { eventsStore }  from '/src/stores/events.js';
 
-
-const events = eventsStore()
 
 
 </script>

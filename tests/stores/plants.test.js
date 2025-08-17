@@ -1,9 +1,9 @@
-// tests/stores/plants.test.js
+// tests/stores/plant.test.js
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { plants as plantsStore } from '@/stores/plants.js'
+import { plant as plantsStore } from '@/stores/plant.js'
 
-describe('plants store', () => {
+describe('plant store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })

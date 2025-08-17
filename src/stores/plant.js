@@ -1,8 +1,10 @@
 import {defineStore} from 'pinia'
 import {ref} from 'vue'
 
-export const plants = defineStore('plantsStore', () => {
-    const plantTypes = ref([{
+export const plant = defineStore('plantStore', () => {
+    const plantTypes = ref(
+        [
+            {
         type: 'grass',
         health: 100,
         plantingOptions: ['seed', 'seedling'],

@@ -1,11 +1,11 @@
-// tests/stores/weather.test.js
+// tests/stores/weatherLabel.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { weatherStore } from '@/stores/weather.js';
 
 const in01 = (x) => x >= 0 && x <= 1;
 
-describe('weather store', () => {
+describe('weatherLabel store', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
@@ -38,7 +38,7 @@ describe('weather store', () => {
     expect(weatherEvents.length).toBeGreaterThan(0);
     for (const e of weatherEvents) {
       expect(typeof e.id).toBe('string');
-      expect(e.type).toBe('weather');
+      expect(e.type).toBe('weatherLabel');
       expect(['spring','summer','autumn','winter','any']).toContain(e.season);
       expect(typeof e.frequency).toBe('number');
       expect(e.frequency).toBeGreaterThanOrEqual(0);
@@ -47,7 +47,7 @@ describe('weather store', () => {
       expect(e.duration).toBeGreaterThan(0);
       expect(Array.isArray(e.effect)).toBe(true);
       for (const fx of e.effect) {
-        expect(fx.target).toBe('weather');
+        expect(fx.target).toBe('weatherLabel');
         expect(['temperature','rainfall','cloudCover']).toContain(fx.parameter);
         expect(typeof fx.delta).toBe('number');
       }
@@ -56,16 +56,16 @@ describe('weather store', () => {
 
   it('sample events have expected effects', () => {
     const { weatherEvents } = weatherStore();
-    const drought = weatherEvents.find(e => e.id === 'weather-3');
+    const drought = weatherEvents.find(e => e.id === 'weatherLabel-3');
     expect(drought).toBeTruthy();
     expect(drought.effect.some(fx => fx.parameter === 'rainfall' && fx.delta === -3)).toBe(true);
     expect(drought.effect.some(fx => fx.parameter === 'temperature' && fx.delta === 2)).toBe(true);
 
-    const thunder = weatherEvents.find(e => e.id === 'weather-8');
+    const thunder = weatherEvents.find(e => e.id === 'weatherLabel-8');
     expect(thunder).toBeTruthy();
     expect(thunder.effect.some(fx => fx.parameter === 'cloudCover' && fx.delta === 0.4)).toBe(true);
 
-    const frost = weatherEvents.find(e => e.id === 'weather-5');
+    const frost = weatherEvents.find(e => e.id === 'weatherLabel-5');
     expect(frost).toBeTruthy();
     expect(frost.effect.some(fx => fx.parameter === 'temperature' && fx.delta === -8)).toBe(true);
   });

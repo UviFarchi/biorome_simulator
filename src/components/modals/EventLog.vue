@@ -1,8 +1,8 @@
 <script setup>
-import { eventsStore }  from '/src/stores/events.js';
+import { gameStore }  from '/src/stores/game.js';
 
 
-const events = eventsStore()
+const events = gameStore()
 
 
 </script>

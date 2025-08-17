@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const modulesStore = defineStore('modulesStore', () => {
+export const moduleStore = defineStore('moduleStore', () => {
     const constants = ref({
         units: { electricity: 'kWh', water: 'm³', waste: 'ton', batteryPack: 'pack' },
         battery: { moduleKey: 'battery', kWhPerPack: 5 }
@@ -133,7 +133,7 @@ export const modulesStore = defineStore('modulesStore', () => {
 
     // ---- SENSORS / IMAGING / NAV ----
     const sensorsAndImaging = [
-        // Air & weather
+        // Air & weatherLabel
         { key:'sensor_air_temp', name:'Air Thermometer', type:'sensor', subtype:'air_temp',
             mass:0.3, volume:0.2, cost:25, electricity:-0.05, carryingCapacity:0, operationalStrength:0,
             capacity:0, slots:0, parentSlotsUsed:1, requires:['battery'], count:0 },

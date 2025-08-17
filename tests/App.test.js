@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'
 import { nextTick } from 'vue'
 import App from '@/App.vue'
 import eventBus from '@/eventBus.js'
-import { eventsStore } from '@/stores/events.js'
+import { eventsStore } from '@/stores/event.js'
 
 vi.mock('@/calc/recalculateTileValues.js', () => ({
   recalculateTileValues: vi.fn(),

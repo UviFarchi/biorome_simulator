@@ -1,11 +1,13 @@
 <script setup>
+import { ref, onMounted, nextTick } from 'vue'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import generateTerrain from '@/calc/generateTerrain.js'
-import { loadAllStores, saveAllStores } from '@/utils.js'
-import { ref, onMounted } from 'vue'
+import {hasSavedState, loadAllStores, saveAllStores} from '@/utils.js'
 
 const game = gameStore()
+const terrainGeneration = ref(false)
+const resuming = ref(false)
 
 const name = ref('')
 const avatarOptions = [
@@ -28,33 +30,41 @@ const difficultyOptions = [
 ]
 const difficulty = ref(1)
 
-const terrainLoading = ref(false);
 
-onMounted(() => {
-  // resume path
-  Promise.resolve().then(() => {
-    if (loadAllStores()) {
+
+onMounted(async () => {
+  if (hasSavedState()) {
+    resuming.value = true            // show "Loading save…" immediately
+    await nextTick()
+    await new Promise(requestAnimationFrame) // let overlay paint
+    // defer actual loading to next task so UI stays responsive
+    setTimeout(() => {
+      loadAllStores()
       eventBus.emit('nav', 'map')
-    }
-  })
+    }, 0)
+  }
 })
 
+async function startGame () {
+  game.userName   = (name.value || '').trim()
+  game.userAvatar = (avatar.value || '').trim()
+  game.difficulty = [1, 2, 3].includes(+difficulty.value) ? +difficulty.value : 1
 
-function startGame () {
-  game.userName   = name.value?.trim() || ''
-  game.userAvatar = avatar.value?.trim() || ''
-  game.difficulty = [1,2,3].includes(+difficulty.value) ? +difficulty.value : 1
+  terrainGeneration.value = true
+  await nextTick()
+  await new Promise(requestAnimationFrame) // paint overlay before heavy work
+  // run generator in the next macrotask so UI stays responsive
+  await new Promise(resolve => setTimeout(() => { generateTerrain(); resolve() }, 0))
 
-  // new game bootstrap
-  generateTerrain()      // builds map tiles using current game.difficulty
-  saveAllStores()        // persist fresh state
+  saveAllStores()
+  terrainGeneration.value = false
   eventBus.emit('nav', 'map')
 }
 </script>
 
 
 <template>
-  <form @submit.prevent="startGame" class="start-form">
+  <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
     <div>
       <label for="userName">Your Name:</label>
       <input id="userName" type="text" v-model="name" autocomplete="off"/>
@@ -84,10 +94,10 @@ function startGame () {
         </label>
       </div>
     </div>
-    <div v-if="terrainLoading" class="terrain-overlay">Generating terrain…</div>
-
     <button type="submit" class="btn start-btn" :disabled="!name">Start</button>
   </form>
+  <div v-if="resuming" class="terrain-overlay">Loading save…</div>
+  <div v-else-if="terrainGeneration" class="terrain-overlay">Generating terrain…</div>
 </template>
 
 <style scoped>

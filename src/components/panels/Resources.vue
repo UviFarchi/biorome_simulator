@@ -1,7 +1,7 @@
 <script setup>
 import {computed, toRef} from 'vue'
 import eventBus from '@/eventBus.js'
-import { resourceStore } from '@/stores/resources.js'
+import { resourceStore } from '@/stores/resource.js'
 const resources = resourceStore()
 const gold = computed(() => resources.gold)
 const waste = computed(() => resources.waste)

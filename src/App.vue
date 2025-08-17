@@ -1,14 +1,14 @@
 <script setup>
 import eventBus from '@/eventBus.js'
 
-import {eventsStore} from '/src/stores/events.js';
+import {gameStore} from '/src/stores/game.js';
 import StartingScreen from '/src/components/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
-import Map from '/src/components/map/Map.vue';
+import Map from '/src/components/Map.vue';
 
 
 
-const events = eventsStore()
+const events = gameStore()
 const currentArea = ref('start')
 
 function handleNav(area) {

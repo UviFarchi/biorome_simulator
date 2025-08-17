@@ -6,10 +6,13 @@ const map = mapStore()
 
 
 <template>
- Tile Modal {{map.selectedTile}}
+  <div class="modalData"> Tile Modal {{map.selectedTile}}</div>
+
 </template>
 
 
 <style scoped>
-
+.modalData{
+  background: white;
+}
 </style>

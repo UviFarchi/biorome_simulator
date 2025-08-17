@@ -5,8 +5,10 @@ import {gameStore} from '@/stores/game.js'
 import { clearSavedStores } from '@/utils.js'
 
 
-const gameState = gameStore()
-const phaseLabel = computed(() => gameState.engines[(gameState.turnPhase + 1) % gameState.engines.length])
+const game = gameStore()
+const nextPhaseLabel = computed(() => {
+  return  game.engines[(game.turnPhase + 1) % game.engines.length]
+})
 const props = defineProps({collapsed: {type: Boolean, default: false}})
 const collapsed = toRef(props, 'collapsed')
 
@@ -21,14 +23,15 @@ function restart() {
   <div id="controlPanel" class="panel">
     <div class="panel-header" @click="eventBus.emit('panel', { target: 'control' })">Control</div>
     <div class="panel-body" v-show="!collapsed">
-      <div id="restart" class="statusBarCell" @click.stop="restart">Restart</div>
-      <div id="showLog" class="statusBarCell" @click.stop="eventBus.emit('menu', { target: 'log' })">Show Log</div>
-      <div id="showAnalytics" class="statusBarCell" @click.stop="eventBus.emit('menu', { target: 'analytics' })">Show
+      <button id="restart" class="statusBarCell" @click.stop="restart">Restart</button>
+      <button id="showLog" class="statusBarCell" @click.stop="eventBus.emit('modal', { target: 'log' })">Show Log</button>
+      <button id="showAnalytics" class="statusBarCell" @click.stop="eventBus.emit('modal', { target: 'analytics' })">Show
         Analytics
-      </div>
-      <div id="nextPhase" class="statusBarCell" @click.stop="eventBus.emit('phase', {})">
-        Next Phase:<br/>{{ phaseLabel }}
-      </div>
+      </button> <button id="nextPhase" class="statusBarCell" @click.stop="eventBus.emit('phase', {})">
+      Next Phase:<br/>{{ nextPhaseLabel }}
+    </button>
+
+
     </div>
   </div>
 </template>

@@ -88,7 +88,7 @@ export const actionRequirementsStore = defineStore('actionRequirementsStore', ()
             }, {type: 'gripper'}, {type: 'cart'}],
 
 
-            // plants
+            // plant
             'corn': [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
                 type: 'arm',
                 subtype: 'medium'

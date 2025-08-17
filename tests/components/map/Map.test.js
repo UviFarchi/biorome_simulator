@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import MapView from '@/components/map/Map.vue'
+import MapView from '@/components/Map.vue'
 import { gameStore } from '@/stores/game.js'
 
 // functional event bus mock
@@ -112,8 +112,8 @@ describe('Map.vue', () => {
     expect(wrapper.find('#playerPanel').attributes('data-collapsed')).toBe('false')
     expect(wrapper.find('#resourcesPanel').attributes('data-collapsed')).toBe('false')
 
-    // implicit toggle weather -> collapsed=true
-    eventBus.emit('panel', { target: 'weather' })
+    // implicit toggle weatherLabel -> collapsed=true
+    eventBus.emit('panel', { target: 'weatherLabel' })
     await nextTick()
     expect(wrapper.find('#weatherPanel').attributes('data-collapsed')).toBe('true')
 

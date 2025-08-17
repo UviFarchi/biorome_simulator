@@ -1,7 +1,7 @@
 // tests/stores/resources.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
-import { resourceStore } from '@/stores/resources.js';
+import { resourceStore } from '@/stores/resource.js';
 import { gameStore } from '@/stores/game.js';
 
 describe('resources store', () => {
