@@ -38,7 +38,7 @@ describe('market store', () => {
       expect(typeof c.dueDate).toBe('string');
       expect(isParsableDate(c.dueDate)).toBe(true);
     }
-  }); // seeded sample matches this shape. :contentReference[oaicite:1]{index=1}
+  }); // seeded sample matches this shape. 
 
   it('open market offers have the required fields and types', () => {
     const m = marketStore();
@@ -52,7 +52,7 @@ describe('market store', () => {
       expect(typeof o.expiryDate).toBe('string');
       expect(isParsableDate(o.expiryDate)).toBe(true);
     }
-  }); // seeded sample matches this shape. :contentReference[oaicite:2]{index=2}
+  }); // seeded sample matches this shape. 
 
   it('extraBuyables include feed and fertilizer with prices and shelf life', () => {
     const m = marketStore();
@@ -67,7 +67,7 @@ describe('market store', () => {
       expect(typeof x.shelfLife).toBe('number');
       expect(x.shelfLife).toBeGreaterThan(0);
     }
-  }); // matches current definitions. :contentReference[oaicite:3]{index=3}
+  }); // matches current definitions. 
 
   it('utilityPrices expose numeric tariffs', () => {
     const { utilityPrices } = marketStore();
@@ -75,7 +75,7 @@ describe('market store', () => {
       expect(typeof utilityPrices[k]).toBe('number');
       expect(utilityPrices[k]).toBeGreaterThanOrEqual(0);
     }
-  }); // matches current defaults. :contentReference[oaicite:4]{index=4}
+  }); // matches current defaults. 
 
   it('harvestedProducts starts empty', () => {
     const m = marketStore();

@@ -5,672 +5,935 @@ export const plant = defineStore('plantStore', () => {
     const plantTypes = ref(
         [
             {
-        type: 'grass',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 21, 40, 20, 8],
-        waterRequired: 600,
-        fertilizerRequired: 50,
-        yield: 8000, // Spring & early autumn hay cuts
-        harvestWindows: [{startMonth: 5, startDay: 15, endMonth: 6, endDay: 30}, {
-            startMonth: 9, startDay: 1, endMonth: 9, endDay: 30
-        }],
-        seedCost: 0.1,
-        seedlingCost: 0.5,
-        icon: '🌱',
-        productKey: 'hay',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'weed_suppression', strength: 1}],
-        synergies: [{target: 'clover', strength: 1}]
-    }, {
-        type: 'corn',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 14, 50, 10, 8, 8, 4],
-        waterRequired: 600,
-        fertilizerRequired: 150,
-        yield: 8000, // One harvest period
-        harvestWindows: [{startMonth: 7, startDay: 1, endMonth: 8, endDay: 15}, {
-            startMonth: 9, startDay: 1, endMonth: 10, endDay: 15
-        }],
-        seedCost: 0.1,
-        seedlingCost: 0.5,
-        icon: '🌽',
-        productKey: 'corn_cob',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'water_consumption', strength: 2}],
-        synergies: [{target: 'beans', strength: 1}, {target: 'pumpkin', strength: 1}]
-    }, {
-        type: 'tomato',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [8, 12, 30, 15, 10, 10, 5],
-        waterRequired: 700,
-        fertilizerRequired: 120,
-        yield: 50000, // Summer and autumn (can harvest indeterminate tomatoes twice)
-        harvestWindows: [{startMonth: 7, startDay: 1, endMonth: 8, endDay: 15}, {
-            startMonth: 9, startDay: 1, endMonth: 9, endDay: 30
-        }],
-        seedCost: 0.2,
-        seedlingCost: 1.0,
-        icon: '🍅',
-        productKey: 'tomato_fruit',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'water_consumption', strength: 2}],
-        synergies: [{target: 'basil', strength: 1}, {target: 'marigold', strength: 1}, {
-            target: 'bee', strength: 1
-        }, {target: 'ladybug', strength: 1}, {target: 'chicken', strength: 1}]
-    }, {
-        type: 'lettuce',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [4, 10, 30, 7, 6, 4],
-        waterRequired: 300,
-        fertilizerRequired: 50,
-        yield: 25000, // Spring & early autumn (often two crops)
-        harvestWindows: [{startMonth: 4, startDay: 15, endMonth: 6, endDay: 15}, {
-            startMonth: 9, startDay: 1, endMonth: 10, endDay: 15
-        }],
-        seedCost: 0.05,
-        seedlingCost: 0.5,
-        icon: '🥬',
-        productKey: 'lettuce_leaf',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'water_consumption', strength: 1}],
-        synergies: [{target: 'clover', strength: 1}, {target: 'duck', strength: 1}]
-    }, {
-        type: 'carrot',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [14, 14, 35, 10, 10, 5],
-        waterRequired: 400,
-        fertilizerRequired: 80,
-        yield: 40000,
-        harvestWindows: [{startMonth: 6, startDay: 1, endMonth: 7, endDay: 31}],
-        seedCost: 0.02,
-        seedlingCost: 0.2,
-        icon: '🥕',
-        productKey: 'carrot_root',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'soil_loosen', strength: 1}],
-        synergies: [{target: 'rabbit', strength: 1}, {target: 'pumpkin', strength: 1}, {target: 'pig', strength: 1}]
-    }, {
-        type: 'pumpkin',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 14, 40, 15, 15, 10, 6],
-        waterRequired: 500,
-        fertilizerRequired: 100,
-        yield: 35000,
-        harvestWindows: [{startMonth: 9, startDay: 15, endMonth: 10, endDay: 31}],
-        seedCost: 0.5,
-        seedlingCost: 2.0,
-        icon: '🎃',
-        productKey: 'pumpkin_fruit',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'water_consumption', strength: 3}],
-        synergies: [{target: 'corn', strength: 1}, {target: 'beans', strength: 1}, {
-            target: 'bee', strength: 1
-        }, {target: 'pig', strength: 1}]
-    }, {
-        type: 'lavender',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [21, 30, 30, 20, 10, 10, 6],
-        waterRequired: 250,
-        fertilizerRequired: 20,
-        yield: 1000,
-        harvestWindows: [{startMonth: 6, startDay: 1, endMonth: 7, endDay: 15}],
-        seedCost: 0.1,
-        seedlingCost: 1.0,
-        icon: '💜',
-        productKey: 'lavender_flower',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}, {type: 'pest_control', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'apple_tree', strength: 1}, {
-            target: 'pear_tree', strength: 1
-        }, {target: 'almond_tree', strength: 1}]
-    }, {
-        type: 'clover',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [10, 14, 30, 10, 8, 8, 4],
-        waterRequired: 400,
-        fertilizerRequired: 0,
-        yield: 10000,
-        harvestWindows: [{startMonth: 5, startDay: 1, endMonth: 6, endDay: 30}],
-        seedCost: 0.01,
-        seedlingCost: 0.1,
-        icon: '☘️',
-        productKey: 'clover_flower',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'nitrogen_fixing', strength: 1}],
-        synergies: [{target: 'coffee', strength: 1}, {target: 'apple_tree', strength: 1}]
-    }, {
-        type: 'sunflower',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 10, 40, 15, 10, 10, 6],
-        waterRequired: 500,
-        fertilizerRequired: 80,
-        yield: 2500,
-        harvestWindows: [{startMonth: 8, startDay: 15, endMonth: 9, endDay: 30}],
-        seedCost: 0.1,
-        seedlingCost: 0.5,
-        icon: '🌻',
-        productKey: 'sunflower_seed',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'grape_vine', strength: 1}, {target: 'coffee', strength: 1}]
-    }, {
-        type: 'wheat',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 14, 60, 7, 7, 7, 4],
-        waterRequired: 500,
-        fertilizerRequired: 100,
-        yield: 4500,
-        harvestWindows: [{startMonth: 7, startDay: 1, endMonth: 8, endDay: 1}],
-        seedCost: 0.005,
-        seedlingCost: 0.05,
-        icon: '🌾',
-        productKey: 'wheat_grain',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'weed_suppression', strength: 1}],
-        synergies: []
-    }, {
-        type: 'barley',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 14, 55, 7, 7, 7, 4],
-        waterRequired: 450,
-        fertilizerRequired: 80,
-        yield: 7000,
-        harvestWindows: [{startMonth: 7, startDay: 1, endMonth: 7, endDay: 31}],
-        seedCost: 0.005,
-        seedlingCost: 0.05,
-        icon: '🌾',
-        productKey: 'barley_grain',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'weed_suppression', strength: 1}],
-        synergies: []
-    }, {
-        type: 'oats',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerGrowthStage: [7, 14, 50, 7, 7, 7, 4],
-        waterRequired: 500,
-        fertilizerRequired: 60,
-        yield: 5000,
-        harvestWindows: [{startMonth: 8, startDay: 1, endMonth: 8, endDay: 31}],
-        seedCost: 0.005,
-        seedlingCost: 0.05,
-        icon: '🌾',
-        productKey: 'oats_grain',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: true,
-        effects: [{type: 'weed_suppression', strength: 1}],
-        synergies: []
-    }, {
-        type: 'strawberry',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [14, 14, 90, 730, 730],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [7, 10, 10, 5],
-        waterRequired: 600,
-        fertilizerRequired: 100,
-        yield: 20000, // Two fruiting periods: spring/early summer, and again late summer
-        harvestWindows: [{startMonth: 5, startDay: 20, endMonth: 6, endDay: 30}, {
-            startMonth: 8, startDay: 15, endMonth: 9, endDay: 15
-        }],
-        seedCost: 0.05,
-        seedlingCost: 1.0,
-        icon: '🍓',
-        productKey: 'strawberry_fruit',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'ladybug', strength: 1}]
-    }, {
-        type: 'blueberry',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [0, 30, 365, 3650, 3650],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [10, 15, 10, 7],
-        waterRequired: 700,
-        fertilizerRequired: 50,
-        yield: 20000, // Two windows: late June/early July and August
-        harvestWindows: [{startMonth: 6, startDay: 25, endMonth: 7, endDay: 15}, {
-            startMonth: 8, startDay: 1, endMonth: 8, endDay: 20
-        }],
-        seedCost: 0.1,
-        seedlingCost: 3.0,
-        icon: '🫐',
-        productKey: 'blueberry_fruit',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}, {type: 'ph_down', strength: 0.2}],
-        synergies: [{target: 'bee', strength: 1}]
-    }, {
-        type: 'coffee',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [30, 730, 730, 1460, 1460],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [14, 180, 30, 14],
-        waterRequired: 1500,
-        fertilizerRequired: 200,
-        yield: 3000,
-        harvestWindows: [{startMonth: 11, startDay: 1, endMonth: 1, endDay: 31}],
-        seedCost: 0.1,
-        seedlingCost: 1.0,
-        icon: '☕',
-        productKey: 'coffee_beans',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'ph_down', strength: 0.2}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'clover', strength: 1}, {target: 'sunflower', strength: 1}]
-    }, {
-        type: 'apple_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [60, 730, 1095, 5475, 5475],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [10, 120, 30, 15],
-        waterRequired: 700,
-        fertilizerRequired: 80,
-        yield: 30000,
-        harvestWindows: [{startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}],
-        seedCost: 0.2,
-        seedlingCost: 10.0,
-        icon: '🍏',
-        productKey: 'apple',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 2}, {target: 'lavender', strength: 2}, {target: 'sunflower', strength: 2}]
-    }, {
-        type: 'oak_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [20, 730, 3650, 18250, 18250],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'acorn', 'ripe', 'overripe'],
-        daysPerFruitStage: [10, 120, 30, 30],
-        waterRequired: 500,
-        fertilizerRequired: 0,
-        yield: 250000,
-        harvestWindows: [{startMonth: 10, startDay: 1, endMonth: 11, endDay: 15}],
-        seedCost: 0.05,
-        seedlingCost: 5.0,
-        icon: '🌳',
-        productKey: 'acorn',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'weed_suppression', strength: 2}],
-        synergies: []
-    }, {
-        type: 'poplar',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [1, 180, 1095, 2190, 2190],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'seed_catkin', 'ripe', 'overripe'],
-        daysPerFruitStage: [7, 30, 7, 0],
-        waterRequired: 800,
-        fertilizerRequired: 100,
-        yield: 100000,
-        harvestWindows: [{startMonth: 11, startDay: 1, endMonth: 12, endDay: 31}],
-        seedCost: 0.05,
-        seedlingCost: 2.0,
-        icon: '🌲',
-        productKey: '',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'weed_suppression', strength: 2}],
-        synergies: []
-    }, {
-        type: 'willow',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [1, 180, 730, 2190, 2190],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'seed_catkin', 'ripe', 'overripe'],
-        daysPerFruitStage: [7, 30, 7, 0],
-        waterRequired: 1000,
-        fertilizerRequired: 80,
-        yield: 30000,
-        harvestWindows: [{startMonth: 1, startDay: 1, endMonth: 2, endDay: 28}],
-        seedCost: 0.05,
-        seedlingCost: 1.0,
-        icon: '🌳',
-        productKey: 'willow_bark',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'weed_suppression', strength: 2}],
-        synergies: []
-    }, {
-        type: 'pear_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [60, 730, 1095, 5110, 5110],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [10, 110, 20, 10],
-        waterRequired: 600,
-        fertilizerRequired: 60,
-        yield: 30000,
-        harvestWindows: [{startMonth: 8, startDay: 15, endMonth: 9, endDay: 30}],
-        seedCost: 0.2,
-        seedlingCost: 10.0,
-        icon: '🍐',
-        productKey: 'pear',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 2}, {target: 'lavender', strength: 2}, {target: 'sunflower', strength: 2}]
-    }, {
-        type: 'almond_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [30, 730, 730, 3650, 3650],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [7, 150, 30, 10],
-        waterRequired: 800,
-        fertilizerRequired: 150,
-        yield: 2800,
-        harvestWindows: [{startMonth: 8, startDay: 1, endMonth: 9, endDay: 15}],
-        seedCost: 0.2,
-        seedlingCost: 10.0,
-        icon: '🌰',
-        productKey: 'almond',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 2}, {target: 'clover', strength: 2}]
-    }, {
-        type: 'orange_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [30, 730, 730, 3650, 3650],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [14, 240, 60, 30],
-        waterRequired: 1000,
-        fertilizerRequired: 180,
-        yield: 30000,
-        harvestWindows: [{startMonth: 12, startDay: 1, endMonth: 3, endDay: 1}, {
-            startMonth: 1, startDay: 1, endMonth: 12, endDay: 31
-        }],
-        seedCost: 0.1,
-        seedlingCost: 15.0,
-        icon: '🍊',
-        productKey: 'orange',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'lavender', strength: 1}]
-    }, {
-        type: 'lemon_tree',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'sapling', 'fruiting', 'old'],
-        daysPerGrowthStage: [30, 730, 730, 3285, 3285],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [14, 180, 60, 30],
-        waterRequired: 1000,
-        fertilizerRequired: 180,
-        yield: 35000,
-        harvestWindows: [{startMonth: 11, startDay: 1, endMonth: 2, endDay: 28}],
-        seedCost: 0.1,
-        seedlingCost: 15.0,
-        icon: '🍋',
-        productKey: 'lemon',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'wood',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'lavender', strength: 1}]
-    }, {
-        type: 'grape_vine',
-        health: 100,
-        plantingOptions: ['seed', 'seedling'],
-        growthStages: ['seed', 'seedling', 'juvenile', 'fruiting', 'old'],
-        daysPerGrowthStage: [30, 180, 730, 1825, 1825],
-       fruitStage: 'vegetative',
-        fruitStages: ['flowering', 'green fruit', 'ripe', 'overripe'],
-        daysPerFruitStage: [7, 60, 30, 14],
-        waterRequired: 600,
-        fertilizerRequired: 50,
-        yield: 25000,
-        harvestWindows: [{startMonth: 8, startDay: 15, endMonth: 10, endDay: 1}],
-        seedCost: 0.05,
-        seedlingCost: 5.0,
-        icon: '🍇',
-        productKey: 'grape',
-        dateDeployed: '',
-        growthStage: '',
-        plantMaterialKey: 'waste',
-        removedWhenHarvested: false,
-        effects: [{type: 'pollination', strength: 1}],
-        synergies: [{target: 'bee', strength: 1}, {target: 'ladybug', strength: 1}]
-    },
-            // Aquatic crops
-            {
-                type: 'rice',
+                // Identity
+                type: "grass", icon: "🌱",
+                scientificName: "Lolium perenne",
+                description: "Perennial forage grass; fast-growing, multiple seasonal cuts; used for hay and pasture.",
+                // Ontogeny
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 21, 40, 20, 365],
+                // Fruiting (hay cut, no pollination needed)
+                fruiting: {
+                    requiresPollination: false,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["vegetative", "ripe", "overripe"],
+                    daysPerStage: [40, 20, 8],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 5, startDay: 15, endMonth: 6, endDay: 30},
+                        {startMonth: 9, startDay: 1, endMonth: 9, endDay: 30}
+                    ]
+                },
                 health: 100,
-                plantingOptions: ['seed', 'seedling'],
-                growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'green fruit', 'ripe', 'overripe'],
-                daysPerGrowthStage: [7, 14, 45, 10, 10, 15, 7],
-                waterRequired: 1200,
-                fertilizerRequired: 150,
-                yield: 6000,
-                harvestWindows: [{ startMonth: 9, startDay: 1, endMonth: 10, endDay: 15 }],
-                seedCost: 0.05,
-                seedlingCost: 0.5,
-                icon: '🌾',
-                productKey: 'rice_grain',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
-                removedWhenHarvested: true,
-                effects: [{ type: 'water_consumption', strength: 3 }],
-                synergies: [{ target: 'duck', strength: 1 }]
-            },
-            {
-                type: 'lotus',
-                health: 100,
-                plantingOptions: ['seed', 'seedling'],
-                growthStages: ['seed', 'seedling', 'vegetative', 'flowering', 'ripe', 'overripe'],
-                daysPerGrowthStage: [10, 20, 60, 20, 20, 10],
-                waterRequired: 1000,
-                fertilizerRequired: 80,
-                yield: 2000,
-                harvestWindows: [{ startMonth: 7, startDay: 1, endMonth: 8, endDay: 31 }],
-                seedCost: 0.1,
-                seedlingCost: 1.0,
-                icon: '🌸',
-                productKey: 'lotus_root',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
-                removedWhenHarvested: true,
-                effects: [{ type: 'pollination', strength: 1 }],
-                synergies: [{ target: 'bee', strength: 1 }]
-            },
-            {
-                type: 'water_spinach',
-                health: 100,
-                plantingOptions: ['seed', 'cutting'],
-                growthStages: ['seed', 'seedling', 'vegetative', 'ripe', 'overripe'],
-                daysPerGrowthStage: [5, 7, 20, 10, 5],
-                waterRequired: 800,
-                fertilizerRequired: 40,
-                yield: 15000,
-                harvestWindows: [{ startMonth: 6, startDay: 1, endMonth: 8, endDay: 31 }],
-                seedCost: 0.02,
-                seedlingCost: 0.2,
-                icon: '🥬',
-                productKey: 'water_spinach_leaf',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
-                removedWhenHarvested: true,
-                effects: [{ type: 'water_consumption', strength: 2 }],
-                synergies: [{ target: 'fish', strength: 1 }]
+                yield: 8000,
+                seedRate_kg_per_ha: 25,
+                seedlingDensity_per_ha: 0,
+                productKey: "hay",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+                dateDeployed: "", devStage: ""
             },
 
-            // Weeds
             {
-                type: 'duckweed',
-                health: 80,
-                plantingOptions: ['natural'],
-                growthStages: ['vegetative', 'ripe'],
-                daysPerGrowthStage: [7, 7],
-                waterRequired: 500,
-                fertilizerRequired: 0,
-                yield: 500,
-                harvestWindows: [{ startMonth: 6, startDay: 1, endMonth: 9, endDay: 30 }],
-                seedCost: 0,
-                seedlingCost: 0,
-                icon: '🟩',
-                productKey: 'duckweed_biomass',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
+                type: "corn", icon: "🌽",
+                scientificName: "Zea mays",
+                description: "Annual cereal crop; wind-pollinated grass with high grain yield.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 50, 30, 60],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 8, 8, 4],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 7, startDay: 1, endMonth: 8, endDay: 15},
+                        {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
+                    ]
+                },
+                health: 100,
+                yield: 8000,
+                seedRate_kg_per_ha: 20,
+                seedlingDensity_per_ha: 0,
+                productKey: "corn_cob",
+                plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                effects: [{ type: 'water_cover', strength: 1 }],
-                synergies: [{ target: 'fish', strength: 1 }]
+                dateDeployed: "", devStage: ""
             },
+
             {
-                type: 'water_hyacinth',
-                health: 90,
-                plantingOptions: ['natural'],
-                growthStages: ['vegetative', 'flowering', 'ripe'],
-                daysPerGrowthStage: [14, 20, 15],
-                waterRequired: 700,
-                fertilizerRequired: 0,
+                type: "tomato", icon: "🍅",
+                scientificName: "Solanum lycopersicum",
+                description: "Annual fruiting vegetable; insect-pollinated; high-yield crop in warm seasons.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [8, 12, 30, 15, 60],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [15, 10, 10, 5],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 7, startDay: 1, endMonth: 8, endDay: 15},
+                        {startMonth: 9, startDay: 1, endMonth: 9, endDay: 30}
+                    ]
+                },
+                health: 100,
+                yield: 50000,
+                seedRate_kg_per_ha: 0.3,
+                seedlingDensity_per_ha: 30000,
+                productKey: "tomato_fruit",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                type: "lettuce", icon: "🥬",
+                scientificName: "Lactuca sativa",
+                description: "Annual leafy vegetable; harvested before bolting; vegetative yield crop.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [4, 10, 30, 15, 30],
+                fruiting: {
+                    requiresPollination: false,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["vegetative", "ripe", "overripe"],
+                    daysPerStage: [30, 7, 6],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 4, startDay: 15, endMonth: 6, endDay: 15},
+                        {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
+                    ]
+                },
+                health: 100,
+                yield: 25000,
+                seedRate_kg_per_ha: 3,
+                seedlingDensity_per_ha: 50000,
+                productKey: "lettuce_leaf",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                type: "carrot", icon: "🥕",
+                scientificName: "Daucus carota subsp. sativus",
+                description: "Root vegetable biennial grown as annual; harvested before flowering; vegetative yield.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [14, 14, 35, 20, 40],
+                fruiting: {
+                    requiresPollination: false,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["vegetative", "ripe", "overripe"],
+                    daysPerStage: [35, 10, 5],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 6, startDay: 1, endMonth: 7, endDay: 31}
+                    ]
+                },
+                health: 100,
+                yield: 40000,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 0,
+                productKey: "carrot_root",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                type: "pumpkin", icon: "🎃",
+                scientificName: "Cucurbita pepo",
+                description: "Annual cucurbit; insect-pollinated; grown for fruit harvested in autumn.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 40, 30, 30],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [15, 15, 10, 6],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 9, startDay: 15, endMonth: 10, endDay: 31}
+                    ]
+                },
+                health: 100,
+                yield: 35000,
+                seedRate_kg_per_ha: 6,
+                seedlingDensity_per_ha: 5000,
+                productKey: "pumpkin_fruit",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Lavender
+                type: "lavender", icon: "💜",
+                scientificName: "Lavandula angustifolia",
+                description: "Perennial aromatic shrub grown for flowers and essential oil; insect-pollinated.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [21, 30, 30, 40, 365],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "butterfly", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [20, 10, 10, 6],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 6, startDay: 1, endMonth: 7, endDay: 15}]
+                },
+                health: 100,
                 yield: 1000,
-                harvestWindows: [{ startMonth: 7, startDay: 1, endMonth: 9, endDay: 30 }],
-                seedCost: 0,
-                seedlingCost: 0,
-                icon: '💜',
-                productKey: 'water_hyacinth_biomass',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
-                removedWhenHarvested: true,
-                effects: [{ type: 'invasive', strength: 2 }],
-                synergies: []
+                seedRate_kg_per_ha: 3,
+                seedlingDensity_per_ha: 35000,
+                productKey: "lavender_flower",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+                dateDeployed: "", devStage: ""
             },
+
             {
-                type: 'barnyard_grass',
-                health: 70,
-                plantingOptions: ['natural'],
-                growthStages: ['seedling', 'vegetative', 'ripe'],
-                daysPerGrowthStage: [7, 30, 15],
-                waterRequired: 400,
-                fertilizerRequired: 0,
-                yield: 2000,
-                harvestWindows: [{ startMonth: 7, startDay: 1, endMonth: 8, endDay: 31 }],
-                seedCost: 0,
-                seedlingCost: 0,
-                icon: '🌱',
-                productKey: 'barnyard_grass_seed',
-                dateDeployed: '',
-                growthStage: '',
-                plantMaterialKey: 'waste',
+                // Clover
+                type: "clover", icon: "☘️",
+                scientificName: "Trifolium pratense",
+                description: "Perennial/short-lived legume used for forage and cover; insect-pollinated.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [10, 14, 30, 26, 365],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "butterfly", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 8, 8, 4],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 5, startDay: 1, endMonth: 6, endDay: 30}]
+                },
+                health: 100,
+                yield: 10000,
+                seedRate_kg_per_ha: 8,
+                seedlingDensity_per_ha: 0,
+                productKey: "clover_flower",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Sunflower
+                type: "sunflower", icon: "🌻",
+                scientificName: "Helianthus annuus",
+                description: "Annual oilseed/ornamental; insect-pollinated heads; summer harvest.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 10, 40, 31, 30],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "butterfly", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [15, 10, 10, 6],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 8, startDay: 15, endMonth: 9, endDay: 30}]
+                },
+                health: 100,
+                yield: 2500,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 0,
+                productKey: "sunflower_seed",
+                plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                effects: [{ type: 'weed_competition', strength: 2 }],
-                synergies: []
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Wheat
+                type: "wheat", icon: "🌾",
+                scientificName: "Triticum aestivum",
+                description: "Annual cereal grain; wind-pollinated; harvested at full grain maturity.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 60, 21, 30],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 7, 7, 4],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 7, startDay: 1, endMonth: 8, endDay: 1}]
+                },
+                health: 100,
+                yield: 4500,
+                seedRate_kg_per_ha: 150,
+                seedlingDensity_per_ha: 0,
+                productKey: "wheat_grain",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Barley
+                type: "barley", icon: "🌾",
+                scientificName: "Hordeum vulgare",
+                description: "Annual cereal grain; wind-pollinated; early summer harvest.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 55, 21, 30],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 7, 7, 4],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 7, startDay: 1, endMonth: 7, endDay: 31}]
+                },
+                health: 100,
+                yield: 7000,
+                seedRate_kg_per_ha: 140,
+                seedlingDensity_per_ha: 0,
+                productKey: "barley_grain",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Oats
+                type: "oats", icon: "🌾",
+                scientificName: "Avena sativa",
+                description: "Annual cereal grain; wind-pollinated panicles; cool-season crop.",
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 50, 21, 30],
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 7, 7, 4],
+                    pollinated: false,
+                    fruitingWindows: [{startMonth: 8, startDay: 1, endMonth: 8, endDay: 31}]
+                },
+                health: 100,
+                yield: 5000,
+                seedRate_kg_per_ha: 120,
+                seedlingDensity_per_ha: 0,
+                productKey: "oats_grain",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+                dateDeployed: "", devStage: ""
+            },
+
+            {
+                // Identity
+                type: "strawberry",
+                icon: "🍓",
+                scientificName: "Fragaria × ananassa",
+                description: "Perennial groundcover; produces berries twice per season; requires pollination for fruit set.",
+
+                // Ontogeny
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [14, 14, 90, 730, 730],
+
+                // Seasonal reproduction
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 10, 10, 5],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 5, startDay: 20, endMonth: 6, endDay: 30},
+                        {startMonth: 8, startDay: 15, endMonth: 9, endDay: 15}
+                    ]
+                },
+
+                health: 100,
+                yield: 20000,
+                seedRate_kg_per_ha: 2,
+                seedlingDensity_per_ha: 50000,
+                productKey: "strawberry_fruit",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "blueberry",
+                icon: "🫐",
+                scientificName: "Vaccinium corymbosum",
+                description: "Perennial shrub with acidic soil preference; requires pollinators; fruits midsummer.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [0, 30, 365, 3650, 3650],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 15, 10, 7],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 6, startDay: 25, endMonth: 7, endDay: 15},
+                        {startMonth: 8, startDay: 1, endMonth: 8, endDay: 20}
+                    ]
+                },
+
+                health: 100,
+                yield: 20000,
+                seedRate_kg_per_ha: 2,
+                seedlingDensity_per_ha: 30000,
+                productKey: "blueberry_fruit",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "coffee",
+                icon: "☕",
+                scientificName: "Coffea arabica",
+                description: "Perennial shrub native to tropical climates; insect-pollinated; produces coffee cherries.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [30, 730, 730, 1460, 1460],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [14, 180, 30, 14],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 11, startDay: 1, endMonth: 1, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 3000,
+                seedRate_kg_per_ha: 3,
+                seedlingDensity_per_ha: 25000,
+                productKey: "coffee_beans",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "apple_tree",
+                icon: "🍏",
+                scientificName: "Malus domestica",
+                description: "Deciduous tree; requires cross-pollination; produces apples in autumn.",
+
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [60, 730, 1095, 5475, 5475],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 120, 30, 15],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
+                    ]
+                },
+
+                health: 100,
+                yield: 30000,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 800,
+                productKey: "apple",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "pear_tree",
+                icon: "🍐",
+                scientificName: "Pyrus communis",
+                description: "Deciduous fruit tree; insect-pollinated; produces pears late summer to early fall.",
+
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [60, 730, 1095, 5110, 5110],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 110, 20, 10],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 8, startDay: 15, endMonth: 9, endDay: 30}
+                    ]
+                },
+
+                health: 100,
+                yield: 30000,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 800,
+                productKey: "pear",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "grape_vine",
+                icon: "🍇",
+                scientificName: "Vitis vinifera",
+                description: "Woody perennial vine; requires pollination; widely cultivated for wine, table grapes, and raisins.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [30, 180, 730, 1825, 1825],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 60, 30, 14],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 8, startDay: 15, endMonth: 10, endDay: 1}
+                    ]
+                },
+
+                health: 100,
+                yield: 25000,
+                seedRate_kg_per_ha: 3,
+                seedlingDensity_per_ha: 4000,
+                productKey: "grape",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                // Identity
+                type: "almond_tree",
+                icon: "🌰",
+                scientificName: "Prunus dulcis",
+                description: "Perennial deciduous nut tree; deep-rooted, heavy spring bloom, high pollinator demand; leaf litter adds organic matter.",
+
+                // Ontogeny
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [30, 730, 730, 3650, 3650],
+
+                // Seasonal reproduction
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [7, 150, 30, 10],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 8, startDay: 1, endMonth: 9, endDay: 15}
+                    ]
+                },
+
+                health: 100,
+                yield: 2800,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 400,
+                productKey: "almond",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "orange_tree",
+                icon: "🍊",
+                scientificName: "Citrus sinensis",
+                description: "Evergreen citrus; long fruiting window in mild climates; aromatic blossoms attract pollinators.",
+
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [30, 730, 730, 3650, 3650],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [14, 240, 60, 30],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 12, startDay: 1, endMonth: 3, endDay: 1},
+                        {startMonth: 1, startDay: 1, endMonth: 12, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 30000,
+                seedRate_kg_per_ha: 4,
+                seedlingDensity_per_ha: 300,
+                productKey: "orange",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "lemon_tree",
+                icon: "🍋",
+                scientificName: "Citrus limon",
+                description: "Evergreen citrus with multiple flushes; sensitive to cold; aromatic flowers attract pollinators.",
+
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [30, 730, 730, 3285, 3285],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [14, 180, 60, 30],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 11, startDay: 1, endMonth: 2, endDay: 28}
+                    ]
+                },
+
+                health: 100,
+                yield: 35000,
+                seedRate_kg_per_ha: 4,
+                seedlingDensity_per_ha: 300,
+                productKey: "lemon",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "oak_tree",
+                icon: "🌳",
+                scientificName: "Quercus robur",
+                description: "Long-lived deciduous hardwood; produces acorns as seasonal fruit; wind-pollinated.",
+
+                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                daysPerDevStage: [20, 730, 3650, 18250, 18250],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "acorn", "ripe", "overripe"],
+                    daysPerStage: [10, 120, 30, 30],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 10, startDay: 1, endMonth: 11, endDay: 15}
+                    ]
+                },
+
+                health: 100,
+                yield: 250000,
+                seedRate_kg_per_ha: 10,
+                seedlingDensity_per_ha: 200,
+                productKey: "acorn",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "poplar",
+                icon: "🌲",
+                scientificName: "Populus spp.",
+                description: "Fast-growing deciduous tree; commonly used for timber and biomass; wind-pollinated catkins.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [1, 180, 1095, 2190, 2190],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "seed_catkin", "ripe", "overripe"],
+                    daysPerStage: [7, 30, 7, 0],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 11, startDay: 1, endMonth: 12, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 100000,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 500,
+                productKey: "poplar_wood",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "willow",
+                icon: "🌳",
+                scientificName: "Salix spp.",
+                description: "Moisture-loving deciduous tree; fast growth; valued for bark and timber; wind-pollinated catkins.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [1, 180, 730, 2190, 2190],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "seed_catkin", "ripe", "overripe"],
+                    daysPerStage: [7, 30, 7, 0],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 1, startDay: 1, endMonth: 2, endDay: 28}
+                    ]
+                },
+
+                health: 100,
+                yield: 30000,
+                seedRate_kg_per_ha: 5,
+                seedlingDensity_per_ha: 500,
+                productKey: "willow_bark",
+                plantMaterialKey: "wood",
+                removedWhenHarvested: false,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "rice",
+                icon: "🌾",
+                scientificName: "Oryza sativa",
+                description: "Staple aquatic cereal; requires flooded conditions; wind-pollinated during flowering.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [7, 14, 45, 42, 15],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [10, 10, 15, 7],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
+                    ]
+                },
+
+                health: 100,
+                yield: 6000,
+                seedRate_kg_per_ha: 80,
+                seedlingDensity_per_ha: 100000,
+                productKey: "rice_grain",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "lotus",
+                icon: "🌸",
+                scientificName: "Nelumbo nucifera",
+                description: "Aquatic perennial; sacred lotus with edible rhizomes; insect-pollinated flowers above water.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [10, 20, 60, 40, 10],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "fly"],
+                    stages: ["flowering", "green fruit", "ripe", "overripe"],
+                    daysPerStage: [20, 20, 20, 10],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 7, startDay: 1, endMonth: 8, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 2000,
+                seedRate_kg_per_ha: 10,
+                seedlingDensity_per_ha: 25000,
+                productKey: "lotus_root",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "water_spinach",
+                icon: "🥬",
+                scientificName: "Ipomoea aquatica",
+                description: "Fast-growing semi-aquatic vegetable; propagated by cuttings or seeds; primarily vegetative yield.",
+
+                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                daysPerDevStage: [5, 7, 20, 15, 5],
+
+                fruiting: {
+                    requiresPollination: false,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["vegetative", "ripe", "overripe"],
+                    daysPerStage: [20, 10, 5],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 6, startDay: 1, endMonth: 8, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 15000,
+                seedRate_kg_per_ha: 15,
+                seedlingDensity_per_ha: 120000,
+                productKey: "water_spinach_leaf",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "duckweed",
+                icon: "🟩",
+                scientificName: "Lemna minor",
+                description: "Tiny floating aquatic plant; reproduces vegetatively at rapid rates; harvested as biomass.",
+
+                devStages: ["vegetative", "mature", "old"],
+                daysPerDevStage: [7, 7, 7],
+
+                fruiting: {
+                    requiresPollination: false,
+                    mode: "self",
+                    vectors: [],
+                    stages: ["vegetative", "ripe"],
+                    daysPerStage: [7, 7],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 6, startDay: 1, endMonth: 9, endDay: 30}
+                    ]
+                },
+
+                health: 100,
+                yield: 500,
+                seedRate_kg_per_ha: 0,
+                seedlingDensity_per_ha: 0,
+                productKey: "duckweed_biomass",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "water_hyacinth",
+                icon: "💜",
+                scientificName: "Eichhornia crassipes",
+                description: "Invasive aquatic species; fast growth; purple flowers; insect-pollinated but harvested as biomass.",
+
+                devStages: ["vegetative", "mature", "old"],
+                daysPerDevStage: [14, 20, 15],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "insect",
+                    vectors: ["bee", "butterfly"],
+                    stages: ["vegetative", "flowering", "ripe"],
+                    daysPerStage: [14, 20, 15],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 7, startDay: 1, endMonth: 9, endDay: 30}
+                    ]
+                },
+
+                health: 100,
+                yield: 1000,
+                seedRate_kg_per_ha: 0,
+                seedlingDensity_per_ha: 0,
+                productKey: "water_hyacinth_biomass",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
+            },
+
+            {
+                type: "barnyard_grass",
+                icon: "🌱",
+                scientificName: "Echinochloa crus-galli",
+                description: "Weedy annual grass; competitive in rice paddies; reproduces by seed.",
+
+                devStages: ["seed", "seedling", "mature", "old"],
+                daysPerDevStage: [7, 30, 15, 15],
+
+                fruiting: {
+                    requiresPollination: true,
+                    mode: "wind",
+                    vectors: ["wind"],
+                    stages: ["seedling", "vegetative", "ripe"],
+                    daysPerStage: [7, 30, 15],
+                    pollinated: false,
+                    fruitingWindows: [
+                        {startMonth: 7, startDay: 1, endMonth: 8, endDay: 31}
+                    ]
+                },
+
+                health: 100,
+                yield: 2000,
+                seedRate_kg_per_ha: 0,
+                seedlingDensity_per_ha: 0,
+                productKey: "barnyard_grass_seed",
+                plantMaterialKey: "waste",
+                removedWhenHarvested: true,
+
+                dateDeployed: "",
+                devStage: ""
             }
-])
+
+        ]
+    )
 
 
     const products = {

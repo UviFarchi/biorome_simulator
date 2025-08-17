@@ -297,6 +297,7 @@ export const moduleStore = defineStore('moduleStore', () => {
         { key:'hvac_unit', name:'HVAC Unit', type:'hvac', subtype:null,
             mass:60, volume:100, cost:1500, electricity:-1.2, capacity:0, slots:0, parentSlotsUsed:1,
             requires:['battery'], count:0 },
+        //TODO add basic weather measuring modules.
     ]
 
 // ---- MAS (storage + manipulation for assembly) ----
@@ -559,6 +560,8 @@ export const moduleStore = defineStore('moduleStore', () => {
             actions: 1
         }
     ])
+
+
     const currentAssembly = ref([])
     return {availableModules, activeAssemblies, premadeAssemblies, currentAssembly, constants}
 })

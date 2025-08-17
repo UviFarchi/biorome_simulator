@@ -8,9 +8,6 @@ const game =gameStore()
     const water = ref(0)
     const waste = ref(0)
     const gold = ref(30000/game.difficulty)
-
-
-
     return {
         electricity,
         water,

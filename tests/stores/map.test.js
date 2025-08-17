@@ -26,7 +26,7 @@ describe('map store', () => {
     expect(m.gate).toEqual({ animals: [], plants: [], extras: [] });
     expect(typeof m.selectedTile).toBe('object');
     expect(Object.keys(m.selectedTile).length).toBe(0);
-  }); // :contentReference[oaicite:2]{index=2}
+  }); // 
 });
 
 it('initializes measurement-shaped fields for topo, soil, and atmosphere', () => {

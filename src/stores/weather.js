@@ -10,5 +10,6 @@ export const weatherStore = defineStore('weatherStore', () => {
     const relHumidity = ref(0.5)
     const currentLabel = ref({label: 'Mild', icon: '🌤️'})
 
+
     return {temperature, rainfall, cloudCover, currentLabel, windKph, relHumidity}
 })

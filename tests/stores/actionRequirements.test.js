@@ -30,7 +30,7 @@ describe('requirements store', () => {
         expect(onlyTypeSubtype(req)).toBe(true);
       });
     }
-  }); // :contentReference[oaicite:0]{index=0}
+  }); // 
 
   it('sowing actions expose seed, seedling, fertilize with arrays of {type, subtype?}', () => {
     const { sowing } = actionRequirementsStore();
@@ -42,7 +42,7 @@ describe('requirements store', () => {
         expect(onlyTypeSubtype(req)).toBe(true);
       });
     }
-  }); // :contentReference[oaicite:1]{index=1}
+  }); // 
 
   it('animal actions expose move, collar, feed with arrays of {type, subtype?}', () => {
     const { animal } = actionRequirementsStore();
@@ -54,7 +54,7 @@ describe('requirements store', () => {
         expect(onlyTypeSubtype(req)).toBe(true);
       });
     }
-  }); // :contentReference[oaicite:2]{index=2}
+  }); // 
 
   it('assemblies expose transportAssembly and buildAssembly with valid entries', () => {
     const { assemblies } = actionRequirementsStore();
@@ -68,5 +68,5 @@ describe('requirements store', () => {
     expect(Array.isArray(assemblies.buildAssembly)).toBe(true);
     expect(assemblies.buildAssembly.length).toBeGreaterThan(0);
     expect(assemblies.buildAssembly.some(x => x.type === 'tool')).toBe(true);
-  }); // :contentReference[oaicite:3]{index=3}
+  }); // 
 });
