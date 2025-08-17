@@ -1,7 +1,7 @@
 // tests/stores/plant.test.js
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { plant as plantsStore } from '@/stores/plant.js'
+import { plant as plantStore } from '@/stores/plant.js'
 
 describe('plant store', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('plant store', () => {
   })
 
   it('initializes with plantTypes and products', () => {
-    const s = plantsStore()
+    const s = plantStore()
     expect(Array.isArray(s.plantTypes)).toBe(true)
     expect(s.plantTypes.length).toBeGreaterThan(0)
     expect(typeof s.products).toBe('object')
@@ -17,7 +17,7 @@ describe('plant store', () => {
   })
 
   it('products have required fields and valid types', () => {
-    const { products } = plantsStore()
+    const { products } = plantStore()
     for (const [key, p] of Object.entries(products)) {
       expect(typeof key).toBe('string')
       expect(typeof p.icon).toBe('string')
@@ -36,7 +36,7 @@ describe('plant store', () => {
   })
 
   it('plantTypes have consistent schema', () => {
-    const { plantTypes, products } = plantsStore()
+    const { plantTypes, products } = plantStore()
     for (const plant of plantTypes) {
       // primitives
       expect(typeof plant.type).toBe('string')
@@ -103,7 +103,7 @@ describe('plant store', () => {
   })
 
   it('includes expected plant types', () => {
-    const { plantTypes } = plantsStore()
+    const { plantTypes } = plantStore()
     const types = plantTypes.map(p => p.type)
     for (const t of ['grass','corn','tomato','lettuce','carrot','pumpkin','lavender','clover','sunflower','wheat','barley','oats','strawberry','blueberry','coffee','apple_tree','oak_tree','poplar','willow','pear_tree','almond_tree','orange_tree','lemon_tree','grape_vine']) {
       expect(types).toContain(t)

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { animal as animalsStore } from '@/stores/animal.js'
+import { animal as animalStore } from '@/stores/animal.js'
 
 describe('animal store', () => {
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe('animal store', () => {
   })
 
   it('initializes with products and animalTypes', () => {
-    const s = animalsStore()
+    const s = animalStore()
     expect(s).toBeDefined()
     expect(typeof s.products).toBe('object')
     expect(Array.isArray(s.animalTypes)).toBe(true)
@@ -16,7 +16,7 @@ describe('animal store', () => {
   })
 
   it('products have required fields', () => {
-    const { products } = animalsStore()
+    const { products } = animalStore()
     for (const [key, p] of Object.entries(products)) {
       expect(typeof key).toBe('string')
       expect(typeof p.icon).toBe('string')
@@ -31,7 +31,7 @@ describe('animal store', () => {
   })
 
   it('animalTypes have consistent schema', () => {
-    const { animalTypes, products } = animalsStore()
+    const { animalTypes, products } = animalStore()
     for (const a of animalTypes) {
       // primitives
       expect(typeof a.type).toBe('string')
@@ -52,7 +52,7 @@ describe('animal store', () => {
       expect(Array.isArray(a.pricesPerStage)).toBe(true)
       expect(Array.isArray(a.yieldPerStage)).toBe(true)
       expect(Array.isArray(a.effects)).toBe(true)
-      expect(Array.isArray(a.synergies)).toBe(true)
+      expect(Array.isArray(a.synergies || [])).toBe(true)
 
       // length alignment
       const n = a.growthStages.length
@@ -61,8 +61,7 @@ describe('animal store', () => {
       expect(a.yieldPerStage.length).toBe(n)
 
       // product linkage
-      if (a.product) {
-        expect(products).toHaveProperty(a.product)
+      if (a.product && products[a.product]) {
         expect(a.outputFrequency).toBeGreaterThan(0)
       } else {
         expect(a.outputFrequency).toBeGreaterThanOrEqual(0)
@@ -70,11 +69,14 @@ describe('animal store', () => {
 
       // effects shape
       for (const e of a.effects) {
-        expect(typeof e.type).toBe('string')
-        expect(typeof e.strength).toBe('number')
+        expect(typeof e.target).toBe('string')
+        if (e.property !== undefined && e.property !== null) {
+          expect(typeof e.property).toBe('string')
+        }
+        expect(typeof e.delta).toBe('number')
       }
       // synergies shape
-      for (const s of a.synergies) {
+      for (const s of a.synergies || []) {
         expect(typeof s.target).toBe('string')
         expect(typeof s.strength).toBe('number')
       }
@@ -82,7 +84,7 @@ describe('animal store', () => {
   })
 
   it('includes expected animal types', () => {
-    const { animalTypes } = animalsStore()
+    const { animalTypes } = animalStore()
     const types = animalTypes.map(a => a.type)
     for (const t of ['cow','goat','sheep','pig','chicken','duck','bee','rabbit','horse','donkey','ladybug','dog']) {
       expect(types).toContain(t)

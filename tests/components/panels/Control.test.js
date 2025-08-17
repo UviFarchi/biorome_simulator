@@ -34,9 +34,9 @@ describe('Control panel', () => {
   it('forwards control actions via bus', async () => {
     const wrapper = mount(Control, { props: { collapsed: false } })
     await wrapper.find('#showLog').trigger('click')
-    expect(eventBus.emit).toHaveBeenCalledWith('menu', { target: 'log' })
+    expect(eventBus.emit).toHaveBeenCalledWith('modal', { target: 'log' })
     await wrapper.find('#showAnalytics').trigger('click')
-    expect(eventBus.emit).toHaveBeenCalledWith('menu', { target: 'analytics' })
+    expect(eventBus.emit).toHaveBeenCalledWith('modal', { target: 'analytics' })
     await wrapper.find('#nextPhase').trigger('click')
     expect(eventBus.emit).toHaveBeenCalledWith('phase', {})
   })
