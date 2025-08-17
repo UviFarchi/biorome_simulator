@@ -12,8 +12,8 @@ describe('Weather panel', () => {
     const wrapper = mount(Weather, { props: { collapsed: false }, attachTo: document.body })
     expect(wrapper.find('#day').exists()).toBe(true)
     expect(wrapper.find('#season').exists()).toBe(true)
-    expect(wrapper.find('#weatherLabel').exists()).toBe(true)
-    expect(wrapper.find('#weatherLabel').attributes('title')).toMatch(/Temp:/)
+    expect(wrapper.find('#weather').exists()).toBe(true)
+    expect(wrapper.find('#weather').attributes('title')).toMatch(/Temp:/)
 
     await wrapper.find('.panel-header').trigger('click')
     expect(eventBus.emit).toHaveBeenCalledWith('panel', { target: 'weatherLabel' })

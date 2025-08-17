@@ -1,10 +1,23 @@
 // tests/components/map/Map.test.js
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import MapView from '@/components/Map.vue'
 import { gameStore } from '@/stores/game.js'
+
+// stub canvas API used by grid components
+beforeAll(() => {
+  HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+    clearRect: vi.fn(),
+    fillRect: vi.fn(),
+    drawImage: vi.fn(),
+    getImageData: vi.fn(() => ({ data: [] })),
+    putImageData: vi.fn(),
+    createImageData: vi.fn((w, h) => ({ data: new Uint8ClampedArray(w * h * 4) })),
+    setTransform: vi.fn(),
+  }))
+})
 
 // functional event bus mock
 const handlers = {}
@@ -15,12 +28,10 @@ vi.mock('@/eventBus.js', () => ({
     emit: vi.fn((evt, payload) => { handlers[evt] && handlers[evt](payload) })
   }
 }))
-vi.mock('@/calc/recalculateTileValues.js', () => ({ recalculateTileValues: vi.fn() }))
-vi.mock('@/calc/produceReport.js', () => ({ produceReport: vi.fn() }))
+vi.mock('@/calc/updateGame.js', () => ({ default: vi.fn() }))
 
 import eventBus from '@/eventBus.js'
-import { recalculateTileValues } from '@/calc/recalculateTileValues.js'
-import { produceReport } from '@/calc/produceReport.js'
+import updateGame from '@/calc/updateGame.js'
 
 // panel stubs that expose the collapsed prop for assertions
 const ControlStub   = { props: ['collapsed'],  template: '<div id="controlPanel"   :data-collapsed="String(collapsed)"></div>' }
@@ -58,9 +69,7 @@ describe('Map.vue', () => {
     await nextTick(); await nextTick()
 
     expect(game.turnPhase).toBe(0)
-    expect(game.currentDay).toBe(1)
-    expect(recalculateTileValues).toHaveBeenCalled()
-    expect(produceReport).toHaveBeenCalled()
+    expect(updateGame).toHaveBeenCalled()
     expect(wrapper.find('#analyticsModal').exists()).toBe(true)
     expect(wrapper.find('#animalsMenu').exists()).toBe(false)
     expect(wrapper.find('#plantsMenu').exists()).toBe(false)
@@ -72,7 +81,7 @@ describe('Map.vue', () => {
 
   it('switches menus per phase on phase events', async () => {
     const game = gameStore()
-    game.turnPhase = 0
+    game.turnPhase = -1
     const wrapper = mount(MapView, { attachTo: document.body, global: { stubs: globalStubs } })
     await nextTick()
 
@@ -112,8 +121,8 @@ describe('Map.vue', () => {
     expect(wrapper.find('#playerPanel').attributes('data-collapsed')).toBe('false')
     expect(wrapper.find('#resourcesPanel').attributes('data-collapsed')).toBe('false')
 
-    // implicit toggle weatherLabel -> collapsed=true
-    eventBus.emit('panel', { target: 'weatherLabel' })
+    // implicit toggle weather -> collapsed=true
+    eventBus.emit('panel', { target: 'weather' })
     await nextTick()
     expect(wrapper.find('#weatherPanel').attributes('data-collapsed')).toBe('true')
 

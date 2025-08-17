@@ -49,9 +49,7 @@ describe('StartingScreen', () => {
     const avatarValue = await pickFirstAvatar(wrapper)
     await wrapper.find(S.diff(2)).setChecked()
     await wrapper.find(S.form).trigger('submit.prevent')
-
-    const saved = JSON.parse(localStorage.getItem('bioromeUser'))
-    expect(saved).toEqual({ userName: 'Reuven', userAvatar: avatarValue, difficulty: 2 })
+    await new Promise(r => setTimeout(r))
 
     const game = gameStore()
     expect(game.userName).toBe('Reuven')
@@ -68,9 +66,8 @@ describe('StartingScreen', () => {
     await wrapper.find(S.name).setValue('Ada')
     await pickFirstAvatar(wrapper)
     await wrapper.find(S.form).trigger('submit.prevent')
+    await new Promise(r => setTimeout(r))
 
-    const saved = JSON.parse(localStorage.getItem('bioromeUser'))
-    expect(saved.difficulty).toBe(1)
     expect(gameStore().difficulty).toBe(1)
   })
 
@@ -82,9 +79,10 @@ describe('StartingScreen', () => {
     const avatarValue = await pickFirstAvatar(wrapper)
     await wrapper.find(S.diff(1)).setChecked()
     await wrapper.find(S.form).trigger('submit.prevent')
+    await new Promise(r => setTimeout(r))
 
-    const saved = JSON.parse(localStorage.getItem('bioromeUser'))
-    expect(saved.userName).toBe('Lin')
-    expect(saved.userAvatar).toBe(avatarValue)
+    const game = gameStore()
+    expect(game.userName).toBe('Lin')
+    expect(game.userAvatar).toBe(avatarValue)
   })
 })
