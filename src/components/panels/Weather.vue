@@ -29,7 +29,7 @@ Humidity: ${humidityPct.value}%`
 
 <template>
   <div id="weatherPanel" class="panel">
-    <div class="panel-header" @click="eventBus.emit('panel', { target: 'weatherLabel' })">Weather</div>
+    <div class="panel-header" @click="eventBus.emit('panel', { target: 'weather' })">Weather</div>
     <div class="panel-body" v-show="!props.collapsed">
       <div id="day" class="statusBarCell">📅 {{ dateText }}</div>
       <div id="season" class="statusBarCell">{{ currentSeason.icon }}{{ currentSeason.label }}</div>
@@ -49,7 +49,7 @@ Humidity: ${humidityPct.value}%`
 </template>
 
 <style scoped>
-.panel { border: 1px solid #000; margin: 0; }
+.panel { border: 1px solid #000; margin: 0;   background: white;}
 .panel-header { font-weight: bold; padding: 4px; cursor: pointer; }
 .panel-body { padding: 4px; }
 .statusBarCell { display: flex; justify-content: center; align-items: center; font-weight: bold; border-top: 1px solid #000; padding: 4px; }

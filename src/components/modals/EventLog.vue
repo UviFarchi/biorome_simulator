@@ -23,17 +23,19 @@ const events = gameStore()
   bottom:0;
   width:98vw;
   margin: 0 auto;
+  max-height: 75vh;
+  overflow: auto;
 
 }
 .operations{
-  color: green;
+  color: purple;
 }
 .analytics{
   color: orange;
 }
 
 .optimizations{
-  color: purple;
+  color: green;
 }
 
 .simulation{
