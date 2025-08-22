@@ -46,6 +46,10 @@ export function applyEffects() {
             const cols = row.length
             for (let c = 0; c < cols; c++) {
                 const t = row[c]
+                const animals = t.animals ?? []
+                const animalsLen = animals.length
+                const plants = t.plants ?? []
+                const plantsLen = plants.length
 
                 // ---------- GLOBAL CATEGORIES (single pass each) ----------
                 // weather
@@ -119,9 +123,8 @@ export function applyEffects() {
                 }
 
                 // animals
-                const animals = Array.isArray(t.animals) ? t.animals : []
-                if (animals.length) {
-                    for (let a = 0; a < animals.length; a++) {
+                if (animalsLen) {
+                    for (let a = 0; a < animalsLen; a++) {
                         const subject = animals[a]
                         const list = FX.animals[subject.type]
                         if (!Array.isArray(list)) continue
@@ -134,8 +137,7 @@ export function applyEffects() {
                                 const slot = subject[eff.property]
                                 if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
                             } else if (eff.target === 'plants') {
-                                const plants = Array.isArray(t.plants) ? t.plants : []
-                                for (let p = 0; p < plants.length; p++) addEnv(plants[p], eff.property, d)
+                                for (let p = 0; p < plantsLen; p++) addEnv(plants[p], eff.property, d)
                             } else {
                                 addEnv(t[eff.target], eff.property, d)
                             }
@@ -144,9 +146,8 @@ export function applyEffects() {
                 }
 
                 // plants
-                const plants = Array.isArray(t.plants) ? t.plants : []
-                if (plants.length) {
-                    for (let p = 0; p < plants.length; p++) {
+                if (plantsLen) {
+                    for (let p = 0; p < plantsLen; p++) {
                         const subject = plants[p]
                         const list = FX.plants[subject.type]
                         if (!Array.isArray(list)) continue
@@ -159,7 +160,7 @@ export function applyEffects() {
                                 const slot = subject[eff.property]
                                 if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
                             } else if (eff.target === 'animals') {
-                                for (let a = 0; a < animals.length; a++) addEnv(animals[a], eff.property, d)
+                                for (let a = 0; a < animalsLen; a++) addEnv(animals[a], eff.property, d)
                             } else {
                                 addEnv(t[eff.target], eff.property, d)
                             }
