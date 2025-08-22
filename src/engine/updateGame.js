@@ -12,7 +12,7 @@ import eventBus from "@/eventBus.js";
 const now = () => (performance && performance.now) ? performance.now() : Date.now();
 
 
-export default function () {
+export default async function () {
     eventBus.emit('log', {engine: 'simulation', msg: 'Beginning Update'})
     const game = gameStore()
 
@@ -41,20 +41,20 @@ export default function () {
     const t0 = now();
     const times = [];
     eventBus.emit('log', {engine: 'simulation', msg: 'Recalculating entity values.'})
-    const step = (name, fn) => {
+    const step = async (name, fn) => {
         eventBus.emit('log', {engine: 'simulation', msg: 'Step ' + name})
-        const s = now(); fn(); const d = now() - s; times.push([name, d]);
+        const s = now(); await fn(); const d = now() - s; times.push([name, d]);
     };
 
     // pipeline (same order)
-    step("getWeather",        getWeather);
-    step("ecosystemEvents",   ecosystemEvents);
-    step("applyEffects",  applyEffects);
-    step("marketFlux",        marketFlux);
-    step("applyStageChanges", applyStageChanges);
-    step("clearAssemblyOrders", clearAssemblyOrders);
-    step("produceReport",     produceReport);
-    step("saveAllStores",     saveAllStores);
+    await step("getWeather",        getWeather);
+    await step("ecosystemEvents",   ecosystemEvents);
+    await step("applyEffects",      applyEffects);
+    await step("marketFlux",        marketFlux);
+    await step("applyStageChanges", applyStageChanges);
+    await step("clearAssemblyOrders", clearAssemblyOrders);
+    await step("produceReport",     produceReport);
+    await step("saveAllStores",     saveAllStores);
 
     const total = now() - t0;
     // single summary log
