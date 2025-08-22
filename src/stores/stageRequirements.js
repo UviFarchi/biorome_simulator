@@ -9,7 +9,7 @@ export const stageRequirementsStore = defineStore('stageRequirementsStore', () =
                         type: 'map',
                         condition: 'tiles_surveyed',
                         atLeast: 20
-                    }, {type: 'assembly', condition: 'central_computing_assembly'}, {type: 'assembly', condition: 'assembly_station'}],
+                    }, {type: 'assemblies', condition: 'central_computing_assembly'}, {type: 'assemblies', condition: 'assembly_station'}],
                 restrictions: {actionsAllowed: ['survey', 'measure']}
             }, design: {
                 milestones: [{

@@ -3,16 +3,17 @@ import {computed, ref, watch} from 'vue'
 
 export const gameStore = defineStore('gameStore', () => {
     const log = ref([]);
-    const events = ref({
+    const currentEvents = ref({
         weather: [],
         market: [],
         biologic: []
     })
+    const stageChangeCalendar = [];
     const startDate = ref(new Date().toISOString().slice(0, 10))
-    const currentDay = ref(0)
+    const currentTurn = ref(0)
     const currentDate = computed(() => {
         const d = new Date(startDate.value);
-        d.setDate(d.getDate() + (currentDay.value - 1));
+        d.setDate(d.getDate() + (currentTurn.value - 1));
         return d
     })
     const currentSeason = ref({label: 'Unknown', icon: ''})
@@ -34,7 +35,7 @@ export const gameStore = defineStore('gameStore', () => {
     return {
         log,
         startDate,
-        currentDay,
+       currentTurn,
         currentDate,
         currentSeason,
         userName,
@@ -44,6 +45,7 @@ export const gameStore = defineStore('gameStore', () => {
         bioromizationStages,
         turnPhase,
         engines,
-        events
+        currentEvents,
+        stageChangeCalendar
     }
 })

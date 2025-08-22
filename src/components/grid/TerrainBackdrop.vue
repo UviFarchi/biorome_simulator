@@ -13,7 +13,7 @@ const palette = {
   landHueHigh: 0,     // red-brown highlands (wider span than before)
   landSat: 1,       // more saturated land colors
   gamma: 0.6,          // <1 exaggerates contrast; >1 flattens
-  quantizeBands: 12,    // set for stepped topo bands; 0 disables
+  quantizeBands: 0,    // set for stepped topo bands; 0 disables
   lightBase: 0.58,     // base lightness at low elevation
   lightRange: 0.28,    // how much lightness drops with elevation
   shadeStrength: 0.30, // influence of hillshade (0..1)
@@ -68,8 +68,8 @@ function paint () {
     return a * (1 - ty) + b * ty
   }
 
-  const elevAt = (u, v) => sample(u, v, t => t.topo.elevation.env)
-  const wtabAt = (u, v) => sample(u, v, t => t.topo.waterTable.env)
+  const elevAt = (u, v) => sample(u, v, t => t.topography.elevation.env)
+  const wtabAt = (u, v) => sample(u, v, t => t.topography.waterTable.env)
 
   // gentle hillshade from elevation gradient
   const grad = 0.25

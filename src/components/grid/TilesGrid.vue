@@ -35,10 +35,12 @@ const tileStyle = () => ({backgroundColor: 'transparent'})
            :key="`${tile.row}-${tile.col}`"
            :class="['cell', { active: isSelected(tile) }]"
            :style="tileStyle(tile)"
-           :title="`R${tile.row+1} C${tile.col+1} | ${tile.topo.elevation.env.toFixed(1)} m`"
+           :title="`R${tile.row+1} C${tile.col+1} | ${tile.topography.elevation.env.toFixed(1)} m`"
            @click="clickTile(tile)">
         <div class="icons">
-          <span v-if="tile.plant">{{ tile.plant.icon }}</span>
+          <span v-if="tile.plant">{{ tile.plant.forEach(plant => {
+            return plant.icon
+          }) }}</span>
           <span v-if="tile.animal">{{ tile.animal.icon }}</span>
           <span v-for="a in tile.assemblies" :key="a.id">{{ a.icon || '🤖' }}</span>
         </div>

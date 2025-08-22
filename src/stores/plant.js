@@ -10,7 +10,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Lolium perenne",
                 description: "Perennial forage grass; fast-growing, multiple seasonal cuts; used for hay and pasture.",
                 // Ontogeny
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 21, 40, 20, 365],
                 // Fruiting (hay cut, no pollination needed)
                 fruiting: {
@@ -25,21 +25,23 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 9, startDay: 1, endMonth: 9, endDay: 30}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 8000,
                 seedRate_kg_per_ha: 25,
                 seedlingDensity_per_ha: 0,
                 productKey: "hay",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: false,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
                 type: "corn", icon: "🌽",
                 scientificName: "Zea mays",
                 description: "Annual cereal crop; wind-pollinated grass with high grain yield.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 50, 30, 60],
                 fruiting: {
                     requiresPollination: true,
@@ -53,21 +55,23 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 8000,
                 seedRate_kg_per_ha: 20,
                 seedlingDensity_per_ha: 0,
                 productKey: "corn_cob",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
                 type: "tomato", icon: "🍅",
                 scientificName: "Solanum lycopersicum",
                 description: "Annual fruiting vegetable; insect-pollinated; high-yield crop in warm seasons.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [8, 12, 30, 15, 60],
                 fruiting: {
                     requiresPollination: true,
@@ -81,21 +85,23 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 9, startDay: 1, endMonth: 9, endDay: 30}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 50000,
                 seedRate_kg_per_ha: 0.3,
                 seedlingDensity_per_ha: 30000,
                 productKey: "tomato_fruit",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
                 type: "lettuce", icon: "🥬",
                 scientificName: "Lactuca sativa",
                 description: "Annual leafy vegetable; harvested before bolting; vegetative yield crop.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [4, 10, 30, 15, 30],
                 fruiting: {
                     requiresPollination: false,
@@ -109,21 +115,23 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 9, startDay: 1, endMonth: 10, endDay: 15}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 25000,
                 seedRate_kg_per_ha: 3,
                 seedlingDensity_per_ha: 50000,
                 productKey: "lettuce_leaf",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
                 type: "carrot", icon: "🥕",
                 scientificName: "Daucus carota subsp. sativus",
                 description: "Root vegetable biennial grown as annual; harvested before flowering; vegetative yield.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [14, 14, 35, 20, 40],
                 fruiting: {
                     requiresPollination: false,
@@ -136,21 +144,23 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 6, startDay: 1, endMonth: 7, endDay: 31}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 40000,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 0,
                 productKey: "carrot_root",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
                 type: "pumpkin", icon: "🎃",
                 scientificName: "Cucurbita pepo",
                 description: "Annual cucurbit; insect-pollinated; grown for fruit harvested in autumn.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 40, 30, 30],
                 fruiting: {
                     requiresPollination: true,
@@ -163,14 +173,16 @@ export const plant = defineStore('plantStore', () => {
                         {startMonth: 9, startDay: 15, endMonth: 10, endDay: 31}
                     ]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 35000,
                 seedRate_kg_per_ha: 6,
                 seedlingDensity_per_ha: 5000,
                 productKey: "pumpkin_fruit",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -178,7 +190,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "lavender", icon: "💜",
                 scientificName: "Lavandula angustifolia",
                 description: "Perennial aromatic shrub grown for flowers and essential oil; insect-pollinated.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [21, 30, 30, 40, 365],
                 fruiting: {
                     requiresPollination: true,
@@ -189,14 +201,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 6, startDay: 1, endMonth: 7, endDay: 15}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 1000,
                 seedRate_kg_per_ha: 3,
                 seedlingDensity_per_ha: 35000,
                 productKey: "lavender_flower",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: false,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -204,7 +218,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "clover", icon: "☘️",
                 scientificName: "Trifolium pratense",
                 description: "Perennial/short-lived legume used for forage and cover; insect-pollinated.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [10, 14, 30, 26, 365],
                 fruiting: {
                     requiresPollination: true,
@@ -215,14 +229,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 5, startDay: 1, endMonth: 6, endDay: 30}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 10000,
                 seedRate_kg_per_ha: 8,
                 seedlingDensity_per_ha: 0,
                 productKey: "clover_flower",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: false,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -230,7 +246,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "sunflower", icon: "🌻",
                 scientificName: "Helianthus annuus",
                 description: "Annual oilseed/ornamental; insect-pollinated heads; summer harvest.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 10, 40, 31, 30],
                 fruiting: {
                     requiresPollination: true,
@@ -241,14 +257,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 8, startDay: 15, endMonth: 9, endDay: 30}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 2500,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 0,
                 productKey: "sunflower_seed",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -256,7 +274,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "wheat", icon: "🌾",
                 scientificName: "Triticum aestivum",
                 description: "Annual cereal grain; wind-pollinated; harvested at full grain maturity.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 60, 21, 30],
                 fruiting: {
                     requiresPollination: true,
@@ -267,14 +285,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 7, startDay: 1, endMonth: 8, endDay: 1}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 4500,
                 seedRate_kg_per_ha: 150,
                 seedlingDensity_per_ha: 0,
                 productKey: "wheat_grain",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -282,7 +302,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "barley", icon: "🌾",
                 scientificName: "Hordeum vulgare",
                 description: "Annual cereal grain; wind-pollinated; early summer harvest.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 55, 21, 30],
                 fruiting: {
                     requiresPollination: true,
@@ -293,14 +313,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 7, startDay: 1, endMonth: 7, endDay: 31}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 7000,
                 seedRate_kg_per_ha: 140,
                 seedlingDensity_per_ha: 0,
                 productKey: "barley_grain",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -308,7 +330,7 @@ export const plant = defineStore('plantStore', () => {
                 type: "oats", icon: "🌾",
                 scientificName: "Avena sativa",
                 description: "Annual cereal grain; wind-pollinated panicles; cool-season crop.",
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 50, 21, 30],
                 fruiting: {
                     requiresPollination: true,
@@ -319,14 +341,16 @@ export const plant = defineStore('plantStore', () => {
                     pollinated: false,
                     fruitingWindows: [{startMonth: 8, startDay: 1, endMonth: 8, endDay: 31}]
                 },
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 5000,
                 seedRate_kg_per_ha: 120,
                 seedlingDensity_per_ha: 0,
                 productKey: "oats_grain",
                 plantMaterialKey: "waste",
                 removedWhenHarvested: true,
-                dateDeployed: "", devStage: ""
+                dateDeployed: "",
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -337,7 +361,7 @@ export const plant = defineStore('plantStore', () => {
                 description: "Perennial groundcover; produces berries twice per season; requires pollination for fruit set.",
 
                 // Ontogeny
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [14, 14, 90, 730, 730],
 
                 // Seasonal reproduction
@@ -354,7 +378,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 20000,
                 seedRate_kg_per_ha: 2,
                 seedlingDensity_per_ha: 50000,
@@ -363,7 +387,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -372,7 +398,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Vaccinium corymbosum",
                 description: "Perennial shrub with acidic soil preference; requires pollinators; fruits midsummer.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [0, 30, 365, 3650, 3650],
 
                 fruiting: {
@@ -388,7 +414,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 20000,
                 seedRate_kg_per_ha: 2,
                 seedlingDensity_per_ha: 30000,
@@ -397,7 +423,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -406,7 +434,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Coffea arabica",
                 description: "Perennial shrub native to tropical climates; insect-pollinated; produces coffee cherries.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [30, 730, 730, 1460, 1460],
 
                 fruiting: {
@@ -421,7 +449,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 3000,
                 seedRate_kg_per_ha: 3,
                 seedlingDensity_per_ha: 25000,
@@ -430,7 +458,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -439,7 +469,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Malus domestica",
                 description: "Deciduous tree; requires cross-pollination; produces apples in autumn.",
 
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [60, 730, 1095, 5475, 5475],
 
                 fruiting: {
@@ -454,7 +484,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 30000,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 800,
@@ -463,7 +493,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -472,7 +504,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Pyrus communis",
                 description: "Deciduous fruit tree; insect-pollinated; produces pears late summer to early fall.",
 
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [60, 730, 1095, 5110, 5110],
 
                 fruiting: {
@@ -487,7 +519,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 30000,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 800,
@@ -496,7 +528,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -505,7 +539,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Vitis vinifera",
                 description: "Woody perennial vine; requires pollination; widely cultivated for wine, table grapes, and raisins.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [30, 180, 730, 1825, 1825],
 
                 fruiting: {
@@ -520,7 +554,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 25000,
                 seedRate_kg_per_ha: 3,
                 seedlingDensity_per_ha: 4000,
@@ -529,7 +563,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -540,7 +576,7 @@ export const plant = defineStore('plantStore', () => {
                 description: "Perennial deciduous nut tree; deep-rooted, heavy spring bloom, high pollinator demand; leaf litter adds organic matter.",
 
                 // Ontogeny
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [30, 730, 730, 3650, 3650],
 
                 // Seasonal reproduction
@@ -556,7 +592,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 2800,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 400,
@@ -565,7 +601,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -574,7 +612,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Citrus sinensis",
                 description: "Evergreen citrus; long fruiting window in mild climates; aromatic blossoms attract pollinators.",
 
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [30, 730, 730, 3650, 3650],
 
                 fruiting: {
@@ -590,7 +628,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 30000,
                 seedRate_kg_per_ha: 4,
                 seedlingDensity_per_ha: 300,
@@ -599,7 +637,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -608,7 +648,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Citrus limon",
                 description: "Evergreen citrus with multiple flushes; sensitive to cold; aromatic flowers attract pollinators.",
 
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [30, 730, 730, 3285, 3285],
 
                 fruiting: {
@@ -623,7 +663,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 35000,
                 seedRate_kg_per_ha: 4,
                 seedlingDensity_per_ha: 300,
@@ -632,7 +672,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -641,7 +683,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Quercus robur",
                 description: "Long-lived deciduous hardwood; produces acorns as seasonal fruit; wind-pollinated.",
 
-                devStages: ["seed", "seedling", "sapling", "mature", "old"],
+                growthStages: ["seed", "seedling", "sapling", "mature", "old"],
                 daysPerDevStage: [20, 730, 3650, 18250, 18250],
 
                 fruiting: {
@@ -656,7 +698,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 250000,
                 seedRate_kg_per_ha: 10,
                 seedlingDensity_per_ha: 200,
@@ -665,7 +707,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -674,7 +718,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Populus spp.",
                 description: "Fast-growing deciduous tree; commonly used for timber and biomass; wind-pollinated catkins.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [1, 180, 1095, 2190, 2190],
 
                 fruiting: {
@@ -689,7 +733,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 100000,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 500,
@@ -698,7 +742,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -707,7 +753,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Salix spp.",
                 description: "Moisture-loving deciduous tree; fast growth; valued for bark and timber; wind-pollinated catkins.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [1, 180, 730, 2190, 2190],
 
                 fruiting: {
@@ -722,7 +768,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 30000,
                 seedRate_kg_per_ha: 5,
                 seedlingDensity_per_ha: 500,
@@ -731,7 +777,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -740,7 +788,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Oryza sativa",
                 description: "Staple aquatic cereal; requires flooded conditions; wind-pollinated during flowering.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [7, 14, 45, 42, 15],
 
                 fruiting: {
@@ -755,7 +803,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 6000,
                 seedRate_kg_per_ha: 80,
                 seedlingDensity_per_ha: 100000,
@@ -764,7 +812,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -773,7 +823,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Nelumbo nucifera",
                 description: "Aquatic perennial; sacred lotus with edible rhizomes; insect-pollinated flowers above water.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [10, 20, 60, 40, 10],
 
                 fruiting: {
@@ -788,7 +838,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 2000,
                 seedRate_kg_per_ha: 10,
                 seedlingDensity_per_ha: 25000,
@@ -797,7 +847,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -806,7 +858,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Ipomoea aquatica",
                 description: "Fast-growing semi-aquatic vegetable; propagated by cuttings or seeds; primarily vegetative yield.",
 
-                devStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
                 daysPerDevStage: [5, 7, 20, 15, 5],
 
                 fruiting: {
@@ -821,7 +873,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 15000,
                 seedRate_kg_per_ha: 15,
                 seedlingDensity_per_ha: 120000,
@@ -830,7 +882,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -839,7 +893,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Lemna minor",
                 description: "Tiny floating aquatic plant; reproduces vegetatively at rapid rates; harvested as biomass.",
 
-                devStages: ["vegetative", "mature", "old"],
+                growthStages: ["vegetative", "mature", "old"],
                 daysPerDevStage: [7, 7, 7],
 
                 fruiting: {
@@ -854,7 +908,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 500,
                 seedRate_kg_per_ha: 0,
                 seedlingDensity_per_ha: 0,
@@ -863,7 +917,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -872,7 +928,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Eichhornia crassipes",
                 description: "Invasive aquatic species; fast growth; purple flowers; insect-pollinated but harvested as biomass.",
 
-                devStages: ["vegetative", "mature", "old"],
+                growthStages: ["vegetative", "mature", "old"],
                 daysPerDevStage: [14, 20, 15],
 
                 fruiting: {
@@ -887,7 +943,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 1000,
                 seedRate_kg_per_ha: 0,
                 seedlingDensity_per_ha: 0,
@@ -896,7 +952,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             },
 
             {
@@ -905,7 +963,7 @@ export const plant = defineStore('plantStore', () => {
                 scientificName: "Echinochloa crus-galli",
                 description: "Weedy annual grass; competitive in rice paddies; reproduces by seed.",
 
-                devStages: ["seed", "seedling", "mature", "old"],
+                growthStages: ["seed", "seedling", "mature", "old"],
                 daysPerDevStage: [7, 30, 15, 15],
 
                 fruiting: {
@@ -920,7 +978,7 @@ export const plant = defineStore('plantStore', () => {
                     ]
                 },
 
-                health: 100,
+               health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
                 yield: 2000,
                 seedRate_kg_per_ha: 0,
                 seedlingDensity_per_ha: 0,
@@ -929,7 +987,9 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
 
                 dateDeployed: "",
-                devStage: ""
+
+                growthStage: "",
+                habitats: []
             }
 
         ]

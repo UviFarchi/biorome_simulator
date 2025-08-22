@@ -3,7 +3,6 @@ import { assemblyRequirementsStore } from '@/stores/assemblyRequirements.js'
 import { mapStore }                 from '@/stores/map.js'
 import { gameStore }              from '@/stores/game.js'
 import { marketStore }              from '@/stores/market.js'
-import { resourceStore }            from '@/stores/resource.js'
 import { weatherStore }             from '@/stores/weather.js'
 import { moduleStore }             from '@/stores/module.js'
 import eventBus                     from '@/eventBus.js'
@@ -15,7 +14,6 @@ const factoryByName = Object.fromEntries(
         gameStore,
         mapStore,
         marketStore,
-        resourceStore,
         weatherStore,
         moduleStore,
     }).map(([exportedName, factoryFn]) => [exportedName.replace(/Store$/, ''), factoryFn])
@@ -115,37 +113,34 @@ function saveAllStores() {
         game:      getStore('game').$state,
         map:       getStore('map').$state,
         market:    getStore('market').$state,
-        resources: getStore('resource').$state,
         weather:   getStore('weather').$state,
         modules:   getStore('module').$state,
     }
     localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
-    eventBus.emit('log', { engine: 'game', msg: 'State saved' })
+    eventBus.emit('log', { engine: 'simulation', msg: 'State saved' })
 }
 function hasSavedState() {
     return !!localStorage.getItem(SAVE_KEY)
 }
 function loadAllStores() {
-    console.log('Loading stores')
+
     const raw = localStorage.getItem(SAVE_KEY)
     if (!raw) return false
     const data = JSON.parse(raw)
 
     if (data.game)      getStore('game').$patch(data.game)
     if (data.map)       getStore('map').$patch(data.map)
-    if (data.events)    getStore('event').$patch(data.events)
     if (data.market)    getStore('market').$patch(data.market)
-    if (data.resources) getStore('resource').$patch(data.resources)
     if (data.weather)   getStore('weather').$patch(data.weather)
     if (data.modules)   getStore('module').$patch(data.modules)
 
-    eventBus.emit('log', { engine: 'game', msg: 'State loaded' })
+    eventBus.emit('log', { engine: 'simulation', msg: 'State loaded' })
     return true
 }
 
 function clearSavedStores() {
     localStorage.removeItem(SAVE_KEY)
-    eventBus.emit('log', { engine: 'game', msg: 'Saved state cleared' })
+    eventBus.emit('log', { engine: 'simulation', msg: 'Saved state cleared' })
 }
 
 // ---------- Exports ----------

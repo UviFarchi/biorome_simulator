@@ -2,7 +2,7 @@
 import { ref, onMounted, nextTick } from 'vue'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
-import generateTerrain from '@/calc/generateTerrain.js'
+import generateTerrain from '@/engine/generateTerrain.js'
 import {hasSavedState, loadAllStores, saveAllStores} from '@/utils.js'
 
 const game = gameStore()

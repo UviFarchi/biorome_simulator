@@ -1,14 +1,12 @@
 <script setup>
 import {computed, toRef} from 'vue'
 import eventBus from '@/eventBus.js'
-import { resourceStore } from '@/stores/resource.js'
-const resources = resourceStore()
-const gold = computed(() => resources.gold)
-const waste = computed(() => resources.waste)
-const water = computed(() => resources.water)
-const electricity = computed(() => resources.electricity)
+import {gameStore} from "@/stores/game.js";
+const game = gameStore()
+const gold = computed(() => game.gold)
 const props = defineProps({ collapsed: { type: Boolean, default: false } })
 const collapsed = toRef(props, 'collapsed')
+// TODO => compute all the global production + consumption of each resource and present a positive or negative number of units of the resource.
 </script>
 
 <template>
@@ -16,9 +14,10 @@ const collapsed = toRef(props, 'collapsed')
     <div class="panel-header" @click="eventBus.emit('panel', { target: 'resources' })">Resources</div>
     <div class="panel-body" v-show="!collapsed">
       <div id="gold" class="statusBarCell" title="Gold">💰{{ gold }}</div>
-      <div id="waste" class="statusBarCell" title="Waste">🗑{{ waste }}</div>
-      <div id="water" class="statusBarCell" title="Water">💧{{ water }}</div>
-      <div id="electricity" class="statusBarCell" title="Electricity">⚡{{ electricity }}</div>
+      <div class="statusBarCell">{{game.currentEvents}}</div>
+<!--      <div id="waste" class="statusBarCell" title="Waste">🗑{{ waste }}</div>-->
+<!--      <div id="water" class="statusBarCell" title="Water">💧{{ water }}</div>-->
+<!--      <div id="electricity" class="statusBarCell" title="Electricity">⚡{{ electricity }}</div>-->
     </div>
   </div>
 </template>

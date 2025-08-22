@@ -21,6 +21,9 @@ const events = gameStore()
   background: black;
   color: white;
   bottom:0;
+  width:98vw;
+  margin: 0 auto;
+
 }
 .operations{
   color: green;
@@ -31,5 +34,9 @@ const events = gameStore()
 
 .optimizations{
   color: purple;
+}
+
+.simulation{
+  color:yellow;;
 }
 </style>

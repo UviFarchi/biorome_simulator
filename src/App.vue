@@ -18,7 +18,7 @@ function handleNav(area) {
 
 
 function logEvent(content) {
-  console.log('Event log', content)
+
   events.log.push(content)
 
 }

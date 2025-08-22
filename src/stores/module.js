@@ -300,7 +300,7 @@ export const moduleStore = defineStore('moduleStore', () => {
         //TODO add basic weather measuring modules.
     ]
 
-// ---- MAS (storage + manipulation for assembly) ----
+// ---- MAS (storage + manipulation for assemblies) ----
     const masModules = [
         { key:'shelf_robotic', name:'Robotic Shelf', type:'shelf', subtype:'robotic',
             mass:40, volume:90, cost:900, electricity:-0.4, carryingCapacity:80, operationalStrength:0,
@@ -557,7 +557,9 @@ export const moduleStore = defineStore('moduleStore', () => {
             deployed: false,
             built: false,
             moves: 1,
-            actions: 1
+            actions: 1,
+            orders:[]
+
         }
     ])
 

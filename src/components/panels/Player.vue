@@ -22,6 +22,7 @@ const collapsed = toRef(props, 'collapsed')
       <br/>
       <div>Difficulty: {{game.difficulty}}</div>
      <div>Current Phase:<br/>{{currentPhaseLabel}}</div>
+     <div>Current Turn:<br/>{{game.currentTurn}}</div>
   </div>
   </div>
 </template>

@@ -18,7 +18,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Bos taurus',
             description: 'A large domesticated bovine raised for meat and milk; adults weigh 500–800kg and are grazing ruminants.',
             food: ['grass', 'clover', 'corn', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['calf', 'heifer', 'adult', 'old'],
             daysPerGrowthStage: [365, 365, 1825, 730],
             pricesPerStage: [200, 600, 1200, 600],
@@ -27,6 +29,8 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
+
         },
         {
             type: 'goat',
@@ -34,7 +38,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Capra hircus',
             description: 'A small domesticated ruminant (domestic goat) known for browsing shrubs and weeds; agile and hardy livestock.',
             food: ['grass', 'lettuce', 'corn', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['kid', 'yearling', 'adult', 'old'],
             daysPerGrowthStage: [180, 185, 1095, 730],
             pricesPerStage: [80, 150, 400, 150],
@@ -43,6 +49,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'sheep',
@@ -50,7 +57,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Ovis aries',
             description: 'A flock-forming domesticated ruminant prized for wool and meat; typically 45–100 kg grazers that crop grass close to the ground.',
             food: ['grass', 'clover', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['lamb', 'yearling', 'adult', 'old'],
             daysPerGrowthStage: [150, 215, 1460, 730],
             pricesPerStage: [60, 120, 250, 80],
@@ -59,6 +68,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 180,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'pig',
@@ -66,7 +76,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Sus scrofa domesticus',
             description: 'A domesticated pig, a large omnivorous mammal raised for pork; intelligent forager that roots in soil with its snout.',
             food: ['corn', 'carrot', 'pumpkin', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['piglet', 'grower', 'finisher', 'old'],
             daysPerGrowthStage: [120, 150, 545, 365],
             pricesPerStage: [50, 120, 220, 70],
@@ -75,6 +87,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 0,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'chicken',
@@ -82,7 +95,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Gallus gallus domesticus',
             description: 'A domesticated fowl kept for eggs and meat; omnivorous forager ~2–4 kg descended from the red junglefowl.',
             food: ['seeds', 'corn', 'grass', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['chick', 'pullet', 'adult', 'old'],
             daysPerGrowthStage: [60, 120, 730, 365],
             pricesPerStage: [10, 20, 60, 20],
@@ -91,6 +106,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'duck',
@@ -98,7 +114,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Anas platyrhynchos domesticus',
             description: 'A domestic duck (often derived from the Mallard), a waterfowl kept for eggs and meat; excellent forager of aquatic pests and weeds.',
             food: ['seeds', 'grass', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['duckling', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [40, 70, 730, 365],
             pricesPerStage: [12, 25, 65, 20],
@@ -107,6 +125,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'bee',
@@ -114,7 +133,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Apis mellifera',
             description: 'The Western honey bee, a social insect kept in hives for honey production; a key crop pollinator with colonies of tens of thousands of workers.',
             food: ['flowers', 'clover', 'lavender', 'sunflower'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['colony', 'established', 'productive', 'old'],
             daysPerGrowthStage: [30, 60, 1460, 730],
             pricesPerStage: [90, 150, 450, 120],
@@ -122,6 +143,7 @@ export const animal = defineStore('animalStore', () => {
             product: 'honey',
             outputFrequency: 120, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'rabbit',
@@ -129,7 +151,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Oryctolagus cuniculus domesticus',
             description: 'A domesticated European rabbit, a small lagomorph (~1–2 kg) often kept for meat or as a pet; herbivorous and fast-breeding.',
             food: ['grass', 'carrot', 'lettuce', 'clover', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['kit', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [45, 45, 365, 180],
             pricesPerStage: [5, 10, 20, 7],
@@ -137,6 +161,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'horse',
@@ -144,7 +169,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Equus ferus caballus',
             description: 'A large domesticated equine used for transport and work; herbivorous grazer (~400–600 kg) with hard hooves and swift speed.',
             food: ['grass', 'oats', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['foal', 'yearling', 'adult', 'old'],
             daysPerGrowthStage: [365, 365, 1825, 730],
             pricesPerStage: [300, 700, 2000, 800],
@@ -152,6 +179,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'donkey',
@@ -159,7 +187,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Equus africanus asinus',
             description: 'A domesticated donkey, a smaller equid (~120–300 kg) used as a pack and guard animal; sure-footed browser descended from the African wild ass.',
             food: ['grass', 'oats', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['foal', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [365, 365, 1460, 730],
             pricesPerStage: [120, 300, 700, 250],
@@ -167,6 +197,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'ladybug',
@@ -174,7 +205,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Coccinella septempunctata',
             description: 'A small beetle (ladybird beetle) with red-and-black spotted wings; a voracious predator of aphids and other soft-bodied pests.',
             food: ['clover'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['larva', 'pupa', 'adult', 'old'],
             daysPerGrowthStage: [10, 5, 60, 30],
             pricesPerStage: [1, 2, 5, 1],
@@ -182,6 +215,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'dog',
@@ -189,7 +223,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Canis lupus familiaris',
             description: 'A domestic dog, descendant of wolves; often used as livestock guardian dogs to protect herds from predators, in addition to being companion animals.',
             food: ['animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['puppy', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [180, 185, 2190, 730],
             pricesPerStage: [80, 200, 400, 150],
@@ -197,6 +233,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'fish_tilapia',
@@ -204,7 +241,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Oreochromis niloticus',
             description: 'Nile tilapia, a hardy freshwater fish often used in aquaculture; an herbivorous/omnivorous cichlid that feeds on plankton and algae.',
             food: ['algae', 'plankton'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['fingerling', 'juvenile', 'adult'],
             daysPerGrowthStage: [60, 120, 365],
             pricesPerStage: [20, 40, 80],
@@ -212,6 +251,7 @@ export const animal = defineStore('animalStore', () => {
             product: 'fish',
             outputFrequency: 180, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'fish_trout',
@@ -219,7 +259,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Oncorhynchus mykiss',
             description: 'Rainbow trout, a cold-water fish valued for food and sport; carnivorous, feeding on insects and small aquatic creatures in streams and ponds.',
             food: ['insects', 'small_fish'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['fry', 'juvenile', 'adult'],
             daysPerGrowthStage: [90, 180, 365],
             pricesPerStage: [30, 60, 100],
@@ -227,6 +269,7 @@ export const animal = defineStore('animalStore', () => {
             product: 'fish',
             outputFrequency: 365, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'hawk',
@@ -234,7 +277,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Buteo jamaicensis',
             description: 'Red-tailed hawk, a common large hawk with a reddish tail; a diurnal bird of prey that hunts rodents, rabbits, and other small animals.',
             food: ['rodents', 'small_birds'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['chick', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [90, 180, 1460, 730],
             pricesPerStage: [100, 250, 600, 200],
@@ -242,6 +287,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'snake',
@@ -249,7 +295,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Pantherophis obsoletus',
             description: 'Black rat snake, a non-venomous constrictor often found around farms; an excellent climber that preys on rodents and occasionally eggs or chicks.',
             food: ['rodents', 'insects'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['hatchling', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [60, 180, 1825, 730],
             pricesPerStage: [20, 50, 200, 50],
@@ -257,6 +305,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'earthworm',
@@ -264,7 +313,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Lumbricus terrestris',
             description: 'Common earthworm (nightcrawler), a pinkish-brown segmented worm living in soil; feeds on organic matter and creates extensive burrows.',
             food: ['organic_matter'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['juvenile', 'adult'],
             daysPerGrowthStage: [30, 365],
             pricesPerStage: [1, 5],
@@ -272,6 +323,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'dung_beetle',
@@ -279,7 +331,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Scarabaeus sacer',
             description: 'A dung beetle, a type of scarab beetle that specializes in collecting and burying animal dung; plays a key role in nutrient cycling on pastures.',
             food: ['manure'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['larva', 'pupa', 'adult'],
             daysPerGrowthStage: [15, 15, 180],
             pricesPerStage: [1, 2, 10],
@@ -287,6 +341,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'frog',
@@ -294,7 +349,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Lithobates pipiens',
             description: 'Northern leopard frog (example species), a common amphibian found near water; eats insects, slugs, and other small invertebrates, benefiting gardens.',
             food: ['insects'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['tadpole', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [30, 60, 365, 365],
             pricesPerStage: [5, 10, 25, 10],
@@ -302,6 +359,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'shrimp',
@@ -309,7 +367,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Macrobrachium rosenbergii',
             description: 'Giant freshwater prawn, a large shrimp species farmed in ponds; omnivorous, feeding on detritus, algae, and small animals and contributing to water clarity.',
             food: ['detritus', 'algae'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['larva', 'juvenile', 'adult'],
             daysPerGrowthStage: [20, 40, 365],
             pricesPerStage: [2, 5, 20],
@@ -317,6 +377,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'deer',
@@ -324,7 +385,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Odocoileus virginianus',
             description: 'White-tailed deer, a wild herbivore (~50–150 kg) known to browse crops, gardens, and forest understory; highly adaptable and often overabundant near farms.',
             food: ['grass', 'leaves', 'fruit', 'vegetables'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['fawn', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [180, 365, 2190, 730],
             pricesPerStage: [200, 400, 1000, 300],
@@ -332,6 +395,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'wild_boar',
@@ -339,7 +403,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Sus scrofa',
             description: 'Wild boar (feral hog), a wild ancestor of domestic pigs; a large omnivore that roots aggressively in soil and can cause extensive crop and land damage.',
             food: ['roots', 'tubers', 'corn', 'leftovers'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['piglet', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [120, 240, 2190, 730],
             pricesPerStage: [150, 300, 800, 200],
@@ -347,6 +413,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'bear',
@@ -354,7 +421,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Ursus americanus',
             description: 'American black bear, a large omnivorous mammal (~100–300 kg) that ranges in forested areas; opportunistically feeds on crops, beehives, and small livestock when available.',
             food: ['honey', 'fruit', 'fish', 'livestock'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['cub', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [365, 730, 3650, 1095],
             pricesPerStage: [500, 1200, 3000, 800],
@@ -362,6 +431,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'fox',
@@ -369,7 +439,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Vulpes vulpes',
             description: 'Red fox, a small omnivorous canid (~4–8 kg) with a bushy tail; adaptable to rural and urban areas, where it hunts rodents and rabbits but also can prey on poultry.',
             food: ['chickens', 'ducks', 'rabbits', 'rodents'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['kit', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [90, 180, 1825, 730],
             pricesPerStage: [50, 120, 300, 100],
@@ -377,6 +449,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'raccoon',
@@ -384,7 +457,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Procyon lotor',
             description: 'Common raccoon, a medium-sized (~4–9 kg) omnivorous mammal with dexterous paws and a masked face; notorious for raiding crops, trash, and henhouses at night.',
             food: ['corn', 'fruit', 'eggs', 'fish'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['kit', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [120, 240, 1825, 730],
             pricesPerStage: [30, 80, 200, 60],
@@ -392,6 +467,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'locust',
@@ -399,7 +475,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Schistocerca gregaria',
             description: 'Desert locust, a short-horned grasshopper that can undergo swarming phases; swarms travel great distances and consume almost all vegetation in their path.',
             food: ['grass', 'cereal', 'corn', 'vegetables'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['nymph', 'juvenile', 'adult', 'swarm'],
             daysPerGrowthStage: [20, 20, 30, 30],
             pricesPerStage: [5, 10, 20, 5],
@@ -407,6 +485,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'mosquito',
@@ -414,7 +493,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Culex pipiens',
             description: 'Common house mosquito, a small flying insect which feeds on nectar (males) and blood (females); notorious as a biting pest and disease vector in warm months.',
             food: ['blood', 'nectar'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['larva', 'pupa', 'adult', 'swarm'],
             daysPerGrowthStage: [7, 3, 14, 14],
             pricesPerStage: [0, 0, 0, 0],
@@ -422,6 +503,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'butterfly',
@@ -429,7 +511,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Vanessa cardui',
             description: 'Painted lady, a migratory butterfly found worldwide; adults feed on flower nectar (pollinating them) and caterpillars feed on leaves of thistles and many crops.',
             food: ['nectar', 'flowers', 'clover'],
-            health: 50,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['caterpillar', 'chrysalis', 'adult', 'old'],
             daysPerGrowthStage: [20, 10, 30, 10],
             pricesPerStage: [1, 2, 5, 1],
@@ -437,6 +521,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'owl',
@@ -444,7 +529,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Tyto alba',
             description: 'Barn owl, a nocturnal raptor with a heart-shaped face; nests around farms and feeds primarily on rodents at night, providing natural pest control.',
             food: ['rodents', 'small_birds', 'insects'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['chick', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [60, 365, 2190, 730],
             pricesPerStage: [50, 120, 300, 100],
@@ -452,6 +539,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         },
         {
             type: 'cat',
@@ -459,7 +547,9 @@ export const animal = defineStore('animalStore', () => {
             scientificName: 'Felis catus',
             description: 'Domestic cat, a small carnivorous mammal domesticated from wildcats; skilled hunter of rodents and birds.',
             food: ['rodents', 'animal_feed'],
-            health: 100,
+           health: { env: 100, unit: 'life',     measured: { value: undefined, date: undefined }},
+            foodPerGrowthStage: [20, 35, 55, 45],
+            weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['kitten', 'juvenile', 'adult', 'old'],
             daysPerGrowthStage: [90, 180, 2920, 730],
             pricesPerStage: [20, 50, 150, 50],
@@ -467,6 +557,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
+            habitats: []
         }
     ])
     return {animalTypes, products}

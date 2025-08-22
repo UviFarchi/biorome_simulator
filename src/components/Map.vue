@@ -3,8 +3,6 @@ import {onMounted, onBeforeUnmount, ref, nextTick} from 'vue'
 import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {mapStore} from '@/stores/map.js'
-import {recalculateTileValues} from '@/calc/recalculateTileValues.js'
-import {produceReport} from '@/calc/produceReport.js'
 import ControlPanel from '@/components/panels/Control.vue'
 import WeatherPanel from '@/components/panels/Weather.vue'
 import PlayerPanel from '@/components/panels/Player.vue'
@@ -18,7 +16,7 @@ import FarmGate from '@/components/menus/operations/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue';
 import {saveAllStores, loadAllStores} from '@/utils.js'
 import TileInfo from "@/components/modals/TileInfo.vue";
-import updateGame from "@/calc/updateGame.js";
+import updateGame from "@/engine/updateGame.js";
 
 
 const show = ref({
@@ -44,20 +42,19 @@ function handlePhaseChange() {
   const next = ((game.turnPhase + 1) % engines.length + engines.length) % engines.length;
 
   if (next === 0) {
-    updateGame();
-    eventBus.emit('log', {engine: 'analytics', msg: 'Day ' + game.currentDay + ' in the biorome'})
-    eventBus.emit('log', {engine: 'analytics', msg: 'Recalculated entity values, producing report'})
-    eventBus.emit('menu', {target: 'analytics', show: true})
+    eventBus.emit('modal', {target: 'log', show: true})
+    eventBus.emit('log', {engine: 'analytics', msg: 'Day ' + game.currentTurn + ' in the biorome'})
     eventBus.emit('menu', {target: 'assemblies', show: false})
     eventBus.emit('menu', {target: 'gate', show: false})
+    setTimeout(()=>{updateGame()},500);
   } else if (next === 1) {
     eventBus.emit('log', {engine: 'optimizations', msg: 'Running simulations...'})
     eventBus.emit('menu', {target: 'animal', show: true})
     eventBus.emit('menu', {target: 'plant', show: true})
-    eventBus.emit('menu', {target: 'analytics', show: false})
+    eventBus.emit('modal', {target: 'analytics', show: false})
   } else if (next === 2) {
     eventBus.emit('log', {engine: 'operations', msg: 'Executing instructions...'})
-    eventBus.emit('menu', {target: 'assemblies', show: true})
+    eventBus.emit('modal', {target: 'assemblies', show: true})
     eventBus.emit('menu', {target: 'gate', show: true})
     eventBus.emit('menu', {target: 'animal', show: false})
     eventBus.emit('menu', {target: 'plant', show: false})
@@ -67,7 +64,7 @@ function handlePhaseChange() {
 }
 
 function toggleMenu(menu) {
-  console.log("menu: ", menu)
+
   const target = menu.target
   const explicit = menu.show
   const current = show.value[target]
@@ -86,7 +83,7 @@ function handleModalState(modal, payload) {
   const target = modal.target;
   const explicit = modal.show;
   const current = show.value[target];
-  console.log(target)
+
   show.value[target] = explicit === undefined ? !current : !!explicit
 }
 
@@ -98,10 +95,7 @@ onMounted(() => {
   eventBus.on('phase', handlePhaseChange)
   eventBus.on('modal', handleModalState)
  loadAllStores()
-  console.log('autostart')
-  handlePhaseChange()
-
-})
+  })
 
 onBeforeUnmount(() => {
   eventBus.off('menu', toggleMenu)
