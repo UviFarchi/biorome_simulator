@@ -61,6 +61,7 @@ export function applyEffects() {
     map.$patch(() => {
         const grid = map.tiles // matrix
         const rows = grid.length
+        const orders = [] // reusable buffer for flattened assembly orders
         for (let r = 0; r < rows; r++) {
             const row = grid[r]
             const cols = row.length
@@ -78,10 +79,17 @@ export function applyEffects() {
                 }
 
                 // ---------- SUBJECT CATEGORIES (skip if empty) ----------
-                // assemblies -> orders flattened
-                const orders = Array.isArray(t.assemblies)
-                    ? t.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
-                    : []
+                // assemblies -> orders flattened using reusable buffer
+                orders.length = 0
+                if (t.assemblies?.length) {
+                    for (let a = 0; a < t.assemblies.length; a++) {
+                        const assembly = t.assemblies[a]
+                        const list = Array.isArray(assembly.orders) ? assembly.orders : null
+                        if (list) {
+                            for (let o = 0; o < list.length; o++) orders.push(list[o])
+                        }
+                    }
+                }
 
                 if (orders.length) {
                     for (let k = 0; k < orders.length; k++) {
