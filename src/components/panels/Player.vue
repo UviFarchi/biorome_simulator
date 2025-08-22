@@ -32,6 +32,7 @@ const collapsed = toRef(props, 'collapsed')
 .panel {
   border: 1px solid #000;
   margin: 0;
+  background: white;
 }
 
 .panel-header {

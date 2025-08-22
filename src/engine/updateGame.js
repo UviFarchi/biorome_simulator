@@ -6,14 +6,15 @@ import getWeather from "@/engine/steps/getWeather.js";
 import {marketFlux} from "@/engine/steps/marketFlux.js";
 import ecosystemEvents from "@/engine/steps/ecosystemEvents.js";
 import applyStageChanges from "@/engine/steps/applyStageChanges.js";
-import clearAssemblyOrders from "@/engine/steps/clearAssemblyOrders.js";
 import eventBus from "@/eventBus.js";
 
-const now = () => (performance && performance.now) ? performance.now() : Date.now();
+const now = () => (performance?.now ? performance.now() : Date.now());
+const yieldUI = () => new Promise(r => setTimeout(r, 0)); // or: () => nextTick()5
 
 
 export default async function () {
     eventBus.emit('log', {engine: 'simulation', msg: 'Beginning Update'})
+    await yieldUI();
     const game = gameStore()
 
     game.currentTurn += 1;
@@ -41,18 +42,20 @@ export default async function () {
     const t0 = now();
     const times = [];
     eventBus.emit('log', {engine: 'simulation', msg: 'Recalculating entity values.'})
+    await yieldUI();
+
     const step = async (name, fn) => {
         eventBus.emit('log', {engine: 'simulation', msg: 'Step ' + name})
+        await yieldUI();
         const s = now(); await fn(); const d = now() - s; times.push([name, d]);
     };
 
     // pipeline (same order)
     await step("getWeather",        getWeather);
     await step("ecosystemEvents",   ecosystemEvents);
+    await step("applyStageChanges", applyStageChanges);
     await step("applyEffects",      applyEffects);
     await step("marketFlux",        marketFlux);
-    await step("applyStageChanges", applyStageChanges);
-    await step("clearAssemblyOrders", clearAssemblyOrders);
     await step("produceReport",     produceReport);
     await step("saveAllStores",     saveAllStores);
 
