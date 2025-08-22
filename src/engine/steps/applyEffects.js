@@ -33,6 +33,26 @@ export function applyEffects() {
         resources:  Object.keys(FX.resources),
     }
 
+    const iterCategory = (cat, fxCat, keys, tile) => {
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
+            const list = fxCat[key]
+            for (let j = 0; j < list.length; j++) {
+                const eff = list[j]
+                const d = (typeof eff.delta === 'function')
+                    ? eff.delta({ tile, subject: null, key, category: cat })
+                    : eff.delta
+                addEnv(tile[eff.target], eff.property, d)
+            }
+        }
+    }
+
+    const GLOBAL_CACHE = GLOBAL_CATS.map(cat => ({
+        cat,
+        keys: FX_KEYS[cat],
+        fx:   FX[cat],
+    }))
+
     const addEnv = (group, prop, d) => {
         const slot = group?.[prop]
         if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
@@ -52,53 +72,9 @@ export function applyEffects() {
                 const plantsLen = plants.length
 
                 // ---------- GLOBAL CATEGORIES (single pass each) ----------
-                // weather
-                for (let i = 0; i < FX_KEYS.weather.length; i++) {
-                    const key = FX_KEYS.weather[i]
-                    const list = FX.weather[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'weather' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // topography
-                for (let i = 0; i < FX_KEYS.topography.length; i++) {
-                    const key = FX_KEYS.topography[i]
-                    const list = FX.topography[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'topography' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // soil
-                for (let i = 0; i < FX_KEYS.soil.length; i++) {
-                    const key = FX_KEYS.soil[i]
-                    const list = FX.soil[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'soil' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // resources
-                for (let i = 0; i < FX_KEYS.resources.length; i++) {
-                    const key = FX_KEYS.resources[i]
-                    const list = FX.resources[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'resources' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
+                for (let g = 0; g < GLOBAL_CACHE.length; g++) {
+                    const { cat, fx, keys } = GLOBAL_CACHE[g]
+                    iterCategory(cat, fx, keys, t)
                 }
 
                 // ---------- SUBJECT CATEGORIES (skip if empty) ----------
