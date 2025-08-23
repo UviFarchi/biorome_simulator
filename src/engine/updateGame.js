@@ -9,7 +9,7 @@ import applyStageChanges from "@/engine/steps/applyStageChanges.js";
 import eventBus from "@/eventBus.js";
 
 const now = () => (performance?.now ? performance.now() : Date.now());
-const yieldUI = () => new Promise(r => setTimeout(r, 0)); // or: () => nextTick()5
+const yieldUI = () => new Promise(r => setTimeout(r, 1)); // or: () => nextTick()5
 
 
 export default async function () {

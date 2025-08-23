@@ -8,6 +8,7 @@ import soilEffects from '@/engine/effects/soil.js'
 import topographyEffects from '@/engine/effects/topography.js'
 import weatherEffects from '@/engine/effects/weather.js'
 
+
 // Catalog of all effect groups
 export const FX = {
     animals: animalEffects,
@@ -20,6 +21,7 @@ export const FX = {
 }
 
 // execution order
+
 export const ORDER = ['weather', 'assemblies', 'topography', 'soil', 'animals', 'plants', 'resources']
 
 // precompute weather entries once since they never change per tile

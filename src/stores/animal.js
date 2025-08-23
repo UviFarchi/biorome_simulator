@@ -29,7 +29,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
 
         },
         {
@@ -49,7 +49,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'sheep',
@@ -68,7 +68,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 180,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'pig',
@@ -87,7 +87,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 0,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'chicken',
@@ -106,7 +106,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'duck',
@@ -125,7 +125,7 @@ export const animal = defineStore('animalStore', () => {
             outputFrequency: 1,
             dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'bee',
@@ -143,7 +143,7 @@ export const animal = defineStore('animalStore', () => {
             product: 'honey',
             outputFrequency: 120, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'rabbit',
@@ -161,7 +161,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'horse',
@@ -179,7 +179,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'donkey',
@@ -197,7 +197,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'ladybug',
@@ -215,7 +215,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'dog',
@@ -233,10 +233,10 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
-            type: 'fish_tilapia',
+            type: 'tilapia',
             icon: '🐟',
             scientificName: 'Oreochromis niloticus',
             description: 'Nile tilapia, a hardy freshwater fish often used in aquaculture; an herbivorous/omnivorous cichlid that feeds on plankton and algae.',
@@ -251,10 +251,10 @@ export const animal = defineStore('animalStore', () => {
             product: 'fish',
             outputFrequency: 180, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'water'
         },
         {
-            type: 'fish_trout',
+            type: 'trout',
             icon: '🐠',
             scientificName: 'Oncorhynchus mykiss',
             description: 'Rainbow trout, a cold-water fish valued for food and sport; carnivorous, feeding on insects and small aquatic creatures in streams and ponds.',
@@ -269,7 +269,7 @@ export const animal = defineStore('animalStore', () => {
             product: 'fish',
             outputFrequency: 365, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'water'
         },
         {
             type: 'hawk',
@@ -287,7 +287,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'snake',
@@ -305,7 +305,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'earthworm',
@@ -323,7 +323,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'dung_beetle',
@@ -341,7 +341,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'frog',
@@ -359,7 +359,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'water'
         },
         {
             type: 'shrimp',
@@ -377,7 +377,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'water'
         },
         {
             type: 'deer',
@@ -395,7 +395,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'wild_boar',
@@ -413,7 +413,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'bear',
@@ -431,7 +431,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'fox',
@@ -449,7 +449,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'raccoon',
@@ -467,7 +467,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'locust',
@@ -485,7 +485,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'mosquito',
@@ -503,7 +503,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'butterfly',
@@ -521,7 +521,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'owl',
@@ -539,7 +539,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         },
         {
             type: 'cat',
@@ -557,7 +557,7 @@ export const animal = defineStore('animalStore', () => {
             product: '',
             outputFrequency: 0, dateDeployed: '',
             growthStage: '',
-            habitats: []
+            habitat: 'land'
         }
     ])
     return {animalTypes, products}
