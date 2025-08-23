@@ -1,5 +1,5 @@
 function evaporateGroundWater(context){
-    //console.log('weather', "tile: " +  context.tile.row + ',' +context.tile.col)
+    // console.log('weather', "tile: " +  context.tile.row + ',' +context.tile.col)
     return -1
 }
 
@@ -10,3 +10,5 @@ export default {
     relHumidity: [{target: 'animals', property: 'health', delta: -1}],
     windKph: [{target: 'resources', property: 'water', delta: -1}],
 }
+
+

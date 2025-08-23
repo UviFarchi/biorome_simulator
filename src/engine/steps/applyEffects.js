@@ -1,172 +1,141 @@
+// src/engine/steps/applyEffects.js
 import { mapStore } from '@/stores/map.js'
-import animalEffects     from '@/engine/effects/animal.js'
-import assemblyEffects   from '@/engine/effects/assembly.js'
-import plantEffects      from '@/engine/effects/plant.js'
-import resourceEffects   from '@/engine/effects/resource.js'
-import soilEffects       from '@/engine/effects/soil.js'
+import animalEffects    from '@/engine/effects/animal.js'
+import assemblyEffects  from '@/engine/effects/assembly.js'
+import plantEffects     from '@/engine/effects/plant.js'
+import resourceEffects  from '@/engine/effects/resource.js'
+import soilEffects      from '@/engine/effects/soil.js'
 import topographyEffects from '@/engine/effects/topography.js'
-import weatherEffects    from '@/engine/effects/weather.js'
+import weatherEffects   from '@/engine/effects/weather.js'
 
-export function applyEffects() {
+export function applyEffects () {
     const map = mapStore()
 
-    // catalogs
     const FX = {
-        weather:    weatherEffects,
-        topography: topographyEffects,
-        soil:       soilEffects,
-        resources:  resourceEffects,
         animals:    animalEffects,
-        plants:     plantEffects,
         assemblies: assemblyEffects,
+        plants:     plantEffects,
+        resources:  resourceEffects,
+        soil:       soilEffects,
+        topography: topographyEffects,
+        weather:    weatherEffects
     }
 
-    // categories
-    const GLOBAL_CATS  = ['weather','topography','soil','resources'] // no subjects
-    const SUBJECT_CATS = ['assemblies','animals','plants']           // orders or tile entities
+    // execution order
+    const ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
 
-    // precompute global keys once
-    const FX_KEYS = {
-        weather:    Object.keys(FX.weather),
-        topography: Object.keys(FX.topography),
-        soil:       Object.keys(FX.soil),
-        resources:  Object.keys(FX.resources),
-    }
+    ////console.log('[applyEffects] start')
 
-    const addEnv = (group, prop, d) => {
-        const slot = group?.[prop]
-        if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
-    }
+    const newTiles = map.tiles.map((row, r) =>
+        row.map((tile, c) => {
+            const t0 = performance.now?.() ?? Date.now()
+            ////console.log(`[applyEffects] tile ${r},${c} — prepare`)
 
-    map.$patch(() => {
-        const grid = map.tiles // matrix
-        const rows = grid.length
-        for (let r = 0; r < rows; r++) {
-            const row = grid[r]
-            const cols = row.length
-            for (let c = 0; c < cols; c++) {
-                const t = row[c]
+            // --- prepare queues (just keys present on the tile or always-on like weather) ---
+            const prepared = {
+                // subjects: pair the effect "key" with the instance that triggered it
+                animals:    (tile.animals  || []).map(a => ({ key: a.type,  subject: a })),
+                plants:     (tile.plants   || []).map(p => ({ key: p.type,  subject: p })),
+                assemblies: (Array.isArray(tile.assemblies)
+                    ? tile.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
+                    : []).map(order => ({ key: order, subject: null })),
 
-                // ---------- GLOBAL CATEGORIES (single pass each) ----------
-                // weather
-                for (let i = 0; i < FX_KEYS.weather.length; i++) {
-                    const key = FX_KEYS.weather[i]
-                    const list = FX.weather[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'weather' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // topography
-                for (let i = 0; i < FX_KEYS.topography.length; i++) {
-                    const key = FX_KEYS.topography[i]
-                    const list = FX.topography[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'topography' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // soil
-                for (let i = 0; i < FX_KEYS.soil.length; i++) {
-                    const key = FX_KEYS.soil[i]
-                    const list = FX.soil[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'soil' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-                // resources
-                for (let i = 0; i < FX_KEYS.resources.length; i++) {
-                    const key = FX_KEYS.resources[i]
-                    const list = FX.resources[key]
-                    for (let j = 0; j < list.length; j++) {
-                        const eff = list[j]
-                        const d = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: t, subject: null, key, category: 'resources' })
-                            : eff.delta
-                        addEnv(t[eff.target], eff.property, d)
-                    }
-                }
-
-                // ---------- SUBJECT CATEGORIES (skip if empty) ----------
-                // assemblies -> orders flattened
-                const orders = Array.isArray(t.assemblies)
-                    ? t.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
-                    : []
-
-                if (orders.length) {
-                    for (let k = 0; k < orders.length; k++) {
-                        const key = orders[k]
-                        const list = FX.assemblies[key]
-                        if (!Array.isArray(list)) continue
-                        for (let j = 0; j < list.length; j++) {
-                            const eff = list[j]
-                            const d = (typeof eff.delta === 'function')
-                                ? eff.delta({ tile: t, subject: null, key, category: 'assemblies' })
-                                : eff.delta
-                            addEnv(t[eff.target], eff.property, d)
-                        }
-                    }
-                }
-
-                // animals
-                const animals = Array.isArray(t.animals) ? t.animals : []
-                if (animals.length) {
-                    for (let a = 0; a < animals.length; a++) {
-                        const subject = animals[a]
-                        const list = FX.animals[subject.type]
-                        if (!Array.isArray(list)) continue
-                        for (let j = 0; j < list.length; j++) {
-                            const eff = list[j]
-                            const d = (typeof eff.delta === 'function')
-                                ? eff.delta({ tile: t, subject, key: subject.type, category: 'animals' })
-                                : eff.delta
-                            if (eff.target === 'animals') {
-                                const slot = subject[eff.property]
-                                if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
-                            } else if (eff.target === 'plants') {
-                                const plants = Array.isArray(t.plants) ? t.plants : []
-                                for (let p = 0; p < plants.length; p++) addEnv(plants[p], eff.property, d)
-                            } else {
-                                addEnv(t[eff.target], eff.property, d)
-                            }
-                        }
-                    }
-                }
-
-                // plants
-                const plants = Array.isArray(t.plants) ? t.plants : []
-                if (plants.length) {
-                    for (let p = 0; p < plants.length; p++) {
-                        const subject = plants[p]
-                        const list = FX.plants[subject.type]
-                        if (!Array.isArray(list)) continue
-                        for (let j = 0; j < list.length; j++) {
-                            const eff = list[j]
-                            const d = (typeof eff.delta === 'function')
-                                ? eff.delta({ tile: t, subject, key: subject.type, category: 'plants' })
-                                : eff.delta
-                            if (eff.target === 'plants') {
-                                const slot = subject[eff.property]
-                                if (slot && typeof slot === 'object' && 'env' in slot) slot.env += d
-                            } else if (eff.target === 'animals') {
-                                for (let a = 0; a < animals.length; a++) addEnv(animals[a], eff.property, d)
-                            } else {
-                                addEnv(t[eff.target], eff.property, d)
-                            }
-                        }
-                    }
-                }
+                // globals: derive keys from the tile’s available properties so we don’t loop unused FX keys
+                weather:    Object.keys(FX.weather || {}).map(k => ({ key: k, subject: null })),
+                topography: Object.keys(tile.topography || {}).filter(k => FX.topography?.[k])
+                    .map(k => ({ key: k, subject: null })),
+                soil:       Object.keys(tile.soil || {}).filter(k => FX.soil?.[k])
+                    .map(k => ({ key: k, subject: null })),
+                resources:  Object.keys(tile.resources || {}).filter(k => FX.resources?.[k])
+                    .map(k => ({ key: k, subject: null })),
             }
-        }
-    })
+
+            //console.log(`[applyEffects] tile ${r},${c} — queues`,
+                // Object.fromEntries(Object.entries(prepared).map(([k,v]) => [k, v.length])))
+
+            // --- working copy (only the parts we’ll mutate) ---
+            const working = {
+                row: tile.row, col: tile.col,
+                soil:       { ...tile.soil },
+                topography: { ...tile.topography },
+                resources:  { ...tile.resources },
+                plants:     (tile.plants  || []).map(p => ({ ...p })),
+                animals:    (tile.animals || []).map(a => ({ ...a })),
+            }
+
+            // helper: apply to tile-level groups
+            const bumpGroup = (groupName, prop, delta) => {
+                const grp = working[groupName]
+                if (grp?.[prop]?.env !== undefined) {
+                    grp[prop].env += delta
+                    return true
+                }
+                return false
+            }
+
+            // --- run categories in order
+            for (const category of ORDER) {
+                const entries = prepared[category] || []
+                const catalog = FX[category]
+                if (!catalog || entries.length === 0) {
+                    //console.log(`[applyEffects] tile ${r},${c} — skip ${category} (no entries)`)
+                    continue
+                }
+
+                //console.log(`[applyEffects] tile ${r},${c} — ${category} (${entries.length} keys)`)
+
+                for (const { key, subject } of entries) {
+                    const effectList = catalog[key]
+                    if (!Array.isArray(effectList) || effectList.length === 0) {
+                        // no effects defined for this key on this tile
+                        continue
+                    }
+
+                    // optional: log once per key
+                    // //console.log(`[applyEffects] tile ${r},${c} — ${category}:${key} (${effectList.length} effects)`)
+
+                    for (const eff of effectList) {
+                        // compute delta now (supports number or function)
+                        const delta = (typeof eff.delta === 'function')
+                            ? eff.delta({ tile: working, subject, key, category })
+                            : eff.delta
+
+                        // subject-aware targets
+                        if (eff.target === 'animals') {
+                            const targets = subject ? [subject] : working.animals
+                            for (const a of targets) {
+                                if (a?.[eff.property]?.env === undefined) continue
+                                a[eff.property].env = (a[eff.property].env ?? 0) + delta
+                            }
+                            continue
+                        }
+
+                        if (eff.target === 'plants') {
+                            const targets = subject ? [subject] : working.plants
+                            for (const p of targets) {
+                                if (p?.[eff.property]?.env === undefined) continue
+                                p[eff.property].env = (p[eff.property].env ?? 0) + delta
+                            }
+                            continue
+                        }
+
+                        // tile-level targets
+                        bumpGroup(eff.target, eff.property, delta)
+                    }
+                }
+
+                //console.log(`[applyEffects] tile ${r},${c} — done ${category}`)
+            }
+
+            const dt = (performance.now?.() ?? Date.now()) - t0
+            //console.log(`[applyEffects] tile ${r},${c} — complete in ${dt.toFixed(2)}ms`)
+
+            return working
+        })
+    )
+
+    // single assignment for reactivity
+    map.tiles.value = newTiles
+
+    //console.log('[applyEffects] end')
 }

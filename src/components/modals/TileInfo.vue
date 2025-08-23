@@ -6,7 +6,7 @@ const map = mapStore()
 
 
 <template>
-  <div class="modalData"> Tile Modal {{map.selectedTile}}</div>
+  <div class="modalData"> tileModal = {{map.selectedTile}}</div>
 
 </template>
 

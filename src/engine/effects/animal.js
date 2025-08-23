@@ -1,8 +1,7 @@
 function foodConsumption(context) {
-    //console.log("animal", "tile: " +  context.tile.row + ',' +context.tile.col)
+    // console.log("animal", "tile: " +  context.tile.row + ',' +context.tile.col)
     const subject = context.subject
-    const stageIndex = subject.growthStages.indexOf(subject.growthStage);
-    const perStage = subject.foodPerGrowthStage?.[stageIndex] ?? 0;
+    const perStage = subject.foodPerGrowthStage?.[subject.growthStages.indexOf(subject.growthStage)] || 0;
     return -perStage;
 }
 

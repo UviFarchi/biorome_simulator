@@ -1,5 +1,5 @@
 function flatten(context){
-    //console.log("topo", "tile: " +  context.tile.row + ',' +context.tile.col)
+    // console.log("topo", "tile: " +  context.tile.row + ',' +context.tile.col)
     return 1
 }
 

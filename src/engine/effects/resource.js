@@ -1,12 +1,10 @@
-function calculateThirstDamage(context){
-    //console.log("resource", "tile: " +  context.tile.row + ',' +context.tile.col)
+function calculateThirstDamage(context) {
+    // console.log("resource", "tile: " + context.tile.row + ',' + context.tile.col)
     return -1
 }
 
 export default {
     water: [
-        {
-            target: 'animal', property: 'health', delta: calculateThirstDamage
-        }
+        {target: 'animals', property: 'health', delta: calculateThirstDamage}
     ]
 }
