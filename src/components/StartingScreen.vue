@@ -66,8 +66,8 @@ async function startGame () {
 <template>
   <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
     <div>
-      <label for="userName">Your Name:</label>
-      <input id="userName" type="text" v-model="name" autocomplete="off"/>
+      <label for="userName" >Your Name:</label>
+      <input id="userName" type="text" v-model="name" autocomplete="off" autofocus/>
     </div>
 
     <div>

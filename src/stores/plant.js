@@ -34,7 +34,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -64,7 +64,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -94,7 +94,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -124,7 +124,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -153,7 +153,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -182,7 +182,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -210,7 +210,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -238,7 +238,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: false,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -266,7 +266,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -294,7 +294,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -322,7 +322,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -350,7 +350,7 @@ export const plant = defineStore('plantStore', () => {
                 removedWhenHarvested: true,
                 dateDeployed: "",
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -389,7 +389,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -425,7 +425,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -460,7 +460,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -495,7 +495,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -530,7 +530,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -565,7 +565,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -603,7 +603,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -639,7 +639,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -674,7 +674,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -709,7 +709,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -744,7 +744,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -779,7 +779,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             },
 
             {
@@ -814,7 +814,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'water'
             },
 
             {
@@ -849,7 +849,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'water'
             },
 
             {
@@ -884,7 +884,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'water'
             },
 
             {
@@ -919,7 +919,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'water'
             },
 
             {
@@ -954,7 +954,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'water'
             },
 
             {
@@ -989,7 +989,7 @@ export const plant = defineStore('plantStore', () => {
                 dateDeployed: "",
 
                 growthStage: "",
-                habitats: []
+                habitat: 'land'
             }
 
         ]

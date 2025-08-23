@@ -29,9 +29,9 @@ export default {
         [{target: 'resources', property: 'food', delta: -1},       ],
     dog:
         [{target: 'resources', property: 'food', delta: -1},       ],
-    fish_tilapia:
+    tilapia:
         [{target: 'resources', property: 'food', delta: -1},       ],
-    fish_trout:
+    trout:
         [{target: 'resources', property: 'food', delta: -1},       ],
     hawk:
         [{target: 'resources', property: 'food', delta: -1},       ],
