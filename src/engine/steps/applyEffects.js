@@ -21,6 +21,12 @@ export const FX = {
 // execution order
 export const ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
 
+// precompute weather entries once since they never change per tile
+const WEATHER_ENTRIES = []
+for (const key in FX.weather) {
+    WEATHER_ENTRIES.push({ key, subject: null })
+}
+
 export function applyEffects () {
     const map = mapStore()
 
@@ -31,24 +37,81 @@ export function applyEffects () {
             const t0 = performance.now?.() ?? Date.now()
             ////console.log(`[applyEffects] tile ${r},${c} — prepare`)
 
-            // --- prepare queues (just keys present on the tile or always-on like weather) ---
-            const prepared = {
-                // subjects: pair the effect "key" with the instance that triggered it
-                animals:    (tile.animals  || []).map(a => ({ key: a.type,  subject: a })),
-                plants:     (tile.plants   || []).map(p => ({ key: p.type,  subject: p })),
-                assemblies: (Array.isArray(tile.assemblies)
-                    ? tile.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
-                    : []).map(order => ({ key: order, subject: null })),
+            // per-tile cache for effect key arrays
+            const cache = tile._fxCache || (tile._fxCache = {
+                animals: [],
+                plants: [],
+                assemblies: [],
+                weather: WEATHER_ENTRIES,
+                topography: [],
+                soil: [],
+                resources: [],
+                topographyRef: null,
+                soilRef: null,
+                resourcesRef: null,
+                prepared: null
+            })
 
-                // globals: derive keys from the tile’s available properties so we don’t loop unused FX keys
-                weather:    Object.keys(FX.weather || {}).map(k => ({ key: k, subject: null })),
-                topography: Object.keys(tile.topography || {}).filter(k => FX.topography?.[k])
-                    .map(k => ({ key: k, subject: null })),
-                soil:       Object.keys(tile.soil || {}).filter(k => FX.soil?.[k])
-                    .map(k => ({ key: k, subject: null })),
-                resources:  Object.keys(tile.resources || {}).filter(k => FX.resources?.[k])
-                    .map(k => ({ key: k, subject: null })),
+            // rebuild cached keys only if the tile's data reference changed
+            if (cache.topographyRef !== tile.topography) {
+                cache.topography.length = 0
+                for (const k in tile.topography || {}) {
+                    if (FX.topography?.[k]) cache.topography.push({ key: k, subject: null })
+                }
+                cache.topographyRef = tile.topography
             }
+            if (cache.soilRef !== tile.soil) {
+                cache.soil.length = 0
+                for (const k in tile.soil || {}) {
+                    if (FX.soil?.[k]) cache.soil.push({ key: k, subject: null })
+                }
+                cache.soilRef = tile.soil
+            }
+            if (cache.resourcesRef !== tile.resources) {
+                cache.resources.length = 0
+                for (const k in tile.resources || {}) {
+                    if (FX.resources?.[k]) cache.resources.push({ key: k, subject: null })
+                }
+                cache.resourcesRef = tile.resources
+            }
+
+            // subjects: pair the effect key with the instance that triggered it
+            const animals = cache.animals
+            animals.length = 0
+            if (Array.isArray(tile.animals)) {
+                for (const a of tile.animals) {
+                    animals.push({ key: a.type, subject: a })
+                }
+            }
+
+            const plants = cache.plants
+            plants.length = 0
+            if (Array.isArray(tile.plants)) {
+                for (const p of tile.plants) {
+                    plants.push({ key: p.type, subject: p })
+                }
+            }
+
+            const assemblies = cache.assemblies
+            assemblies.length = 0
+            if (Array.isArray(tile.assemblies)) {
+                for (const a of tile.assemblies) {
+                    if (!Array.isArray(a.orders)) continue
+                    for (const order of a.orders) {
+                        assemblies.push({ key: order, subject: null })
+                    }
+                }
+            }
+
+            const prepared = cache.prepared || (cache.prepared = {
+                animals,
+                plants,
+                assemblies,
+                weather: cache.weather,
+                topography: cache.topography,
+                soil: cache.soil,
+                resources: cache.resources
+            })
 
             //console.log(`[applyEffects] tile ${r},${c} — queues`,
                 // Object.fromEntries(Object.entries(prepared).map(([k,v]) => [k, v.length])))
@@ -61,7 +124,12 @@ export function applyEffects () {
                 resources:  { ...tile.resources },
                 plants:     (tile.plants  || []).map(p => ({ ...p })),
                 animals:    (tile.animals || []).map(a => ({ ...a })),
+                _fxCache:   cache
             }
+            // update references so future runs know if sources changed
+            cache.topographyRef = working.topography
+            cache.soilRef = working.soil
+            cache.resourcesRef = working.resources
 
             // helper: apply to tile-level groups
             const bumpGroup = (groupName, prop, delta) => {
