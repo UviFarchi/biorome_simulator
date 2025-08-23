@@ -8,21 +8,21 @@ import soilEffects      from '@/engine/effects/soil.js'
 import topographyEffects from '@/engine/effects/topography.js'
 import weatherEffects   from '@/engine/effects/weather.js'
 
+export const FX = {
+    animals:    animalEffects,
+    assemblies: assemblyEffects,
+    plants:     plantEffects,
+    resources:  resourceEffects,
+    soil:       soilEffects,
+    topography: topographyEffects,
+    weather:    weatherEffects
+}
+
+// execution order
+export const ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
+
 export function applyEffects () {
     const map = mapStore()
-
-    const FX = {
-        animals:    animalEffects,
-        assemblies: assemblyEffects,
-        plants:     plantEffects,
-        resources:  resourceEffects,
-        soil:       soilEffects,
-        topography: topographyEffects,
-        weather:    weatherEffects
-    }
-
-    // execution order
-    const ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
 
     ////console.log('[applyEffects] start')
 
