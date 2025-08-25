@@ -71,8 +71,8 @@ function restart() {
       </div>
     </div>
     <div class="subpanel">
-      <div class="infoScreen"> Bioromization Stage <br/> {{ stageLabel }}</div>
-      <div class="infoScreen">Current Phase:<br/>{{ currentPhaseLabel }}</div>
+      <div class="infoScreen"> Bioromization Stage: <br/> {{ stageLabel?.toUpperCase() }}</div>
+      <div class="infoScreen">Current Phase:<br/>{{ currentPhaseLabel?.toUpperCase() }}</div>
       <div class="infoScreen">Current Turn:<br/>{{ game.currentTurn }}</div>
       <div class="infoScreen">Current Date:<br/>{{ game.currentDate.toLocaleDateString('en-GB') }}</div>
     </div>
@@ -175,8 +175,7 @@ function restart() {
 </div>
     <div class="right-panel">
       <div class="subpanel">
-        Operator
-        <div id="player" class="infoScreen">{{ userAvatar }}<br/>{{ userName }}</div>
+            <div id="player" class="infoScreen">    Operator<br/>{{ userAvatar }}<br/>{{ userName }}</div>
         <div id="gold" class="infoScreen" title="Gold">Gold 💰<br/>{{ gold }}</div>
       </div>
     <div class="subpanel">
@@ -324,4 +323,15 @@ background-color: grey;
 }
 
 
+.infoScreen {
+  background-color: black;
+  position: relative;
+  padding: 5px;
+border: 5px inset black;
+  height: 75%;
+  text-align: center;
+  color: lawngreen;
+  aspect-ratio: 4/3;
+  line-height: 1.25rem;
+}
 </style>

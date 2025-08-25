@@ -547,25 +547,7 @@ export const moduleStore = defineStore('moduleStore', () => {
         }, {type: 'gps'}]
     }]
 
-    const activeAssemblies = ref([
-        {
-            id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
-            modules: [
-                { type: 'transport', subtype: 'ground' },
-                { type: 'arm', subtype: 'medium' },
-                { type: 'tool', subtype: 'seeder' },
-                { type: 'tool', subtype: 'borer' }
-            ],
-            name: 'Seed Planter',
-            deployed: false,
-            built: false,
-            moves: 1,
-            actions: 1,
-            orders:[]
-
-        }
-    ])
 
     const currentAssembly = ref([])
-    return {availableModules,  premadeAssemblies, currentAssembly, constants, activeAssemblies}
+    return {availableModules,  premadeAssemblies, currentAssembly, constants}
 })
