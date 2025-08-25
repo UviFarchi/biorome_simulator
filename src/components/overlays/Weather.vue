@@ -46,10 +46,6 @@ Humidity: ${humidityPct.value}%`
 </template>
 
 <style scoped>
-.panel { border: 1px solid white; margin: 0;   background: black;}
-.panel-header { font-weight: bold; padding: 4px; cursor: pointer; }
-.panel-body { padding: 4px; }
-.controlButton { display: flex; justify-content: center; align-items: center; font-weight: bold; border-top: 1px solid white; padding: 4px; }
 .metrics { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 4px; margin-top: 6px; }
 .metrics div { border-top: 1px solid white; padding: 4px; }
 </style>
