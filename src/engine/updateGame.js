@@ -1,13 +1,13 @@
-import {saveAllStores} from "@/utils.js";
-import {applyEffects} from "@/engine/steps/applyEffects.js";
-import {produceReport} from "@/engine/steps/produceReport.js";
-import {gameStore} from "@/stores/game.js";
-import getWeather from "@/engine/steps/getWeather.js";
-import {marketFlux} from "@/engine/steps/marketFlux.js";
-import ecosystemEvents from "@/engine/steps/ecosystemEvents.js";
-import applyStageChanges from "@/engine/steps/applyStageChanges.js";
-import eventBus from "@/eventBus.js";
-import {mapStore} from "@/stores/map.js";
+import {saveAllStores} from '@/utils.js';
+import {applyEffects} from '@/engine/steps/applyEffects.js';
+import {produceReport} from '@/engine/steps/produceReport.js';
+import {gameStore} from '@/stores/game.js';
+import getWeather from '@/engine/steps/getWeather.js';
+import {marketFlux} from '@/engine/steps/marketFlux.js';
+import ecosystemEvents from '@/engine/steps/ecosystemEvents.js';
+import applyStageChanges from '@/engine/steps/applyStageChanges.js';
+import eventBus from '@/eventBus.js';
+import {mapStore} from '@/stores/map.js';
 
 const now = () => (performance?.now ? performance.now() : Date.now());
 const yieldUI = () => new Promise(r => setTimeout(r, 1)); // or: () => nextTick()5
@@ -56,13 +56,13 @@ export default async function () {
     };
 
     // pipeline (same order)
-    await step("getWeather", getWeather);
-    await step("ecosystemEvents", ecosystemEvents);
-    await step("applyStageChanges", applyStageChanges);
-    await step("applyEffects", applyEffects);
-    await step("marketFlux", marketFlux);
-    await step("produceReport", produceReport);
-    await step("saveAllStores", saveAllStores);
+    await step('getWeather', getWeather);
+    await step('ecosystemEvents', ecosystemEvents);
+    await step('applyStageChanges', applyStageChanges);
+    await step('applyEffects', applyEffects);
+    await step('marketFlux', marketFlux);
+    await step('produceReport', produceReport);
+    await step('saveAllStores', saveAllStores);
 
     const total = now() - t0;
     console.log(

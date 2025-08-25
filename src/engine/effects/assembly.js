@@ -4,5 +4,5 @@ function getNewPH(context) {
 
 
 export default {
-    acidify: [{target: "soil", property: "ph", delta:getNewPH}]
+    acidify: [{target: 'soil', property: 'ph', delta:getNewPH}]
 }

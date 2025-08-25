@@ -12,7 +12,7 @@ export const mapStore = defineStore('mapStore', () => {
         neighborCap: 6,
         cellSize: 100
     }
-const previousDayTiles=[]
+const optimizedTiles=[]
     const tiles = ref(
         Array.from({length: size.value}, (_, row) =>
                 Array.from({length: size.value}, (_, col) => ({
@@ -61,16 +61,16 @@ const previousDayTiles=[]
 
                     plants: (row === 2 && col === 1) ?
                         [{
-                        type: "tomato", icon: "🍅",
-                        scientificName: "Solanum lycopersicum",
-                        description: "Annual fruiting vegetable; insect-pollinated; high-yield crop in warm seasons.",
-                        growthStages: ["seed", "seedling", "juvenile", "mature", "old"],
+                        type: 'tomato', icon: '🍅',
+                        scientificName: 'Solanum lycopersicum',
+                        description: 'Annual fruiting vegetable; insect-pollinated; high-yield crop in warm seasons.',
+                        growthStages: ['seed', 'seedling', 'juvenile', 'mature', 'old'],
                         daysPerDevStage: [8, 12, 30, 15, 60],
                         fruiting: {
                             requiresPollination: true,
-                            mode: "insect",
-                            vectors: ["bee", "fly"],
-                            stages: ["flowering", "green fruit", "ripe", "overripe"],
+                            mode: 'insect',
+                            vectors: ['bee', 'fly'],
+                            stages: ['flowering', 'green fruit', 'ripe', 'overripe'],
                             daysPerStage: [15, 10, 10, 5],
                             pollinated: false,
                             fruitingWindows: [
@@ -82,11 +82,11 @@ const previousDayTiles=[]
                         yield: 50000,
                         seedRate_kg_per_ha: 0.3,
                         seedlingDensity_per_ha: 30000,
-                        productKey: "tomato_fruit",
-                        plantMaterialKey: "waste",
+                        productKey: 'tomato_fruit',
+                        plantMaterialKey: 'waste',
                         removedWhenHarvested: true,
-                        dateDeployed: "",
-                        growthStage: "mature",
+                        dateDeployed: '',
+                        growthStage: 'mature',
                         habitats: []
                     }] :
                         []
@@ -143,5 +143,5 @@ const previousDayTiles=[]
     const gate = ref({animals: [], plants: [], extras: []})
     const selectedTile = ref({})
 
-    return {tiles, gate, size, selectedTile, topographyConstraints, previousDayTiles}
+    return {tiles, gate, size, selectedTile, topographyConstraints, optimizedTiles}
 })

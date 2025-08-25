@@ -11,12 +11,12 @@
 // - Assumes map.tiles is a 2D grid. We flatten only for selection.
 // - getAdjacentTiles(tile, tilesGrid) is provided in utils.
 
-import { gameStore } from "@/stores/game.js"
-import { mapStore } from "@/stores/map.js"
-import { animal as animalStore } from "@/stores/animal.js"
-import { plant as plantStore } from "@/stores/plant.js"
-import { getAdjacentTiles } from "@/utils.js"
-import eventBus from "@/eventBus.js"
+import { gameStore } from '@/stores/game.js'
+import { mapStore } from '@/stores/map.js'
+import { animal as animalStore } from '@/stores/animal.js'
+import { plant as plantStore } from '@/stores/plant.js'
+import { getAdjacentTiles } from '@/utils.js'
+import eventBus from '@/eventBus.js'
 
 // -------------------------------------------------------------
 // Helpers
@@ -50,7 +50,7 @@ function formatDateISO(dateLike) {
 }
 
 function getFirstStageName(stages) {
-    return Array.isArray(stages) && stages.length ? stages[0] : ""
+    return Array.isArray(stages) && stages.length ? stages[0] : ''
 }
 
 function ensureEntityArraysOnTile(tile) {
@@ -67,7 +67,7 @@ function makePlantInstanceFromSpec(spec, dateLike) {
         growthStage: getFirstStageName(spec.growthStages),
         health: {
             env: spec.health?.env ?? 100,
-            unit: "life",
+            unit: 'life',
             measured: { value: undefined, date: undefined }
         }
     }
@@ -82,7 +82,7 @@ function makeAnimalInstanceFromSpec(spec, dateLike) {
         growthStage: getFirstStageName(spec.growthStages),
         health: {
             env: spec.health?.env ?? 100,
-            unit: "life",
+            unit: 'life',
             measured: { value: undefined, date: undefined }
         }
     }
@@ -101,8 +101,8 @@ function getNeighborTiles(originTile, map) {
 // Filter tiles by requested habitat
 function filterTilesByHabitat(tiles, habitat) {
     if (!Array.isArray(tiles)) return []
-    if (habitat === "water") return tiles.filter(isWaterTile)
-    if (habitat === "land") return tiles.filter(t => !isWaterTile(t))
+    if (habitat === 'water') return tiles.filter(isWaterTile)
+    if (habitat === 'land') return tiles.filter(t => !isWaterTile(t))
     return tiles
 }
 
@@ -129,57 +129,57 @@ function sampleUniqueTiles(list, maxCount) {
 // -------------------------------------------------------------
 const EVENTS = [
     {
-        id: "weed_propagation",
-        label: "Weed propagation",
+        id: 'weed_propagation',
+        label: 'Weed propagation',
         dailyProbability: 100, // debug
-        habitat: "land",
-        entity: "plant",
-        candidates: ["barnyard_grass"],
+        habitat: 'land',
+        entity: 'plant',
+        candidates: ['barnyard_grass'],
         spawnCount: { min: 1, max: 3 }
     },
     {
-        id: "aquatic_weed_bloom",
-        label: "Aquatic weed bloom",
+        id: 'aquatic_weed_bloom',
+        label: 'Aquatic weed bloom',
         dailyProbability: 0.08,
-        habitat: "water",
-        entity: "plant",
-        candidates: ["duckweed", "water_hyacinth"],
+        habitat: 'water',
+        entity: 'plant',
+        candidates: ['duckweed', 'water_hyacinth'],
         spawnCount: { min: 2, max: 6 }
     },
     {
-        id: "locust_scatter",
-        label: "Locusts arrive",
+        id: 'locust_scatter',
+        label: 'Locusts arrive',
         dailyProbability: 0.05,
-        habitat: "land",
-        entity: "animal",
-        candidates: ["locust"],
+        habitat: 'land',
+        entity: 'animal',
+        candidates: ['locust'],
         spawnCount: { min: 3, max: 10 }
     },
     {
-        id: "mosquito_bloom",
-        label: "Mosquito bloom",
+        id: 'mosquito_bloom',
+        label: 'Mosquito bloom',
         dailyProbability: 0.06,
-        habitat: "water",
-        entity: "animal",
-        candidates: ["mosquito"],
+        habitat: 'water',
+        entity: 'animal',
+        candidates: ['mosquito'],
         spawnCount: { min: 4, max: 12 }
     },
     {
-        id: "predator_invasion",
-        label: "Predator invasion",
+        id: 'predator_invasion',
+        label: 'Predator invasion',
         dailyProbability: 0.04,
-        habitat: "land",
-        entity: "animal",
-        candidates: ["fox", "wild_boar", "raccoon", "hawk", "owl", "snake"],
+        habitat: 'land',
+        entity: 'animal',
+        candidates: ['fox', 'wild_boar', 'raccoon', 'hawk', 'owl', 'snake'],
         spawnCount: { min: 1, max: 2 }
     },
     {
-        id: "beneficial_insects",
-        label: "Beneficial insects arrive",
+        id: 'beneficial_insects',
+        label: 'Beneficial insects arrive',
         dailyProbability: 100, // debug
-        habitat: "land",
-        entity: "animal",
-        candidates: ["ladybug", "bee", "butterfly"],
+        habitat: 'land',
+        entity: 'animal',
+        candidates: ['ladybug', 'bee', 'butterfly'],
         spawnCount: { min: 2, max: 8 }
     }
 ]
@@ -210,7 +210,7 @@ export default function ecosystemEvents() {
         const seedTiles = sampleUniqueTiles(habitatPool, targetTileCount)
 
         // Resolve catalog and pick a candidate species type present in the store
-        const catalog = eventDef.entity === "animal"
+        const catalog = eventDef.entity === 'animal'
             ? (animals.animalTypes ?? [])
             : (plants.plantTypes ?? [])
 
@@ -238,7 +238,7 @@ export default function ecosystemEvents() {
                 const targetTile = spreadStripe[Math.min(i, spreadStripe.length - 1)] // dump remainder on last
                 ensureEntityArraysOnTile(targetTile)
 
-                if (eventDef.entity === "animal") {
+                if (eventDef.entity === 'animal') {
                     targetTile.animals.push(
                         makeAnimalInstanceFromSpec(chosenSpec, game.currentDate)
                     )
@@ -252,9 +252,9 @@ export default function ecosystemEvents() {
         }
 
         if (placementsCount > 0) {
-            eventBus.emit("log", {
-                engine: "simulation",
-                msg: `${eventDef.label}: ${placementsCount} ${eventDef.entity}${placementsCount === 1 ? "" : "s"} added (${chosenSpec.type}) on ${seedTiles.length} tiles (adjacent spread).`
+            eventBus.emit('log', {
+                engine: 'simulation',
+                msg: `${eventDef.label}: ${placementsCount} ${eventDef.entity}${placementsCount === 1 ? '' : 's'} added (${chosenSpec.type}) on ${seedTiles.length} tiles (adjacent spread).`
             })
         }
     }

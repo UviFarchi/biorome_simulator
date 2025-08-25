@@ -18,7 +18,7 @@ import TileInfo from '@/components/overlays/TileInfo.vue'
 import Market from '@/components/overlays/Market.vue'
 import ResourcesMenu from '@/components/overlays/ResourcesMenu.vue'
 import News from '@/components/overlays/News.vue'
-import updateGame from "@/engine/updateGame.js";
+import updateGame from '@/engine/updateGame.js';
 
 const game = gameStore()
 const map = mapStore()

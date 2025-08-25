@@ -9,22 +9,22 @@ export const gameStore = defineStore('gameStore', () => {
         market: [],
         ecologic: []
     })
-    const latestReport = ref({})
+    const analyticsReport = ref({})
     const stationAssemblies = ref([
         {
             id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
             modules: [
-                { type: 'transport', subtype: 'ground' },
-                { type: 'arm', subtype: 'medium' },
-                { type: 'tool', subtype: 'seeder' },
-                { type: 'tool', subtype: 'borer' }
+                {type: 'transport', subtype: 'ground'},
+                {type: 'arm', subtype: 'medium'},
+                {type: 'tool', subtype: 'seeder'},
+                {type: 'tool', subtype: 'borer'}
             ],
             name: 'Seed Planter',
             deployed: false,
             built: false,
             moves: 1,
             actions: 1,
-            orders:[]
+            orders: []
 
         }
     ])
@@ -51,12 +51,11 @@ export const gameStore = defineStore('gameStore', () => {
 
     const difficulty = ref(1)
 
-
     return {
         gold,
         log,
         startDate,
-       currentTurn,
+        currentTurn,
         currentDate,
         currentSeason,
         userName,
@@ -68,6 +67,7 @@ export const gameStore = defineStore('gameStore', () => {
         engines,
         currentEvents,
         stageChangeCalendar,
-        stationAssemblies
+        stationAssemblies,
+        analyticsReport
     }
 })

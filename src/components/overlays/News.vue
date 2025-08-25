@@ -1,7 +1,7 @@
 <script setup>
 import {computed, toRef} from 'vue'
 import eventBus from '@/eventBus.js'
-import {gameStore} from "@/stores/game.js";
+import {gameStore} from '@/stores/game.js';
 const game = gameStore()
 const props = defineProps({ collapsed: { type: Boolean, default: false } })
 const collapsed = toRef(props, 'collapsed')

@@ -2,7 +2,7 @@
 // Parallel applyEffects with a worker pool. Preserves per-tile order.
 // Verbose logs for step-by-step tracing.
 
-import { mapStore } from '@/stores/map.js'
+import {mapStore} from '@/stores/map.js'
 
 // Tune this after profiling
 const MAX_WORKERS = Math.min(4, navigator.hardwareConcurrency || 4)
@@ -12,9 +12,9 @@ const CONSISTENCY_SAMPLE_SIZE = 200
 
 // Worker factory; path is relative to THIS file
 const createWorker = () =>
-    new Worker(new URL('../workers/effectWorkers.js', import.meta.url), { type: 'module' })
+    new Worker(new URL('../workers/effectWorkers.js', import.meta.url), {type: 'module'})
 
-export async function applyEffects () {
+export async function applyEffects() {
 
     const map = mapStore()
 
@@ -61,7 +61,7 @@ export async function applyEffects () {
                 }
                 // Post exactly once per worker
                 try {
-                    worker.postMessage({ tiles: chunk })
+                    worker.postMessage({tiles: chunk})
                 } catch (postErr) {
                     reject(postErr)
                 }
@@ -96,7 +96,13 @@ export async function applyEffects () {
         else map.tiles = newTiles2D
     } finally {
         // Ensure all workers are terminated if any remain
-        workerPool.forEach(w => { try { w.terminate() } catch (_) {} })
+        workerPool.forEach(w => {
+            try {
+                w.terminate()
+            } catch (_) {
+                console.error(_)
+            }
+        })
 
     }
 }
@@ -108,18 +114,22 @@ export async function applyEffects () {
 function safeTileSnapshot(tile) {
     // structuredClone is faster and safer; fall back to JSON if unavailable
     const clone = (obj) => {
-        try { return structuredClone(obj) } catch { return JSON.parse(JSON.stringify(obj ?? null)) }
+        try {
+            return structuredClone(obj)
+        } catch {
+            return JSON.parse(JSON.stringify(obj ?? null))
+        }
     }
     return {
         row: tile.row,
         col: tile.col,
         // These groups contain {prop: {env, measured?}} objects
         topography: clone(tile.topography ?? {}),
-        soil:       clone(tile.soil ?? {}),
-        resources:  clone(tile.resources ?? {}),
+        soil: clone(tile.soil ?? {}),
+        resources: clone(tile.resources ?? {}),
         // Arrays of biotic subjects
-        plants:     clone(tile.plants ?? []),
-        animals:    clone(tile.animals ?? []),
+        plants: clone(tile.plants ?? []),
+        animals: clone(tile.animals ?? []),
         // Assemblies may be arrays with .orders arrays; send as-is and the worker will flatten
         assemblies: clone(tile.assemblies ?? [])
     }
@@ -166,38 +176,47 @@ function runApplyEffectsSingleThread(tiles2D) {
     } = requireLike('@/engine/effects/weather.js')
 
     const FX = {
-        animals:    animalEffects,
+        animals: animalEffects,
         assemblies: assemblyEffects,
-        plants:     plantEffects,
-        resources:  resourceEffects,
-        soil:       soilEffects,
+        plants: plantEffects,
+        resources: resourceEffects,
+        soil: soilEffects,
         topography: topographyEffects,
-        weather:    weatherEffects
+        weather: weatherEffects
     }
-    const ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
+    const ORDER = ['weather', 'assemblies', 'topography', 'soil', 'animals', 'plants', 'resources']
 
     const result = tiles2D.map((row, r) =>
         row.map((tile, c) => {
             const prepared = {
-                animals:    (tile.animals  || []).map(a => ({ key: a.type,  subject: a })),
-                plants:     (tile.plants   || []).map(p => ({ key: p.type,  subject: p })),
+                animals: (tile.animals || []).map(a => ({key: a.type, subject: a})),
+                plants: (tile.plants || []).map(p => ({key: p.type, subject: p})),
                 assemblies: (Array.isArray(tile.assemblies)
                     ? tile.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
-                    : []).map(order => ({ key: order, subject: null })),
-                weather:    Object.keys(FX.weather || {}).map(k => ({ key: k, subject: null })),
-                topography: Object.keys(tile.topography || {}).filter(k => FX.topography?.[k]).map(k => ({ key: k, subject: null })),
-                soil:       Object.keys(tile.soil || {}).filter(k => FX.soil?.[k]).map(k => ({ key: k, subject: null })),
-                resources:  Object.keys(tile.resources || {}).filter(k => FX.resources?.[k]).map(k => ({ key: k, subject: null })),
+                    : []).map(order => ({key: order, subject: null})),
+                weather: Object.keys(FX.weather || {}).map(k => ({key: k, subject: null})),
+                topography: Object.keys(tile.topography || {}).filter(k => FX.topography?.[k]).map(k => ({
+                    key: k,
+                    subject: null
+                })),
+                soil: Object.keys(tile.soil || {}).filter(k => FX.soil?.[k]).map(k => ({key: k, subject: null})),
+                resources: Object.keys(tile.resources || {}).filter(k => FX.resources?.[k]).map(k => ({
+                    key: k,
+                    subject: null
+                })),
             }
 
             const working = {
                 row: tile.row, col: tile.col,
-                soil:       { ...tile.soil },
-                topography: { ...tile.topography },
-                resources:  { ...tile.resources },
-                plants:     (tile.plants  || []).map(p => ({ ...p })),
-                animals:    (tile.animals || []).map(a => ({ ...a })),
-                assemblies: Array.isArray(tile.assemblies) ? tile.assemblies.map(a => ({...a, orders: Array.isArray(a.orders) ? [...a.orders] : []})) : [],
+                soil: {...tile.soil},
+                topography: {...tile.topography},
+                resources: {...tile.resources},
+                plants: (tile.plants || []).map(p => ({...p})),
+                animals: (tile.animals || []).map(a => ({...a})),
+                assemblies: Array.isArray(tile.assemblies) ? tile.assemblies.map(a => ({
+                    ...a,
+                    orders: Array.isArray(a.orders) ? [...a.orders] : []
+                })) : [],
             }
 
             const bumpGroup = (groupName, prop, delta) => {
@@ -210,13 +229,13 @@ function runApplyEffectsSingleThread(tiles2D) {
                 const catalog = FX[category]
                 if (!catalog || entries.length === 0) continue
 
-                for (const { key, subject } of entries) {
+                for (const {key, subject} of entries) {
                     const effectList = catalog[key]
                     if (!Array.isArray(effectList) || effectList.length === 0) continue
 
                     for (const eff of effectList) {
                         const delta = (typeof eff.delta === 'function')
-                            ? eff.delta({ tile: working, subject, key, category })
+                            ? eff.delta({tile: working, subject, key, category})
                             : eff.delta
 
                         if (eff.target === 'animals') {
@@ -261,50 +280,56 @@ function requireLike(path) {
  * and logging the first mismatch with a JSON diff path.
  */
 async function debugCompareFirstN(snapshotsFlat, height, width, n) {
-    try {
-        const sample = snapshotsFlat.slice(0, n)
-        // Run worker on the sample
-        const worker = createWorker()
-        const workerPromise = new Promise((resolve, reject) => {
-            worker.onmessage = e => { resolve(e.data); worker.terminate() }
-            worker.onerror = err => { reject(err); worker.terminate() }
-        })
-        worker.postMessage({ tiles: sample })
-        const workerOut = await workerPromise
-
-        // Run single-thread on the same tiles by rebuilding a tiny 2D grid
-        const cols = width
-        const rows = Math.ceil(sample.length / cols)
-        const tinyGrid = []
-        for (let r = 0; r < rows; r++) tinyGrid.push(sample.slice(r * cols, (r + 1) * cols))
-        // We must call the single-thread function that expects the full FX catalogs.
-        // Here we bypass requireLike, as this check is optional; if it fails, we skip.
-        let singleOut2D
-        try { singleOut2D = runApplyEffectsSingleThread(tinyGrid) } catch (e) {
-          return }
-        const singleOutFlat = singleOut2D.flat()
-
-        // Compare JSON stringified shallowly; if mismatch, locate the key path
-        for (let i = 0; i < workerOut.length; i++) {
-            const a = workerOut[i], b = singleOutFlat[i]
-            const aj = JSON.stringify(a), bj = JSON.stringify(b)
-            if (aj !== bj) {
-                break
-            }
+    const sample = snapshotsFlat.slice(0, n)
+    // Run worker on the sample
+    const worker = createWorker()
+    const workerPromise = new Promise((resolve, reject) => {
+        worker.onmessage = e => {
+            resolve(e.data);
+            worker.terminate()
         }
+        worker.onerror = err => {
+            reject(err);
+            worker.terminate()
+        }
+    })
+    worker.postMessage({tiles: sample})
+    const workerOut = await workerPromise
+
+    // Run single-thread on the same tiles by rebuilding a tiny 2D grid
+    const cols = width
+    const rows = Math.ceil(sample.length / cols)
+    const tinyGrid = []
+    for (let r = 0; r < rows; r++) tinyGrid.push(sample.slice(r * cols, (r + 1) * cols))
+    // We must call the single-thread function that expects the full FX catalogs.
+    // Here we bypass requireLike, as this check is optional; if it fails, we skip.
+    let singleOut2D
+    try {
+        singleOut2D = runApplyEffectsSingleThread(tinyGrid)
     } catch (e) {
-    } finally {
+        return
     }
+    const singleOutFlat = singleOut2D.flat()
+
+    // Compare JSON stringified shallowly; if mismatch, locate the key path
+    for (let i = 0; i < workerOut.length; i++) {
+        const a = workerOut[i], b = singleOutFlat[i]
+        const aj = JSON.stringify(a), bj = JSON.stringify(b)
+        if (aj !== bj) {
+            break
+        }
+    }
+
 }
 
 /** Produce a crude first differing key path between two objects. */
 function diffKeyPath(a, b, prefix = '') {
-    if (a === b) return { path: null, a, b }
-    if (typeof a !== 'object' || typeof b !== 'object' || !a || !b) return { path: prefix || '(root)', a, b }
+    if (a === b) return {path: null, a, b}
+    if (typeof a !== 'object' || typeof b !== 'object' || !a || !b) return {path: prefix || '(root)', a, b}
     const keys = new Set([...Object.keys(a), ...Object.keys(b)])
     for (const k of keys) {
         const res = diffKeyPath(a[k], b[k], prefix ? `${prefix}.${k}` : k)
         if (res.path) return res
     }
-    return { path: null, a, b }
+    return {path: null, a, b}
 }

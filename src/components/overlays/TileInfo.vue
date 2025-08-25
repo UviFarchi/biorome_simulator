@@ -84,14 +84,13 @@ function collectEnv(tile) {
       if (v && typeof v === 'object') visit(v, group, path)
     }
   }
-  try {
+
     visit(tile.topography ?? {}, 'topography', '')
     visit(tile.soil ?? {},       'soil',       '')
     visit(tile.resources ?? {},  'resources',  '')
     visit(tile.plants ?? [],     'plants',     '')
     visit(tile.animals ?? [],    'animals',    '')
-  } catch (e) {
-  }
+
   return out
 }
 

@@ -4,7 +4,7 @@ import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import generate from '@/engine/terrain/generate.js'
 import {hasSavedState, loadAllStores, saveAllStores} from '@/utils.js'
-import {mapStore} from "@/stores/map.js";
+import {mapStore} from '@/stores/map.js';
 
 const game = gameStore()
 const map = mapStore()

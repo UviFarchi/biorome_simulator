@@ -1,5 +1,5 @@
 <script setup>
-import eventBus from "@/eventBus.js";
+import eventBus from '@/eventBus.js';
 </script>
 
 <template>
