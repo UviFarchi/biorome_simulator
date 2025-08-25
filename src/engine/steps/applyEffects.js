@@ -197,6 +197,7 @@ function runApplyEffectsSingleThread(tiles2D) {
                 resources:  { ...tile.resources },
                 plants:     (tile.plants  || []).map(p => ({ ...p })),
                 animals:    (tile.animals || []).map(a => ({ ...a })),
+                assemblies: Array.isArray(tile.assemblies) ? tile.assemblies.map(a => ({...a, orders: Array.isArray(a.orders) ? [...a.orders] : []})) : [],
             }
 
             const bumpGroup = (groupName, prop, delta) => {
