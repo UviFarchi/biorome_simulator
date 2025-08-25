@@ -18,7 +18,5 @@ const collapsed = toRef(props, 'collapsed')
 
 
 <style scoped>
-.panel { border: 1px solid white; margin: 0; }
-.panel-header { font-weight: bold; padding: 4px; cursor: pointer; }
-.controlButton { display: flex; justify-content: center; align-items: center; font-weight: bold; border-top: 1px solid #000; padding: 4px; }
+.controlButton { border-top: 1px solid #000; }
 </style>
