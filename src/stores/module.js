@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const moduleStore = defineStore('moduleStore', () => {
+   //TODO: Refactor stores so that the ones that are actually changed during game play (game, map,weather and market) are kept as Pinia stores, while the others can be static JSON.
+
     const constants = ref({
         units: { electricity: 'kWh', water: 'm³', waste: 'ton', batteryPack: 'pack' },
         battery: { moduleKey: 'battery', kWhPerPack: 5 }
@@ -544,6 +546,7 @@ export const moduleStore = defineStore('moduleStore', () => {
             type: 'alarm', subtype: 'electric'
         }, {type: 'gps'}]
     }]
+
     const activeAssemblies = ref([
         {
             id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
@@ -563,7 +566,6 @@ export const moduleStore = defineStore('moduleStore', () => {
         }
     ])
 
-
     const currentAssembly = ref([])
-    return {availableModules, activeAssemblies, premadeAssemblies, currentAssembly, constants}
+    return {availableModules,  premadeAssemblies, currentAssembly, constants, activeAssemblies}
 })

@@ -5,6 +5,7 @@ import {gameStore} from '/src/stores/game.js';
 import StartingScreen from '/src/components/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import Map from '/src/components/Map.vue';
+import AssemblyAssemblyAssembly from "@/components/AssemblyAssemblyAssembly.vue";
 
 
 
@@ -41,6 +42,7 @@ onBeforeUnmount(() => {
   <main>
     <StartingScreen v-if="currentArea === 'start'"/>
     <Map v-if="currentArea === 'map'"/>
+    <AssemblyAssemblyAssembly v-if="currentArea=== 'assembly'"/>
   </main>
 </template>
 
@@ -49,6 +51,7 @@ html, body, #app {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  background: black;
 }
 
 main {

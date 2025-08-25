@@ -5,11 +5,13 @@
 </script>
 
 <template>
-<div>
+<div class="analyticsReport">
 Analytics Report
 </div>
 </template>
 
 <style scoped>
-
+.analyticsReport {
+  background: darkolivegreen;
+}
 </style>

@@ -3,9 +3,13 @@
 </script>
 
 <template>
+  <div class="assembliesMenu">
  Assemblies Menu
+  </div>
 </template>
 
 <style scoped>
-
+.assembliesMenu {
+  background: blueviolet;
+}
 </style>

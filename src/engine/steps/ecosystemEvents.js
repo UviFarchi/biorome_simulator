@@ -1,49 +1,132 @@
 // src/engine/steps/ecosystemEvents.js
-import {gameStore} from "@/stores/game.js"
-import {mapStore} from "@/stores/map.js"
-import {animal as animalStore} from "@/stores/animal.js"
-import {plant as plantStore} from "@/stores/plant.js"
+//
+// Purpose:
+// Roll daily ecosystem events that introduce animals or plants.
+// Select eligible tiles by habitat, choose a small random subset,
+// then spread each tile’s spawns across the tile and its adjacent tiles.
+// Any overflow is placed on the last adjacent tile.
+//
+// Notes:
+// - Uses measurement contract { env, measured:{} } for health.
+// - Assumes map.tiles is a 2D grid. We flatten only for selection.
+// - getAdjacentTiles(tile, tilesGrid) is provided in utils.
+
+import { gameStore } from "@/stores/game.js"
+import { mapStore } from "@/stores/map.js"
+import { animal as animalStore } from "@/stores/animal.js"
+import { plant as plantStore } from "@/stores/plant.js"
 import { getAdjacentTiles } from "@/utils.js"
 import eventBus from "@/eventBus.js"
 
-// ---------- Helpers
-const rand = (n) => Math.floor(Math.random() * n)
-const chance = (p) => Math.random() < p
-const pick = (arr) => arr[rand(arr.length)]
-const clamp = (x, a, b) => Math.max(a, Math.min(b, x))
+// -------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------
 
-const isWaterTile = (t) => {
-    const wt = t?.topo?.waterTable?.env ?? -Infinity
-    const el = t?.topo?.elevation?.env ?? Infinity
-    const soilWater = t?.soil?.water?.env ?? 0
-    return el <= wt || soilWater >= 90
+function getRandomIntBelow(limitExclusive) {
+    return Math.floor(Math.random() * limitExclusive)
 }
 
-const nowISO = (d) => new Date(d).toISOString().slice(0, 10)
-const firstStage = (stages) => (Array.isArray(stages) && stages.length ? stages[0] : "")
+function randomChance(probabilityZeroToOne) {
+    return Math.random() < probabilityZeroToOne
+}
 
-const ensureArraysOnTile = (tile) => {
+function pickRandom(array) {
+    return array[getRandomIntBelow(array.length)]
+}
+
+function clampToRange(value, minValue, maxValue) {
+    return Math.max(minValue, Math.min(maxValue, value))
+}
+
+function isWaterTile(tile) {
+    const waterTable = tile?.topo?.waterTable?.env ?? -Infinity
+    const elevation = tile?.topo?.elevation?.env ?? Infinity
+    const soilWater = tile?.soil?.water?.env ?? 0
+    return elevation <= waterTable || soilWater >= 90
+}
+
+function formatDateISO(dateLike) {
+    return new Date(dateLike).toISOString().slice(0, 10)
+}
+
+function getFirstStageName(stages) {
+    return Array.isArray(stages) && stages.length ? stages[0] : ""
+}
+
+function ensureEntityArraysOnTile(tile) {
     if (!Array.isArray(tile.animals)) tile.animals = []
     if (!Array.isArray(tile.plants)) tile.plants = []
 }
 
-const makePlantInstance = (spec, date) => ({
-    type: spec.type,
-    icon: spec.icon,
-    dateDeployed: nowISO(date),
-    growthStage: firstStage(spec.growthStages),
-    health: {env: spec.health?.env ?? 100, unit: "life", measured: {value: undefined, date: undefined}}
-})
+// Instantiate a minimal plant instance from a catalog spec
+function makePlantInstanceFromSpec(spec, dateLike) {
+    return {
+        type: spec.type,
+        icon: spec.icon,
+        dateDeployed: formatDateISO(dateLike),
+        growthStage: getFirstStageName(spec.growthStages),
+        health: {
+            env: spec.health?.env ?? 100,
+            unit: "life",
+            measured: { value: undefined, date: undefined }
+        }
+    }
+}
 
-const makeAnimalInstance = (spec, date) => ({
-    type: spec.type,
-    icon: spec.icon,
-    dateDeployed: nowISO(date),
-    growthStage: firstStage(spec.growthStages),
-    health: {env: spec.health?.env ?? 100, unit: "life", measured: {value: undefined, date: undefined}}
-})
+// Instantiate a minimal animal instance from a catalog spec
+function makeAnimalInstanceFromSpec(spec, dateLike) {
+    return {
+        type: spec.type,
+        icon: spec.icon,
+        dateDeployed: formatDateISO(dateLike),
+        growthStage: getFirstStageName(spec.growthStages),
+        health: {
+            env: spec.health?.env ?? 100,
+            unit: "life",
+            measured: { value: undefined, date: undefined }
+        }
+    }
+}
 
-// ---------- Event catalog
+// Thin wrapper over provided adjacency util. Always returns an array.
+function getNeighborTiles(originTile, map) {
+    try {
+        const neighbors = getAdjacentTiles(originTile, map.tiles) || []
+        return Array.isArray(neighbors) ? neighbors : []
+    } catch {
+        return []
+    }
+}
+
+// Filter tiles by requested habitat
+function filterTilesByHabitat(tiles, habitat) {
+    if (!Array.isArray(tiles)) return []
+    if (habitat === "water") return tiles.filter(isWaterTile)
+    if (habitat === "land") return tiles.filter(t => !isWaterTile(t))
+    return tiles
+}
+
+// Sample up to maxCount unique tiles from a list
+function sampleUniqueTiles(list, maxCount) {
+    const count = clampToRange(maxCount, 0, list.length)
+    const picked = []
+    const usedIndexes = new Set()
+    while (picked.length < count) {
+        const i = getRandomIntBelow(list.length)
+        if (!usedIndexes.has(i)) {
+            usedIndexes.add(i)
+            picked.push(list[i])
+        }
+    }
+    return picked
+}
+
+// -------------------------------------------------------------
+// Event catalog
+// Each entry:
+//   id, label, dailyProbability, habitat ("land" | "water"),
+//   entity ("plant" | "animal"), candidates (type keys), spawnCount {min,max}
+// -------------------------------------------------------------
 const EVENTS = [
     {
         id: "weed_propagation",
@@ -52,7 +135,7 @@ const EVENTS = [
         habitat: "land",
         entity: "plant",
         candidates: ["barnyard_grass"],
-        spawnCount: {min: 1, max: 3}
+        spawnCount: { min: 1, max: 3 }
     },
     {
         id: "aquatic_weed_bloom",
@@ -61,7 +144,7 @@ const EVENTS = [
         habitat: "water",
         entity: "plant",
         candidates: ["duckweed", "water_hyacinth"],
-        spawnCount: {min: 2, max: 6}
+        spawnCount: { min: 2, max: 6 }
     },
     {
         id: "locust_scatter",
@@ -70,7 +153,7 @@ const EVENTS = [
         habitat: "land",
         entity: "animal",
         candidates: ["locust"],
-        spawnCount: {min: 3, max: 10}
+        spawnCount: { min: 3, max: 10 }
     },
     {
         id: "mosquito_bloom",
@@ -79,7 +162,7 @@ const EVENTS = [
         habitat: "water",
         entity: "animal",
         candidates: ["mosquito"],
-        spawnCount: {min: 4, max: 12}
+        spawnCount: { min: 4, max: 12 }
     },
     {
         id: "predator_invasion",
@@ -88,7 +171,7 @@ const EVENTS = [
         habitat: "land",
         entity: "animal",
         candidates: ["fox", "wild_boar", "raccoon", "hawk", "owl", "snake"],
-        spawnCount: {min: 1, max: 2}
+        spawnCount: { min: 1, max: 2 }
     },
     {
         id: "beneficial_insects",
@@ -97,92 +180,81 @@ const EVENTS = [
         habitat: "land",
         entity: "animal",
         candidates: ["ladybug", "bee", "butterfly"],
-        spawnCount: {min: 2, max: 8}
+        spawnCount: { min: 2, max: 8 }
     }
 ]
 
-// ---------- Adjacency wrapper (uses your utils)
-function neighborTiles(tile, map) {
-    try {
-        const res = getAdjacentTiles(tile, map.tiles) || []
-        return Array.isArray(res) ? res : []
-    } catch {
-        return []
-    }
-}
-
-// ---------- Tile selection by habitat
-const filterTiles = (tiles, habitat) => {
-    if (!Array.isArray(tiles)) return []
-    if (habitat === "water") return tiles.filter(isWaterTile)
-    if (habitat === "land") return tiles.filter((t) => !isWaterTile(t))
-    return tiles
-}
-
-const sampleTiles = (arr, maxCount) => {
-    const n = clamp(maxCount, 0, arr.length)
-    const picked = []
-    const used = new Set()
-    while (picked.length < n) {
-        const i = rand(arr.length)
-        if (!used.has(i)) {
-            used.add(i)
-            picked.push(arr[i])
-        }
-    }
-    return picked
-}
-
-// ---------- Main
+// -------------------------------------------------------------
+// Main
+// -------------------------------------------------------------
 export default function ecosystemEvents() {
     const game = gameStore()
     const map = mapStore()
     const animals = animalStore()
     const plants = plantStore()
 
-    const allTiles = map?.tiles?.flat?.() ?? []
-    if (!allTiles.length) return false
+    // Flatten to a single array for habitat filtering and sampling
+    const allTilesFlat = map?.tiles?.flat?.() ?? []
+    if (!allTilesFlat.length) return false
 
-    for (const ev of EVENTS) {
-        if (!chance(ev.dailyProbability)) continue
+    // Process each event independently per tick
+    for (const eventDef of EVENTS) {
+        if (!randomChance(eventDef.dailyProbability)) continue
 
-        const pool = filterTiles(allTiles, ev.habitat)
-        if (!pool.length) continue
+        // Habitat-filtered pool and a small target sample
+        const habitatPool = filterTilesByHabitat(allTilesFlat, eventDef.habitat)
+        if (!habitatPool.length) continue
 
-        const targetCount = clamp(Math.ceil(pool.length * 0.05), 1, 25)
-        const chosenTiles = sampleTiles(pool, targetCount)
+        // Use up to ~5% of eligible tiles, with sane caps
+        const targetTileCount = clampToRange(Math.ceil(habitatPool.length * 0.05), 1, 25)
+        const seedTiles = sampleUniqueTiles(habitatPool, targetTileCount)
 
-        const catalog = ev.entity === "animal" ? (animals.animalTypes ?? []) : (plants.plantTypes ?? [])
-        const byType = new Map(catalog.map((c) => [c.type, c]))
-        const chosenSpecType = pick(ev.candidates.filter((t) => byType.has(t)))
-        if (!chosenSpecType) continue
-        const spec = byType.get(chosenSpecType)
+        // Resolve catalog and pick a candidate species type present in the store
+        const catalog = eventDef.entity === "animal"
+            ? (animals.animalTypes ?? [])
+            : (plants.plantTypes ?? [])
 
-        let totalSpawns = 0
+        const specByType = new Map(catalog.map(spec => [spec.type, spec]))
+        const availableCandidates = eventDef.candidates.filter(t => specByType.has(t))
+        if (!availableCandidates.length) continue
 
-        for (const tile of chosenTiles) {
-            ensureArraysOnTile(tile)
-            const k = rand(ev.spawnCount.max - ev.spawnCount.min + 1) + ev.spawnCount.min
+        const chosenTypeKey = pickRandom(availableCandidates)
+        const chosenSpec = specByType.get(chosenTypeKey)
 
-            const neighbors = neighborTiles(tile, map)
-            const stripe = [tile, ...neighbors] // origin first, then adjacents
+        let placementsCount = 0
 
-            for (let i = 0; i < k; i++) {
-                const target = stripe[Math.min(i, stripe.length - 1)] // dump remainder on last neighbor
-                ensureArraysOnTile(target)
-                if (ev.entity === "animal") {
-                    target.animals.push(makeAnimalInstance(spec, game.currentDate))
+        // For each seed tile, spread k instances over the tile + its neighbors
+        for (const seedTile of seedTiles) {
+            ensureEntityArraysOnTile(seedTile)
+
+            const spawnCount =
+                getRandomIntBelow(eventDef.spawnCount.max - eventDef.spawnCount.min + 1) +
+                eventDef.spawnCount.min
+
+            const neighbors = getNeighborTiles(seedTile, map)
+            const spreadStripe = [seedTile, ...neighbors] // origin first, then adjacency
+
+            for (let i = 0; i < spawnCount; i++) {
+                const targetTile = spreadStripe[Math.min(i, spreadStripe.length - 1)] // dump remainder on last
+                ensureEntityArraysOnTile(targetTile)
+
+                if (eventDef.entity === "animal") {
+                    targetTile.animals.push(
+                        makeAnimalInstanceFromSpec(chosenSpec, game.currentDate)
+                    )
                 } else {
-                    target.plants.push(makePlantInstance(spec, game.currentDate))
+                    targetTile.plants.push(
+                        makePlantInstanceFromSpec(chosenSpec, game.currentDate)
+                    )
                 }
-                totalSpawns++
+                placementsCount++
             }
         }
 
-        if (totalSpawns > 0) {
+        if (placementsCount > 0) {
             eventBus.emit("log", {
                 engine: "simulation",
-                msg: `${ev.label}: ${totalSpawns} ${ev.entity}${totalSpawns === 1 ? "" : "s"} added (${spec.type}) on ${chosenTiles.length} tiles (adjacent spread).`
+                msg: `${eventDef.label}: ${placementsCount} ${eventDef.entity}${placementsCount === 1 ? "" : "s"} added (${chosenSpec.type}) on ${seedTiles.length} tiles (adjacent spread).`
             })
         }
     }

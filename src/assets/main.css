@@ -1,7 +1,8 @@
 #app {
   margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
+  color:white;
+  background: orange;
 }
 
 :root {
@@ -31,7 +32,7 @@
 }
 
 .card {
-  background: #adf0fd;
+  background: black;
   border-radius: var(--radius);
   box-shadow: 0 1px 4px #0001;
   padding: 0.7em 0.8em;

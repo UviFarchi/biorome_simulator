@@ -1,5 +1,4 @@
 function calculateMycorrhizalGrowth(context) {
-  // console.log("plants", "tile: " +  context.tile.row + ',' +context.tile.col)
     return 2;
 }
 

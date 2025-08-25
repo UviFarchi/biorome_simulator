@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import {ref, onMounted, nextTick} from 'vue'
 import eventBus from '@/eventBus.js'
-import { gameStore } from '@/stores/game.js'
-import generateTerrain from '@/engine/generateTerrain.js'
+import {gameStore} from '@/stores/game.js'
+import generate from '@/engine/terrain/generate.js'
 import {hasSavedState, loadAllStores, saveAllStores} from '@/utils.js'
+import {mapStore} from "@/stores/map.js";
 
 const game = gameStore()
+const map = mapStore()
 const terrainGeneration = ref(false)
 const resuming = ref(false)
 
@@ -31,7 +33,6 @@ const difficultyOptions = [
 const difficulty = ref(1)
 
 
-
 onMounted(async () => {
   if (hasSavedState()) {
     resuming.value = true            // show "Loading save…" immediately
@@ -45,20 +46,28 @@ onMounted(async () => {
   }
 })
 
-async function startGame () {
-  game.userName   = (name.value || '').trim()
+async function startGame() {
+  game.userName = (name.value || '').trim()
   game.userAvatar = (avatar.value || '').trim()
-  game.difficulty = [1, 2, 3].includes(+difficulty.value) ? +difficulty.value : 1
+  const difficulty = game.difficulty;
+  game.difficulty = [1, 2, 3].includes(+difficulty) ? +difficulty : 1;
+  game.gold = game.gold / difficulty;
+  map.size = map.size * difficulty;
 
   terrainGeneration.value = true
   await nextTick()
   await new Promise(requestAnimationFrame) // paint overlay before heavy work
   // run generator in the next macrotask so UI stays responsive
-  await new Promise(resolve => setTimeout(() => { generateTerrain(); resolve() }, 0))
+  await new Promise(resolve => setTimeout(() => {
+    generate();
+    resolve()
+  }, 0))
 
   saveAllStores()
   terrainGeneration.value = false
   eventBus.emit('nav', 'map')
+  await nextTick()
+  eventBus.emit('phase', {})
 }
 </script>
 
@@ -66,7 +75,7 @@ async function startGame () {
 <template>
   <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
     <div>
-      <label for="userName" >Your Name:</label>
+      <label for="userName">Your Name:</label>
       <input id="userName" type="text" v-model="name" autocomplete="off" autofocus/>
     </div>
 

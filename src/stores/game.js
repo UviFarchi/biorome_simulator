@@ -2,12 +2,31 @@ import {defineStore} from 'pinia'
 import {computed, ref, watch} from 'vue'
 
 export const gameStore = defineStore('gameStore', () => {
+    const gold = ref(300000)
     const log = ref([]);
     const currentEvents = ref({
         weather: [],
         market: [],
-        biologic: []
+        ecologic: []
     })
+    const stationAssemblies = ref([
+        {
+            id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
+            modules: [
+                { type: 'transport', subtype: 'ground' },
+                { type: 'arm', subtype: 'medium' },
+                { type: 'tool', subtype: 'seeder' },
+                { type: 'tool', subtype: 'borer' }
+            ],
+            name: 'Seed Planter',
+            deployed: false,
+            built: false,
+            moves: 1,
+            actions: 1,
+            orders:[]
+
+        }
+    ])
     const stageChangeCalendar = [];
     const startDate = ref(new Date().toISOString().slice(0, 10))
     const currentTurn = ref(0)
@@ -33,6 +52,7 @@ export const gameStore = defineStore('gameStore', () => {
 
 
     return {
+        gold,
         log,
         startDate,
        currentTurn,
@@ -46,6 +66,7 @@ export const gameStore = defineStore('gameStore', () => {
         turnPhase,
         engines,
         currentEvents,
-        stageChangeCalendar
+        stageChangeCalendar,
+        stationAssemblies
     }
 })

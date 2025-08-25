@@ -3,16 +3,16 @@ import {computed, ref} from 'vue'
 import {gameStore} from '@/stores/game.js'
 
 export const mapStore = defineStore('mapStore', () => {
-    const gameState = gameStore()
+    const game = gameStore()
 
-    const size = computed(() => 6 * gameState.difficulty)
+    const size = ref(6 )
 
     const topographyConstraints = {
         elevationRange: [0, 220],
         neighborCap: 6,
         cellSize: 100
     }
-
+const previousDayTiles=[]
     const tiles = ref(
         Array.from({length: size.value}, (_, row) =>
                 Array.from({length: size.value}, (_, col) => ({
@@ -113,7 +113,6 @@ export const mapStore = defineStore('mapStore', () => {
                     }] : [],
                     assemblies: (row === 2 && col === 1) ?
                         [
-
                         {
                             id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
                             modules: [
@@ -144,5 +143,5 @@ export const mapStore = defineStore('mapStore', () => {
     const gate = ref({animals: [], plants: [], extras: []})
     const selectedTile = ref({})
 
-    return {tiles, gate, size, selectedTile, topographyConstraints}
+    return {tiles, gate, size, selectedTile, topographyConstraints, previousDayTiles}
 })

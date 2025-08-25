@@ -23,10 +23,10 @@ function isSurveyed (tile)
 function clickTile(tile) {
   if (isSelected(tile)) {
     map.selectedTile.value = {}
-    eventBus.emit('modal', {target: 'tileInfo', show: false})
+   eventBus.emit('overlay', {target: 'tileInfo', show: false})
   } else {
     map.selectedTile.value = tile
-    eventBus.emit('modal', {target: 'tileInfo', show: true})
+   eventBus.emit('overlay', {target: 'tileInfo', show: true})
   }
 }
 
@@ -83,6 +83,7 @@ function clickTile(tile) {
   user-select: none;
   cursor: pointer;
   box-shadow: inset 0 0 0 1px black;
+  color: black;
 }
 
 .cell.active {

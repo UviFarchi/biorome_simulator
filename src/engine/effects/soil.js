@@ -1,5 +1,4 @@
 function ecReading(context){
-    // console.log("soil", "tile: " +  context.tile.row + ',' +context.tile.col)
     return 1
 }
 

@@ -1,5 +1,4 @@
 function evaporateGroundWater(context){
-    // console.log('weather', "tile: " +  context.tile.row + ',' +context.tile.col)
     return -1
 }
 

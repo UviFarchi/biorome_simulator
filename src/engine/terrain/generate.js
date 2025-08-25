@@ -1,4 +1,4 @@
-// src/calc/generateTerrain.js
+// src/calc/generate.js
 import { mapStore } from '@/stores/map.js'
 import eventBus from '@/eventBus.js'
 
@@ -68,7 +68,7 @@ function fractalBrownianMotion2D(x, y, seed, octaves = 5, baseFreq = 1.25, lacun
 
 /* ------------------------------ Terrain builder ------------------------------ */
 
-export default function generateTerrain() {
+export default function generate() {
     eventBus.emit('log', { engine: 'simulation', msg: 'Generating terrain' })
 
     const map = mapStore()

@@ -54,13 +54,16 @@ export const marketStore = defineStore('marketStore', () => {
         waterBuyPerM3: 3.50,
         wasteDisposalPerTon: 100
     })
-
+    const priceCatalog = ref({ plants: {}, animals: {}, inputs: {} })
+    const lastMarketDate = ref(null)
     return {
         contracts,
         openMarketOffers,
         harvestedProducts,
         extraBuyables,
         utilityPrices,
-        notifications
+        notifications,
+        priceCatalog,
+        lastMarketDate
     }
 })

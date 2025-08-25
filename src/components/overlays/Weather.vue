@@ -5,15 +5,13 @@ import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import { weatherStore } from '@/stores/weather.js'
 
-const props = defineProps({ collapsed: { type: Boolean, default: false } })
 
 const game = gameStore()
 const weather = weatherStore()
 
-const { currentDate, currentSeason } = storeToRefs(game)
+const { currentSeason } = storeToRefs(game)
 const { temperature, rainfall, cloudCover, windKph, relHumidity, currentLabel } = storeToRefs(weather)
 
-const dateText = computed(() => currentDate.value.toISOString().slice(0, 10))
 const cloudPct = computed(() => Math.round(cloudCover.value * 100))
 const humidityPct = computed(() => Math.round(relHumidity.value * 100))
 
@@ -29,11 +27,10 @@ Humidity: ${humidityPct.value}%`
 
 <template>
   <div id="weatherPanel" class="panel">
-    <div class="panel-header" @click="eventBus.emit('panel', { target: 'weather' })">Weather</div>
-    <div class="panel-body" v-show="!props.collapsed">
-      <div id="day" class="statusBarCell">📅 {{ dateText }}</div>
-      <div id="season" class="statusBarCell">{{ currentSeason.icon }}{{ currentSeason.label }}</div>
-      <div id="weather" class="statusBarCell" :title="weatherTooltip">
+    <div class="panel-header" @click="eventBus.emit('overlay', { target: 'weather' })">Weather</div>
+    <div class="panel-body">
+      <div id="season" class="controlButton">{{ currentSeason.icon }}{{ currentSeason.label }}</div>
+      <div id="weather" class="controlButton" :title="weatherTooltip">
         {{ currentLabel.icon }}{{ currentLabel.label }}
       </div>
 
@@ -49,10 +46,10 @@ Humidity: ${humidityPct.value}%`
 </template>
 
 <style scoped>
-.panel { border: 1px solid #000; margin: 0;   background: white;}
+.panel { border: 1px solid white; margin: 0;   background: black;}
 .panel-header { font-weight: bold; padding: 4px; cursor: pointer; }
 .panel-body { padding: 4px; }
-.statusBarCell { display: flex; justify-content: center; align-items: center; font-weight: bold; border-top: 1px solid #000; padding: 4px; }
+.controlButton { display: flex; justify-content: center; align-items: center; font-weight: bold; border-top: 1px solid white; padding: 4px; }
 .metrics { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 4px; margin-top: 6px; }
-.metrics div { border-top: 1px solid #000; padding: 4px; }
+.metrics div { border-top: 1px solid white; padding: 4px; }
 </style>
