@@ -9,6 +9,7 @@ export const gameStore = defineStore('gameStore', () => {
         market: [],
         ecologic: []
     })
+    const latestReport = ref({})
     const stationAssemblies = ref([
         {
             id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',

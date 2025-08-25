@@ -306,12 +306,16 @@ background-color: grey;
 .label {
   margin-top: 4px;
   font-family: ui-monospace, Menlo, monospace;
-  font-size: 1em;
+  font-size: 0.8em;
   color: #cfd3cf;
+  box-shadow: inset 10px 50px rgba(0,0,0,0.35);
+  border: 2px inset black;
+  padding: 0 3px;
 }
 .controlButton.s-disabled + .label {
   color: #ff8c8c;
   text-shadow: 0 0 3px rgba(255,90,90,.35);
+
 }
 .controlButton.s-idle + .label {
   color: #ffd27a;

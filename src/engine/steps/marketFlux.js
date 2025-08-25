@@ -183,7 +183,7 @@ export function marketFlux() {
 
     // 4) cap notifications
     while (market.notifications.length > 10) market.notifications.shift()
-
+//TODO => Calculate how much water, electricity and waste removal was consumed last turn and take money
     market.lastMarketDate = today
     return { ran: true, date: today }
 }
