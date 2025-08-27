@@ -11,9 +11,9 @@ The sections are :
 <script setup>
 import {computed, ref, defineComponent} from 'vue'
 import {gameStore} from '@/stores/game.js'
-import expandableTable from "@/components/overlays/AnalyticsReportBlocks/ExpandableTable.vue";
-import simpleTable from "@/components/overlays/AnalyticsReportBlocks/SimpleTable.vue";
-import weatherDays from "@/components/overlays/AnalyticsReportBlocks/WeatherDays.vue";
+import expandableTable from '@/components/overlays/AnalyticsReportBlocks/ExpandableTable.vue';
+import simpleTable from '@/components/overlays/AnalyticsReportBlocks/SimpleTable.vue';
+import weatherDays from '@/components/overlays/AnalyticsReportBlocks/WeatherDays.vue';
 
 const game = gameStore()
 
@@ -236,47 +236,6 @@ const subcomponents = {
   padding: 10px 12px 12px;
   max-height: 1200px; /* plenty; body height is unknown */
 }
-
-/* ---------- Tables (shared across subcomponents) ---------- */
-:deep(.kv) {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 12.5px;
-  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.2));
-  border: 1px solid var(--panel-edge);
-  margin: 8px 0;
-  color: var(--text);
-}
-:deep(.kv th), :deep(.kv td) {
-  border: 1px solid color-mix(in oklab, var(--panel-edge), #000 25%);
-  padding: 6px 8px;
-  white-space: nowrap;
-  text-align: left;
-  vertical-align: top;
-}
-:deep(.kv.compact th), :deep(.kv.compact td) { padding: 5px 7px; }
-:deep(.kv th) {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--text-dim);
-  background: linear-gradient(180deg, #151a20, #10151b);
-  position: sticky; /* helpful when tables overflow vertically */
-  top: 0;
-  z-index: 1;
-}
-:deep(.kv tbody tr:nth-child(odd) td) {
-  background-color: rgba(255,255,255,.015);
-}
-:deep(.kv tbody tr:hover td) {
-  background-color: rgba(125, 249, 255, .05);
-}
-
-/* inner one-column tables in expandable cells */
-:deep(.kv.inner) { border: 0; background: transparent; }
-:deep(.kv.inner td) { border: 0; padding: 2px 0; }
-:deep(.kv.inner.onecol td) { white-space: normal; }
 
 /* Chips / tokens */
 :deep(.token) {

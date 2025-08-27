@@ -17,6 +17,4 @@ const collapsed = toRef(props, 'collapsed')
 </template>
 
 
-<style scoped>
-.controlButton { border-top: 1px solid #000; }
-</style>
+

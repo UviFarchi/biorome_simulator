@@ -55,7 +55,7 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
       <div class="grid">
         <div class="card">
           <h4>Inputs & Utilities</h4>
-          <table>
+          <table class="kv">
             <thead>
             <tr>
               <th>Item</th>
@@ -75,7 +75,7 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
 
         <div class="card">
           <h4>Plants (seed, seedling/sapling)</h4>
-          <table>
+          <table class="kv">
             <thead>
             <tr>
               <th>Type</th>
@@ -95,7 +95,7 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
 
         <div class="card">
           <h4>Animals (by stage)</h4>
-          <table>
+          <table class="kv">
             <thead>
             <tr>
               <th>Type</th>
@@ -206,35 +206,10 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
   align-items: center;
 }
 
-.panel {
-  background: #0f1418;
-  color: #e0e0e0;
-  border: 1px solid #00bcd4;
-  border-radius: 10px;
-  padding: .8rem;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: .8rem;
-}
-
-.card {
-  border: 1px solid #2a3b45;
-  border-radius: 8px;
-  padding: .6rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border-bottom: 1px solid #2a3b45;
-  padding: .35rem .4rem;
-  text-align: left;
 }
 
 .list {

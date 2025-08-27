@@ -2,13 +2,9 @@
 
 </script>
 <template>
-  <div class="farmGate"> Farm Gate</div>
+  <div class="panel farmGate"> Farm Gate</div>
 
 </template>
 
-<style scoped>
-.farmGate {
-  background: orangered;
-}
-</style>
+
 

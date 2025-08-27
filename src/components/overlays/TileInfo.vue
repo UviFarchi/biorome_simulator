@@ -121,7 +121,7 @@ function fmt(entry) {
 </script>
 
 <template>
-  <div class="modalData" v-if="currentTile">
+  <div class="panel modalData" v-if="currentTile">
     <div class="headerRow">
       <h4>Tile {{ selectedKey }}</h4>
       <button class="close" @click="map.selectedTile.value = null">Close</button>
@@ -149,13 +149,11 @@ function fmt(entry) {
 
     <div v-else>No comparable values on this tile.</div>
   </div>
-  <div v-else class="modalData">No tile selected.</div>
+  <div v-else class="panel modalData">No tile selected.</div>
 </template>
 
 <style scoped>
-.modalData { background: black; max-height: 70vh; overflow: auto; padding: 8px; }
-.kv { width: 100%; border-collapse: collapse; font-size: 13px; }
-.kv th, .kv td { border: 1px solid #ccc; padding: 4px 6px; white-space: nowrap; text-align: left; }
+.modalData { max-height: 70vh; overflow: auto; padding: 8px; }
 .changed { background: rgba(255, 235, 59, 0.25); }
 .up td:last-child { color: #2e7d32; font-weight: 600; }
 .down td:last-child { color: #c62828; font-weight: 600; }
