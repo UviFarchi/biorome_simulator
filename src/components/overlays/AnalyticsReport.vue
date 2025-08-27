@@ -11,9 +11,9 @@ The sections are :
 <script setup>
 import {computed, ref, defineComponent} from 'vue'
 import {gameStore} from '@/stores/game.js'
-import expandableTable from '@/components/overlays/AnalyticsReportBlocks/ExpandableTable.vue';
-import simpleTable from '@/components/overlays/AnalyticsReportBlocks/SimpleTable.vue';
-import weatherDays from '@/components/overlays/AnalyticsReportBlocks/WeatherDays.vue';
+import expandableTable from '@/components/overlays/blocks/ExpandableTable.vue';
+import simpleTable from '@/components/overlays/blocks/SimpleTable.vue';
+import weatherDays from '@/components/overlays/blocks/WeatherDays.vue';
 
 const game = gameStore()
 
@@ -134,7 +134,7 @@ const subcomponents = {
 
 </script>
 
-<!-- Keep your <script setup> exactly as-is -->
+<!-- TODO => Add actual analysis to weather, market and ecological events rather than just listing the events and forecast. -->
 
 <template>
   <div class="analyticsReport lane-fit">

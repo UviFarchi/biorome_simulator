@@ -1,8 +1,8 @@
 <script setup>
-import {onMounted, onBeforeUnmount, ref} from 'vue'
+import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
 import eventBus from '@/eventBus.js'
-import {gameStore} from '@/stores/game.js'
-import {mapStore} from '@/stores/map.js'
+import { gameStore } from '@/stores/game.js'
+import { mapStore } from '@/stores/map.js'
 
 import ControlPanel from '@/components/grid/Controls.vue'
 import WeatherPanel from '@/components/overlays/Weather.vue'
@@ -13,33 +13,32 @@ import AnimalsMenu from '@/components/overlays/AnimalsMenu.vue'
 import PlantsMenu from '@/components/overlays/PlantsMenu.vue'
 import FarmGate from '@/components/overlays/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
-import {loadAllStores} from '@/utils.js'
+import { loadAllStores } from '@/utils.js'
 import TileInfo from '@/components/overlays/TileInfo.vue'
 import Market from '@/components/overlays/Market.vue'
 import ResourcesMenu from '@/components/overlays/ResourcesMenu.vue'
 import News from '@/components/overlays/News.vue'
-import updateGame from '@/engine/simulationUpdate/updateGame.js';
-import {produceReport} from '@/engine/phases/analytics/produceReport.js';
-
+import {produceReport} from "@/engine/phases/analytics/produceReport.js";
+import updateGame from "@/engine/simulationUpdate/updateGame.js";
 
 const game = gameStore()
-const map = mapStore()
+const map  = mapStore()
 
-// 1) truth of what's open
+/* ---------------- Open/close truth per overlay ---------------- */
 const show = ref({
   log: false, analytics: false, animals: false, plants: false, assemblies: false,
   gate: false, weather: false, resources: false, tileInfo: false, market: false, news: false
 })
 
-// 2) lane manager (balance left/right)
+/* ---------------- Lane manager (placement + order) ---------------- */
 const lanes = ref({
-  left: [],          // array of keys in visual order
-  right: [],         // array of keys in visual order
-  sideByKey: {},     // key -> 'left' | 'right'
-  nextSide: 'left'   // flip‑flop when counts are equal
+  left: [],               // visual order
+  right: [],
+  sideByKey: Object.create(null), // key -> 'left' | 'right'
+  nextSide: 'left'
 })
 
-// registry to render <component :is="...">
+/* ---------------- Registry for dynamic components ---------------- */
 const compByKey = {
   weather: WeatherPanel,
   log: EventLog,
@@ -54,16 +53,67 @@ const compByKey = {
   news: News
 }
 
+/* ---------------- Layout modes: singleWidth | doubleWidth | fullWidth ---------------- */
+const doubleWidth = ref(false)
+const fullWidth   = ref(false)
+const isSingleWidth = computed(() => !doubleWidth.value && !fullWidth.value)
+
+/** Move all overlays from right → left (preserve order and open/close state). */
+function moveAllRightToLeft() {
+  const s = lanes.value
+  if (!s.right.length) return
+  const moving = [...s.right]
+  for (const key of moving) {
+    removeFromLane(key)
+    s.sideByKey[key] = 'left'
+    s.left.push(key)
+  }
+  s.right.length = 0
+}
+
+/** Explicitly set layout: 'single' | 'double' | 'full'. */
+function setLayoutWidth(mode) {
+  if (mode === 'full') {
+    fullWidth.value = true
+    doubleWidth.value = false
+    moveAllRightToLeft()
+  } else if (mode === 'double') {
+    doubleWidth.value = true
+    fullWidth.value = false
+    moveAllRightToLeft()
+  } else {
+    // singleWidth
+    doubleWidth.value = false
+    fullWidth.value = false
+  }
+}
+
+/** Optional toggles with overloaded boolean (force) for convenience. */
+function toggleFullWidth(force) {
+  const want = (typeof force === 'boolean') ? force : !fullWidth.value
+  setLayoutWidth(want ? 'fullWidth' : 'singleWidth')
+}
+function toggleDoubleWidth(force) {
+  const want = (typeof force === 'boolean') ? force : !doubleWidth.value
+  setLayoutWidth(want ? 'doubleWidth' : 'singleWidth')
+}
+function toggleSingleWidth(force) {
+  const want = (typeof force === 'boolean') ? force : !isSingleWidth.value
+  setLayoutWidth(want ? 'singleWidth' : (fullWidth.value ? 'fullWidth' : 'doubleWidth'))
+}
+
+/* ---------------- Lane placement helpers ---------------- */
 function addToLane(key) {
   const s = lanes.value
-  if (s.sideByKey[key]) return // already placed
-  const l = s.left.length, r = s.right.length
+  if (s.sideByKey[key]) return
   let side
-  if (l < r) side = 'left'
-  else if (r < l) side = 'right'
-  else {
-    side = s.nextSide;
-    s.nextSide = (s.nextSide === 'left' ? 'right' : 'left')
+  if (!isSingleWidth.value) {
+    side = 'left' // double/full modes render only left lane
+  } else {
+    const l = s.left.length, r = s.right.length
+    if (l < r) side = 'left'
+    else if (r < l) side = 'right'
+    else { side = s.nextSide; s.nextSide = (s.nextSide === 'left' ? 'right' : 'left') }
   }
   s.sideByKey[key] = side
   s[side].push(key)
@@ -74,18 +124,43 @@ function removeFromLane(key) {
   const side = s.sideByKey[key]
   if (!side) return
   const arr = s[side]
-  const idx = arr.indexOf(key)
-  if (idx !== -1) arr.splice(idx, 1)
+  const i = arr.indexOf(key)
+  if (i !== -1) arr.splice(i, 1)
   delete s.sideByKey[key]
 }
 
-function toggleOverlay({target, show: explicit}) {
+/* ---------------- Overlay open/close API (via eventBus) ---------------- */
+function toggleOverlay({ target, show: explicit }) {
   if (!(target in show.value)) return
   const next = explicit === undefined ? !show.value[target] : !!explicit
   show.value[target] = next
   next ? addToLane(target) : removeFromLane(target)
 }
 
+/* ---------------- Reordering + switching lanes ---------------- */
+function moveOverlay(key, dir) {
+  const s = lanes.value
+  const side = s.sideByKey[key]
+  if (!side) return
+  const arr = s[side]
+  const i = arr.indexOf(key); if (i === -1) return
+  const j = i + (dir === 'up' ? -1 : 1)
+  if (j < 0 || j >= arr.length) return
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
+}
+
+function switchLane(key) {
+  if (!isSingleWidth.value) return // disabled in double/full
+  const s = lanes.value
+  const from = s.sideByKey[key]
+  if (!from) return
+  const arr = s[from]
+  const i = arr.indexOf(key); if (i === -1) return
+  arr.splice(i, 1)
+  const to = from === 'left' ? 'right' : 'left'
+  s.sideByKey[key] = to
+  s[to].push(key)
+}
 function handlePhaseChange() {
   eventBus.emit('spinner', true)
   const engines = game.engines
@@ -98,6 +173,7 @@ function handlePhaseChange() {
   if (next === 0) { // Phase 0 — Analytics
     // auto-open
     on('log')
+    setLayoutWidth('full')
     // available but closed
     off('analytics');
     off('weather');
@@ -118,6 +194,7 @@ function handlePhaseChange() {
     }, 500)
 
   } else if (next === 1) { // Phase 1 — Optimization
+    setLayoutWidth('double')
     // auto-open planners
     on('animals');
     on('plants');
@@ -136,6 +213,7 @@ function handlePhaseChange() {
     eventBus.emit('log', {engine: 'optimizations', msg: 'Running simulations...'})
 
   } else if (next === 2) { // Phase 2 — Operations
+    setLayoutWidth('single')
     // auto-open ops
     on('assemblies');
     on('gate')
@@ -155,38 +233,12 @@ function handlePhaseChange() {
   }
 
   game.turnPhase = next
- setTimeout(()=>{eventBus.emit('spinner', false)},1000)
+  setTimeout(()=>{eventBus.emit('spinner', false)},1000)
 }
-
-function moveOverlay(key, dir) {
-  const s = lanes.value
-  const side = s.sideByKey[key]
-  if (!side) return
-  const arr = s[side]
-  const i = arr.indexOf(key)
-  if (i === -1) return
-  const j = i + (dir === 'up' ? -1 : 1)
-  if (j < 0 || j >= arr.length) return
-      ;
-  [arr[i], arr[j]] = [arr[j], arr[i]]
-}
-
-function switchLane(key) {
-  const s = lanes.value
-  const from = s.sideByKey[key]
-  if (!from) return
-  const arr = s[from]
-  const i = arr.indexOf(key)
-  if (i === -1) return
-  arr.splice(i, 1)                          // remove from current lane
-  const to = from === 'left' ? 'right' : 'left'
-  s.sideByKey[key] = to
-  s[to].push(key)                           // append to end of target lane
-}
-//TODO => Add buttons to make overlay take both lanes, as well as cover the entire map
-
+/* ---------------- Lifecycle: wire events ---------------- */
 onMounted(() => {
   eventBus.on('overlay', toggleOverlay)
+  // NOTE: handlePhaseChange is defined elsewhere; it may call setLayoutWidth().
   eventBus.on('phase', handlePhaseChange)
   loadAllStores()
 })
@@ -195,56 +247,71 @@ onBeforeUnmount(() => {
   eventBus.off('overlay', toggleOverlay)
   eventBus.off('phase', handlePhaseChange)
 })
+
+
+
+
 </script>
 
 <template>
   <div class="mapWrapper">
     <ControlPanel class="control"/>
 
-    <div class="content">
-      <!-- Left lane: render by manager order -->
+    <!-- content wrapper: add fullscreen class -->
+    <div class="content" :class="{
+  'doubleWidth': doubleWidth,
+  'fullWidth': fullWidth
+}">
+      <!-- Left lane -->
       <div class="lane left">
-        <div
-            v-for="k in lanes.left"
-            :key="'L-'+k"
-            class="overlay-wrapper"
-        >
+        <div class="lane-controls">
+          Layout Selection:
+          <button class="layout-btn" :aria-pressed="isSingleWidth"
+                  @click="setLayoutWidth('single')" title="Single width">
+            ▊▊▒▒▒▊▊
+          </button>
+
+          <!-- Double width: wide empty (left) | narrow filled (grid) | right hidden -->
+          <button class="layout-btn" :aria-pressed="doubleWidth"
+                  @click="setLayoutWidth('double')" title="Double width">
+            ▊▊▊▊▒▒▒
+          </button>
+
+          <!-- Full width: single empty wide rectangle (lane covers all) -->
+          <button class="layout-btn" :aria-pressed="fullWidth"
+                  @click="setLayoutWidth('full')" title="Full width">
+            ▊▊▊▊▊▊▊
+          </button>
+        </div>
+
+        <div v-for="k in lanes.left" :key="'L-'+k" class="overlay-wrapper">
           <div class="overlay-controls">
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
-            <button @click="switchLane(k)" aria-label="Switch lane">→</button>
+            <button v-if="isSingleWidth" @click="switchLane(k)" aria-label="Switch lane">→</button>
           </div>
-          <component
-              :is="compByKey[k]"
-              v-show="show[k]"
-              class="overlay"
-          />
+          <component :is="compByKey[k]" v-show="show[k]" class="overlay" />
         </div>
       </div>
 
-      <!-- Grid centered -->
+      <!-- Grid -->
       <TilesGrid class="grid"/>
 
-      <!-- Right lane: render by manager order -->
+      <!-- Right lane -->
       <div class="lane right">
-        <div
-            v-for="k in lanes.right"
-            :key="'L-'+k"
-            class="overlay-wrapper"
-        >
+        <div v-for="k in lanes.right" :key="'R-'+k" class="overlay-wrapper">
           <div class="overlay-controls">
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
             <button @click="switchLane(k)" aria-label="Switch lane">←</button>
           </div>
-          <component
-              :is="compByKey[k]"
-              v-show="show[k]"
-              class="overlay"
-          />
+          <component :is="compByKey[k]" v-show="show[k]" class="overlay" />
         </div>
       </div>
     </div>
+
+
+
   </div>
 </template>
 <style scoped>
@@ -294,7 +361,8 @@ onBeforeUnmount(() => {
 /* every overlay scrolls inside itself and never overflows outside its lane */
 .overlay {
   max-height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 12px;
   pointer-events: auto;
 }
@@ -311,5 +379,49 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow: auto;
 }
+/* Double width (left lane wider; right lane hidden; grid shrinks) */
+.content.doubleWidth  { grid-template-columns: 2fr max-content 0fr; }
+.content.doubleWidth  .lane.right { display: none; }
+.content.doubleWidth  .grid { justify-self: end; }
+
+/* Full width (left lane covers content row; grid + right hidden) */
+.content.fullWidth { grid-template-columns: 1fr 0 0; }
+.content.fullWidth .grid { display: none; }
+.content.fullWidth .lane.right { display: none; }
+
+/* Left lane toolbar (top-right) */
+.lane-controls {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 6px 0 4px;
+  background: var(--ui-bg, #0c0c0f);
+  color: limegreen;
+  align-items: center;
+}
+
+/* Icon buttons */
+.layout-btn {
+  position: relative;
+  display: inline;
+  place-items: center;
+  background: limegreen;
+  color: black;
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: larger;
+letter-spacing: -0.175rem;
+  font-family: monospace;
+  border: 1px solid white;
+}
+.layout-btn[aria-pressed="true"] {
+  border-color: var(--ui-accent, #cde4cf);
+}
+
+
+
 
 </style>

@@ -83,6 +83,7 @@ onBeforeUnmount(() => {
           <button class="hamburger" aria-label="More">☰</button>
           <div class="optionsMenu" role="menu">
             <button role="menuitem" @click.stop="restart">Restart</button>
+            <button role="menuitem" >Tutorial Mode</button>
           </div>
         </div>
       </div>
@@ -374,8 +375,8 @@ onBeforeUnmount(() => {
 
 #assemblyStation {
   border-radius: 100%;
-  height: 8vh;
-  width: 8vh;
+  height: 7vh;
+  width: 7vh;
   color: black;
   font-weight: lighter;
   text-shadow: 0 0 5px white;
@@ -387,12 +388,13 @@ onBeforeUnmount(() => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
- width: 8vw;
+ width: 6vw;
   display: flex;
   align-items: center;
   justify-items: center;
   flex-direction: column;
   filter: saturate(0.2);
+
 }
 
 .nextPhaseBg.active {
