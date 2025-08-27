@@ -58,9 +58,9 @@ function restart() {
 
 const spinnerOn = ref(false);
 
-function toggleSpinner(on){
+function toggleSpinner(on) {
   console.log('spinner', on)
- spinnerOn.value = on
+  spinnerOn.value = on
 }
 
 onMounted(() => {
@@ -83,16 +83,65 @@ onBeforeUnmount(() => {
           <button class="hamburger" aria-label="More">☰</button>
           <div class="optionsMenu" role="menu">
             <button role="menuitem" @click.stop="restart">Restart</button>
-            <button role="menuitem" >Tutorial Mode</button>
+            <button role="menuitem">Tutorial Mode</button>
           </div>
         </div>
       </div>
       <div class="subpanel">
-        <div class="infoScreen"> Stage: <br/> {{ stageLabel?.toUpperCase() }}</div>
-        <div class="infoScreen">Date:<br/>{{ game.currentDate.toLocaleDateString('en-GB') }}</div>
-        <div class="infoScreen">Turn:<br/>{{ game.currentTurn }}</div>
-        <div class="infoScreen">Phase:<br/>{{ currentPhaseLabel?.toUpperCase() }}</div>
-
+        <div class="subpanel-title">Layout</div>
+        <div class="layout-controls">
+          <button class="layout-btn" @click.stop="eventBus.emit('layout','single')" title="Single width">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="singleLayoutTitle" focusable="false" style="pointer-events:none">
+              <title id="singleLayoutTitle">Single layout</title>
+              <!-- frame -->
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
+              <!-- lanes -->
+              <rect x="0.5"   y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <rect x="33.5"  y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <!-- grid (center 19 units wide) -->
+              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+                <!-- horizontals -->
+                <line x1="14.5" y1="10.5" x2="33.5" y2="10.5"/>
+                <line x1="14.5" y1="20.5" x2="33.5" y2="20.5"/>
+                <!-- verticals -->
+                <line x1="19.5" y1="0.5" x2="19.5" y2="29.5"/>
+                <line x1="24.5" y1="0.5" x2="24.5" y2="29.5"/>
+                <line x1="29.5" y1="0.5" x2="29.5" y2="29.5"/>
+              </g>
+            </svg>
+          </button>
+          <button class="layout-btn" @click.stop="eventBus.emit('layout','double')" title="Double width">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="doubleLayoutTitle" focusable="false" style="pointer-events:none">
+              <title id="doubleLayoutTitle">Double layout</title>
+              <!-- frame -->
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
+              <!-- wide left lane -->
+              <rect x="0.5"  y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <!-- narrow grid on right (14 units) -->
+              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+                <!-- horizontals -->
+                <line x1="28.5" y1="10.5" x2="47.5" y2="10.5"/>
+                <line x1="28.5" y1="20.5" x2="47.5" y2="20.5"/>
+                <!-- verticals -->
+                <line x1="33.5" y1="0.5" x2="33.5" y2="29.5"/>
+                <line x1="38.5" y1="0.5" x2="38.5" y2="29.5"/>
+                <line x1="43.5" y1="0.5" x2="43.5" y2="29.5"/>
+              </g>
+            </svg>
+          </button>
+          <button class="layout-btn" @click.stop="eventBus.emit('layout','full')" title="Full width">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="fullLayoutTitle" focusable="false" style="pointer-events:none">
+              <title id="fullLayoutTitle">Full layout</title>
+              <!-- frame -->
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
+              <!-- full-width lane -->
+              <rect x="0.5" y="0.5" width="47" height="29" fill="currentColor" fill-opacity="0.85"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="subpanel">
+        <button id="assemblyStation" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
       </div>
     </div>
     <div class="centerPanel">
@@ -187,18 +236,24 @@ onBeforeUnmount(() => {
           <div class="label">Assemblies</div>
         </div>
       </div>
-      <div class="subpanel">
-        <button id="assemblyStation" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
-      </div>
+
     </div>
     <div class="right-panel">
       <div class="subpanel">
-        <div id="player" class="infoScreen">Operator<br/>{{ userAvatar }}<br/>{{ userName }}</div>
-        <div id="gold" class="infoScreen" title="Gold">Gold 💰<br/>{{ gold }}</div>
+        <div class="infoScreen" title="Gold">Operator:<br/>{{ userAvatar }} {{ userName }} <br/>💰{{ gold }}</div>
+        <div class="infoScreen">Stage: <br/> {{ stageLabel?.toUpperCase() }}</div>
+        <div class="infoScreen">Date:<br/>{{
+            game.currentDate.toLocaleDateString('en-GB')
+          }}<br/>Turn:{{ game.currentTurn }}
+        </div>
+        <div class="infoScreen">Phase:<br/>{{ currentPhaseLabel?.toUpperCase() }}</div>
+
+
       </div>
-      <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'" :title='"Next Phase:\n" + nextPhaseLabel' >
+      <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'"
+           :title='"Next Phase:\n" + nextPhaseLabel'>
         <button id="nextPhaseBtn" @click.stop="eventBus.emit('phase',{})">Next</button>
-       </div>
+      </div>
     </div>
   </div>
 
@@ -238,9 +293,10 @@ onBeforeUnmount(() => {
 
 /* subpanels: use your image */
 .subpanel {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   height: 8vh;
   padding: 6px 10px;
   border: 2px solid #1f231f;
@@ -249,6 +305,18 @@ onBeforeUnmount(() => {
   background-size: cover; /* or 'contain' if you prefer */
   background-position: center;
   background-repeat: no-repeat;
+  flex-wrap: wrap;
+}
+
+.subpanel .subpanel-title {
+  flex: 0 0 100%;
+  text-align: center;
+  font-weight: bold;
+  pointer-events: none; /* avoid blocking clicks */
+  text-shadow: 0 0 5px white;
+  color: black;
+  padding: 0;
+  margin: 0;
 }
 
 .subpanel hr {
@@ -273,7 +341,7 @@ onBeforeUnmount(() => {
   position: absolute;
   margin: 0;
   bottom: -16vh;
-  left:-10px;
+  left: -10px;
   height: 12vh;
   width: 100px;
   display: none;
@@ -364,10 +432,10 @@ onBeforeUnmount(() => {
   padding: 5px;
   border: 5px inset black;
   height: 75%;
-  width:4.5vw;
-  text-align: center;
+  width: 5vw;
+  text-align: left;
   font-size: medium;
-  color: lawngreen;
+  color: limegreen;
   aspect-ratio: 4/3;
   line-height: 1.25rem;
   word-break: break-word;
@@ -388,7 +456,7 @@ onBeforeUnmount(() => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
- width: 6vw;
+  width: 6vw;
   display: flex;
   align-items: center;
   justify-items: center;
@@ -406,8 +474,32 @@ onBeforeUnmount(() => {
   height: 5vh;
   width: 5vh;
   margin: 0;
-  background: rgba(0,0,0,0.75);
-  color :white;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+}
+
+.layout-controls {
+  flex: 0 0 100%;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  color: limegreen;
+  margin-bottom: 10px;
+  justify-content: space-evenly;
+  width: 10vw;
+}
+
+.layout-btn {
+  display: flex;
+  background: silver;
+  border: 2px outset black;
+  cursor: pointer;
+  padding: 3px;
+  font-family: monospace;
+}
+
+.layout-btn svg{
+  color: black;
 }
 
 </style>
