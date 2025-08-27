@@ -10,6 +10,9 @@ export const weatherStore = defineStore('weatherStore', () => {
     const relHumidity = ref(0.5)
     const currentLabel = ref({label: 'Mild', icon: '🌤️'})
 
+    const weatherHistory = []
 
-    return {temperature, rainfall, cloudCover, currentLabel, windKph, relHumidity}
+//TODO => Implement week long weather forecast by generating 7 days of weather, and then vary the forecast daily to get the real weather.
+const weatherForecast= []
+    return {temperature, rainfall, cloudCover, currentLabel, windKph, relHumidity, weatherHistory, weatherForecast}
 })

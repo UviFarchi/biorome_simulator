@@ -18,7 +18,9 @@ import TileInfo from '@/components/overlays/TileInfo.vue'
 import Market from '@/components/overlays/Market.vue'
 import ResourcesMenu from '@/components/overlays/ResourcesMenu.vue'
 import News from '@/components/overlays/News.vue'
-import updateGame from '@/engine/updateGame.js';
+import updateGame from '@/engine/simulationUpdate/updateGame.js';
+import {produceReport} from '@/engine/phases/analytics/produceReport.js';
+
 
 const game = gameStore()
 const map = mapStore()
@@ -85,6 +87,7 @@ function toggleOverlay({target, show: explicit}) {
 }
 
 function handlePhaseChange() {
+  eventBus.emit('spinner', true)
   const engines = game.engines
   const next = ((game.turnPhase + 1) % engines.length + engines.length) % engines.length
 
@@ -109,8 +112,9 @@ function handlePhaseChange() {
     disable('gate')
 
     eventBus.emit('log', {engine: 'analytics', msg: 'Day ' + game.currentTurn + ' in the biorome'})
-    setTimeout(() => {
-      updateGame()
+    setTimeout(async () => {
+      await updateGame();
+      produceReport()
     }, 500)
 
   } else if (next === 1) { // Phase 1 — Optimization
@@ -151,6 +155,7 @@ function handlePhaseChange() {
   }
 
   game.turnPhase = next
+ setTimeout(()=>{eventBus.emit('spinner', false)},1000)
 }
 
 function moveOverlay(key, dir) {
@@ -178,7 +183,7 @@ function switchLane(key) {
   s.sideByKey[key] = to
   s[to].push(key)                           // append to end of target lane
 }
-
+//TODO => Add buttons to make overlay take both lanes, as well as cover the entire map
 
 onMounted(() => {
   eventBus.on('overlay', toggleOverlay)

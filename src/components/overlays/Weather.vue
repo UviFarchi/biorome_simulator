@@ -5,7 +5,7 @@ import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import { weatherStore } from '@/stores/weather.js'
 
-
+//TODO => Remake with blocks to unify look, extract as much CSS as possible to main
 const game = gameStore()
 const weather = weatherStore()
 

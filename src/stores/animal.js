@@ -23,7 +23,6 @@ export const animal = defineStore('animalStore', () => {
             weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['calf', 'heifer', 'adult', 'old'],
             daysPerGrowthStage: [365, 365, 1825, 730],
-
             yieldPerStage: [0, 0, 50, 20],
             product: 'milk',
             outputFrequency: 1,

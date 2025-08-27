@@ -7,7 +7,7 @@ export const gameStore = defineStore('gameStore', () => {
     const currentEvents = ref({
         weather: [],
         market: [],
-        ecologic: []
+        ecosystem: []
     })
     const analyticsReport = ref({})
     const stationAssemblies = ref([

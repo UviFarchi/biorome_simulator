@@ -56,6 +56,9 @@ export const marketStore = defineStore('marketStore', () => {
     })
     const priceCatalog = ref({ plants: {}, animals: {}, inputs: {} })
     const lastMarketDate = ref(null)
+    //TODO => Push daily market values into market history and keep for 7 game days.
+    const marketHistory = []
+
     return {
         contracts,
         openMarketOffers,
@@ -64,6 +67,7 @@ export const marketStore = defineStore('marketStore', () => {
         utilityPrices,
         notifications,
         priceCatalog,
-        lastMarketDate
+        lastMarketDate,
+        marketHistory
     }
 })

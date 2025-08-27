@@ -5,7 +5,7 @@ import {gameStore} from '/src/stores/game.js';
 import StartingScreen from '/src/components/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import Map from '/src/components/Map.vue';
-import AssemblyAssemblyAssembly from '@/components/AssemblyAssemblyAssembly.vue';
+import AssemblyAssemblyAssembly from '@/components/AssemblyStation.vue';
 
 
 

@@ -12,6 +12,7 @@ export const mapStore = defineStore('mapStore', () => {
         neighborCap: 6,
         cellSize: 100
     }
+const previousDayTiles=[]
 const optimizedTiles=[]
     const tiles = ref(
         Array.from({length: size.value}, (_, row) =>
@@ -143,5 +144,5 @@ const optimizedTiles=[]
     const gate = ref({animals: [], plants: [], extras: []})
     const selectedTile = ref({})
 
-    return {tiles, gate, size, selectedTile, topographyConstraints, optimizedTiles}
+    return {tiles, gate, size, selectedTile, topographyConstraints, previousDayTiles, optimizedTiles}
 })
