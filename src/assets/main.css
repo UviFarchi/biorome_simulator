@@ -33,9 +33,12 @@
 
 /* Overlay panel styles */
 .panel {
-  border: 1px solid white;
+  background: #0f1418;
+  color: #e0e0e0;
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  padding: 0.8rem;
   margin: 0;
-  background: black;
 }
 
 .panel-header {
@@ -53,9 +56,51 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  border-top: 1px solid white;
+  border-top: 1px solid var(--color-primary);
   padding: 4px;
 }
+
+/* Key-value table styles */
+.kv {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12.5px;
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.2));
+  border: 1px solid var(--panel-edge, #2a3b45);
+  margin: 8px 0;
+  color: var(--text, #e0e0e0);
+}
+
+.kv th,
+.kv td {
+  border: 1px solid color-mix(in oklab, var(--panel-edge, #2a3b45), #000 25%);
+  padding: 6px 8px;
+  white-space: nowrap;
+  text-align: left;
+  vertical-align: top;
+}
+
+.kv.compact th,
+.kv.compact td { padding: 5px 7px; }
+
+.kv th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-dim, #a9b4bd);
+  background: linear-gradient(180deg, #151a20, #10151b);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.kv tbody tr:nth-child(odd) td { background-color: rgba(255,255,255,.015); }
+.kv tbody tr:hover td { background-color: color-mix(in oklab, var(--accent, #7df9ff), transparent 95%); }
+
+.kv.inner { border: 0; background: transparent; }
+.kv.inner td { border: 0; padding: 2px 0; }
+.kv.inner.onecol td { white-space: normal; }
 
 .card {
   background: black;
@@ -64,6 +109,7 @@
   padding: 0.7em 0.8em;
   display: flex;
   flex-direction: column;
+  border: 1px solid #2a3b45;
 }
 
 .card--horizontal {

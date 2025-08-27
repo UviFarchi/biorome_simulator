@@ -3,12 +3,8 @@
 </script>
 
 <template>
-  <div class="resourcesMenu"> Resources Menu    Water, Electricity, Fertilizer and Feed
+  <div class="panel resourcesMenu"> Resources Menu    Water, Electricity, Fertilizer and Feed
   </div>
 </template>
 
-<style scoped>
-.resourcesMenu {
-  background: mediumvioletred;
-}
-</style>
+
