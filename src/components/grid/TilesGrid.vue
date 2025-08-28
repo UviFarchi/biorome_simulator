@@ -1,40 +1,53 @@
 <script setup>
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import eventBus from '@/eventBus.js'
 import {mapStore} from '@/stores/map.js'
 import TerrainBackdrop from '@/components/grid/TerrainBackdrop.vue'
+import TileInfo from '@/components/grid/TileInfo.vue'
 
 const map = mapStore()
 const size = computed(() => map.size)
 const flatTiles = computed(() => map.tiles.flat())
 
-function isSelected (tile)
-{
+function isSelected(tile) {
   return map.selectedTile.value?.row === tile.row && map.selectedTile.value?.col === tile.col
 }
 
-function isSurveyed (tile)
-{
+function isSurveyed(tile) {
   return typeof tile.topography.elevation.measured.value === 'number'
 }
 
+const showTileInfo = ref(false)
 
 
 function clickTile(tile) {
   if (isSelected(tile)) {
     map.selectedTile.value = {}
-   eventBus.emit('overlay', {target: 'tileInfo', show: false})
+    showTileInfo.value = false;
   } else {
     map.selectedTile.value = tile
-   eventBus.emit('overlay', {target: 'tileInfo', show: true})
+    showTileInfo.value = true;
   }
+}
+
+function closeModal(){
+  map.selectedTile.value = null;
+  showTileInfo.value = false;
 }
 
 </script>
 
 <template>
   <div class="grid-fit">
-    <div class="grid-box"
+    <!-- Tile info uses the exact grid box -->
+
+    <div class="grid-box" v-show="showTileInfo">
+      <button v-show="showTileInfo" class="closeModalBtn" @click="closeModal">Close</button>
+      <TileInfo />
+    </div>
+
+    <!-- Grid view -->
+    <div class="grid-box" v-show="!showTileInfo"
          :style="{ gridTemplateColumns:`repeat(${size},1fr)`,
                    gridTemplateRows:`repeat(${size},1fr)` }">
       <TerrainBackdrop/>
@@ -44,9 +57,9 @@ function clickTile(tile) {
            :title="`R${tile.row+1} C${tile.col+1} | ${tile.topography.elevation.env.toFixed(1)} m`"
            @click="clickTile(tile)">
         <div class="icons">
-          <span v-if="tile.plants">{{ tile.plants.map(plant => {  return plant.icon   }) }}</span>
-          <span v-if="tile.animals">{{   tile.animals.map(animal => {  return animal.icon   }) }}</span>
-          <span v-if="tile.assemblies">{{   tile.assemblies.map(assembly => {  return assembly.icon || '🤖'}) }}</span>
+          <span v-if="tile.plants">{{ tile.plants.map(p => p.icon) }}</span>
+          <span v-if="tile.animals">{{ tile.animals.map(a => a.icon) }}</span>
+          <span v-if="tile.assemblies">{{ tile.assemblies.map(s => s.icon || '🤖') }}</span>
         </div>
       </div>
     </div>
@@ -91,11 +104,12 @@ function clickTile(tile) {
   outline-offset: -2px;
 }
 
-.cell.unsurveyed:before{
+.cell.unsurveyed:before {
   content: "Unsurveyed";
   position: absolute;
-  top:10px
+  top: 10px
 }
+
 .cell.unsurveyed {
   background: rgba(0, 0, 0, .095);
 
@@ -107,10 +121,9 @@ function clickTile(tile) {
   font-size: 1.1em;
 }
 
-.terrain-canvas {
+.closeModalBtn {
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  top: 5px;
+  right: 20px;
 }
-
 </style>

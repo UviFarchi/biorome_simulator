@@ -1,4 +1,4 @@
-<!-- src/components/modals/TileInfo.vue -->
+<!-- src/components/grid/TileInfo.vue -->
 <script setup>
 import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
@@ -7,7 +7,6 @@ import { gameStore } from '@/stores/game.js'
 const map = mapStore()
 const game = gameStore()
 
-// Unwrap selected tile if it's a ref-like
 const currentTile = computed(() => {
   const t = map.selectedTile
   return t && typeof t === 'object' && 'value' in t ? t.value : t
@@ -17,16 +16,13 @@ const selectedKey = computed(() =>
     currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
 )
 
-// Get previous-day tile at same coordinates
 const previousTile = computed(() => {
   if (!currentTile.value) return null
   const prevGrid = Array.isArray(map.previousDayTiles) ? map.previousDayTiles : map.previousDayTiles?.value
   const r = currentTile.value.row, c = currentTile.value.col
-  const t = prevGrid?.[r]?.[c] || null
-  return t
+  return prevGrid?.[r]?.[c] || null
 })
 
-// Build table rows: union of all {env,unit} leaves across prev and current
 const tableRows = computed(() => {
   const curr = currentTile.value
   if (!curr) return []
@@ -51,11 +47,19 @@ const tableRows = computed(() => {
       delta: computeDelta(prevEntry?.value, currEntry?.value)
     })
   }
-  rows.sort((a,b) => a.group.localeCompare(b.group) || a.path.localeCompare(b.path))
+  rows.sort((a, b) => a.group.localeCompare(b.group) || a.path.localeCompare(b.path))
   return rows
 })
 
-// Helpers
+/* group into [{ group, rows: [...] }, ...] */
+const grouped = computed(() => {
+  const map = new Map()
+  for (const r of tableRows.value) {
+    if (!map.has(r.group)) map.set(r.group, [])
+    map.get(r.group).push(r)
+  }
+  return Array.from(map, ([group, rows]) => ({ group, rows }))
+})
 
 function parseKey(k) {
   const [group, path] = k.split(':', 2)
@@ -85,12 +89,11 @@ function collectEnv(tile) {
     }
   }
 
-    visit(tile.topography ?? {}, 'topography', '')
-    visit(tile.soil ?? {},       'soil',       '')
-    visit(tile.resources ?? {},  'resources',  '')
-    visit(tile.plants ?? [],     'plants',     '')
-    visit(tile.animals ?? [],    'animals',    '')
-
+  visit(tile.topography ?? {}, 'topography', '')
+  visit(tile.soil ?? {},       'soil',       '')
+  visit(tile.resources ?? {},  'resources',  '')
+  visit(tile.plants ?? [],     'plants',     '')
+  visit(tile.animals ?? [],    'animals',    '')
   return out
 }
 
@@ -124,39 +127,51 @@ function fmt(entry) {
   <div class="panel modalData" v-if="currentTile">
     <div class="headerRow">
       <h4>Tile {{ selectedKey }}</h4>
-      <button class="close" @click="map.selectedTile.value = null">Close</button>
     </div>
-    <table class="kv" v-if="tableRows.length">
-      <thead>
-      <tr>
-        <th>Group</th>
-        <th>Path</th>
-        <th>Previous</th>
-        <th>Current</th>
-        <th>Δ</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="r in tableRows" :key="r.key" :class="{ changed: r.changed, up: r.changed && Number(r.delta) > 0, down: r.changed && Number(r.delta) < 0 }">
-        <td>{{ r.group }}</td>
-        <td>{{ r.path }}</td>
-        <td>{{ fmt(r.prev) }}</td>
-        <td>{{ fmt(r.curr) }}</td>
-        <td>{{ r.delta }}</td>
-      </tr>
-      </tbody>
-    </table>
+
+    <div v-if="grouped.length" class="groupsGrid">
+      <section v-for="g in grouped" :key="g.group" class="groupSection">
+        <h5 class="groupTitle">{{ g.group.toUpperCase() }}</h5>
+        <table class="kv">
+          <thead>
+          <tr>
+            <th>Path</th>
+            <th>Previous</th>
+            <th>Current</th>
+            <th>Δ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="r in g.rows" :key="r.key"
+              :class="{ changed: r.changed, up: r.changed && Number(r.delta) > 0, down: r.changed && Number(r.delta) < 0 }">
+            <td>{{ r.path }}</td>
+            <td>{{ fmt(r.prev) }}</td>
+            <td>{{ fmt(r.curr) }}</td>
+            <td>{{ r.delta }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
 
     <div v-else>No comparable values on this tile.</div>
   </div>
+
   <div v-else class="panel modalData">No tile selected.</div>
 </template>
 
 <style scoped>
-.modalData { max-height: 70vh; overflow: auto; padding: 8px; }
-.changed { background: rgba(255, 235, 59, 0.25); }
-.up td:last-child { color: #2e7d32; font-weight: 600; }
-.down td:last-child { color: #c62828; font-weight: 600; }
+.modalData {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  overflow: auto;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
 .headerRow {
   display: flex;
   align-items: center;
@@ -165,11 +180,36 @@ function fmt(entry) {
   margin-bottom: 8px;
 }
 .headerRow h4 { margin: 0; }
-.close {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  background: #f7f7f7;
-  border-radius: 4px;
-  cursor: pointer;
+
+.groupsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  grid-auto-flow: row;
+  grid-auto-rows: min-content; /* rows sized to their content */
+  align-items: start;          /* items top-aligned inside cells */
+  align-content: start;        /* grid packed at the top */
 }
+
+.groupSection {
+  align-self: start;
+  min-height: 0;               /* prevent accidental stretch */
+}
+
+
+.groupTitle {
+  margin: 0 0 6px 0;          /* remove default top margin */
+}
+
+.kv {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  table-layout: fixed;         /* avoid intrinsic table width pushing */
+}
+
+.kv th, .kv td { padding: 4px 6px; border-bottom: 1px solid rgba(0,0,0,.2); word-break: break-word; }
+.changed { background: rgba(255, 235, 59, 0.25); }
+.up td:last-child { color: #2e7d32; font-weight: 600; }
+.down td:last-child { color: #c62828; font-weight: 600; }
 </style>

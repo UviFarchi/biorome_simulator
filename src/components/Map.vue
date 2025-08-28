@@ -14,7 +14,7 @@ import PlantsMenu from '@/components/overlays/PlantsMenu.vue'
 import FarmGate from '@/components/overlays/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
 import {loadAllStores} from '@/utils.js'
-import TileInfo from '@/components/overlays/TileInfo.vue'
+
 import Market from '@/components/overlays/Market.vue'
 import ResourcesMenu from '@/components/overlays/ResourcesMenu.vue'
 import News from '@/components/overlays/News.vue'
@@ -27,7 +27,7 @@ const map = mapStore()
 /* ---------------- Open/close truth per overlay ---------------- */
 const show = ref({
   log: false, analytics: false, animals: false, plants: false, assemblies: false,
-  gate: false, weather: false, resources: false, tileInfo: false, market: false, news: false
+  gate: false, weather: false, resources: false, market: false, news: false
 })
 
 /* ---------------- Lane manager (placement + order) ---------------- */
@@ -44,7 +44,6 @@ const compByKey = {
   log: EventLog,
   analytics: AnalyticsReport,
   resources: ResourcesMenu,
-  tileInfo: TileInfo,
   market: Market,
   animals: AnimalsMenu,
   plants: PlantsMenu,
@@ -88,21 +87,7 @@ function setLayoutWidth(mode) {
   }
 }
 
-/** Optional toggles with overloaded boolean (force) for convenience. */
-function toggleFullWidth(force) {
-  const want = (typeof force === 'boolean') ? force : !fullWidth.value
-  setLayoutWidth(want ? 'fullWidth' : 'singleWidth')
-}
 
-function toggleDoubleWidth(force) {
-  const want = (typeof force === 'boolean') ? force : !doubleWidth.value
-  setLayoutWidth(want ? 'doubleWidth' : 'singleWidth')
-}
-
-function toggleSingleWidth(force) {
-  const want = (typeof force === 'boolean') ? force : !isSingleWidth.value
-  setLayoutWidth(want ? 'singleWidth' : (fullWidth.value ? 'fullWidth' : 'doubleWidth'))
-}
 
 /* ---------------- Lane placement helpers ---------------- */
 function addToLane(key) {
@@ -188,7 +173,6 @@ function handlePhaseChange() {
     off('weather');
     off('news');
     off('market');
-    off('tileInfo')
     // not allowed
     disable('animals');
     disable('plants');
@@ -209,7 +193,6 @@ function handlePhaseChange() {
     on('plants');
     on('resources')
     // available but closed
-    off('tileInfo');
     off('weather');
     off('news');
     off('market');
@@ -227,7 +210,6 @@ function handlePhaseChange() {
     on('assemblies');
     on('gate')
     // available but closed
-    off('tileInfo');
     off('weather');
     off('news');
     off('market');
