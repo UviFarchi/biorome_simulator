@@ -124,15 +124,15 @@ function fmt(entry) {
 </script>
 
 <template>
-  <div class="panel modalData" v-if="currentTile">
-    <div class="headerRow">
+  <div class="panel panel--fill" v-if="currentTile">
+    <div class="panel-header-row">
       <h4>Tile {{ selectedKey }}</h4>
     </div>
 
-    <div v-if="grouped.length" class="groupsGrid">
-      <section v-for="g in grouped" :key="g.group" class="groupSection">
-        <h5 class="groupTitle">{{ g.group.toUpperCase() }}</h5>
-        <table class="kv">
+    <div v-if="grouped.length" class="groups-grid">
+      <section v-for="g in grouped" :key="g.group" class="group-section">
+        <h5 class="group-title">{{ g.group.toUpperCase() }}</h5>
+        <table class="kv kv-wrap">
           <thead>
           <tr>
             <th>Path</th>
@@ -157,59 +157,5 @@ function fmt(entry) {
     <div v-else>No comparable values on this tile.</div>
   </div>
 
-  <div v-else class="panel modalData">No tile selected.</div>
+  <div v-else class="panel panel--fill">No tile selected.</div>
 </template>
-
-<style scoped>
-.modalData {
-  display: block;
-  width: 100%;
-  max-width: none;
-  height: 100%;
-  max-height: none;
-  overflow: auto;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.headerRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.headerRow h4 { margin: 0; }
-
-.groupsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  grid-auto-flow: row;
-  grid-auto-rows: min-content; /* rows sized to their content */
-  align-items: start;          /* items top-aligned inside cells */
-  align-content: start;        /* grid packed at the top */
-}
-
-.groupSection {
-  align-self: start;
-  min-height: 0;               /* prevent accidental stretch */
-}
-
-
-.groupTitle {
-  margin: 0 0 6px 0;          /* remove default top margin */
-}
-
-.kv {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0;
-  table-layout: fixed;         /* avoid intrinsic table width pushing */
-}
-
-.kv th, .kv td { padding: 4px 6px; border-bottom: 1px solid rgba(0,0,0,.2); word-break: break-word; }
-.changed { background: rgba(255, 235, 59, 0.25); }
-.up td:last-child { color: #2e7d32; font-weight: 600; }
-.down td:last-child { color: #c62828; font-weight: 600; }
-</style>

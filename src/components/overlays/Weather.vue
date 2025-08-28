@@ -79,10 +79,4 @@ const forecastDays = computed(() => game.analyticsReport?.weather?.forecast || [
 
 <style scoped>
 .controlsRow { display: flex; gap: 6px; margin-bottom: 8px; }
-
-/* keep vertical scroll only; no horizontal */
-.panel-body { overflow-y: auto; overflow-x: hidden; }
-
-/* hide collapsers inside reused blocks for this overlay */
-:deep(.noToggle .table-header .linklike) { display: none !important; }
 </style>

@@ -8,7 +8,7 @@ const events = gameStore()
 </script>
 
 <template>
-  <div class="panel logModal">
+  <div class="panel panel--fill">
     <table class="kv">
       <thead>
       <tr>
@@ -26,8 +26,6 @@ const events = gameStore()
 </template>
 
 <style scoped>
-.logModal { overflow: auto; }
-
 .operations {
   color: purple;
 }
