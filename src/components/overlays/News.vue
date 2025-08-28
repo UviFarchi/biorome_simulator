@@ -68,9 +68,5 @@ const totalRows = computed(() =>
 </template>
 
 <style scoped>
-/* vertical scroll only */
-.panel-body { overflow-y: auto; overflow-x: hidden; }
-/* hide collapsers inside reused blocks for this overlay */
-:deep(.noToggle .table-header .linklike) { display: none !important; }
 .emptyHint { opacity: .7; font-size: 12px; margin-top: 6px; }
 </style>
