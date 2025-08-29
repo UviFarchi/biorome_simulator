@@ -1,7 +1,8 @@
 <script setup>
-import {computed} from 'vue'
-import {gameStore} from '@/stores/game.js'
-import {marketStore} from '@/stores/market.js'
+import { computed } from 'vue'
+import { gameStore } from '@/stores/game.js'
+import { marketStore } from '@/stores/market.js'
+import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
 
 const game = gameStore()
 const market = marketStore()
@@ -29,8 +30,39 @@ const openOffers = computed(() =>
         .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate))
 )
 
-const priceCatalog = computed(() => market.priceCatalog || {plants: {}, animals: {}, inputs: {}})
+const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, inputs: {} })
 const harvested = computed(() => market.harvestedProducts || []) // [{ type, qty, shelfLife? }]
+
+// Price catalog tables
+const inputsHeaders = ['Item', 'Buy', 'Sell']
+const inputsRows = computed(() =>
+    Object.entries(priceCatalog.value.inputs || {}).map(([k, v]) => [
+      k,
+      fmtMoney(v?.buy ?? v),
+      fmtMoney(v?.sell ?? (k === 'electricitySellPerKWh' ? v : null)),
+    ])
+)
+
+const plantsHeaders = ['Type', 'seed', 'seedling', 'sapling']
+const plantsRows = computed(() =>
+    Object.entries(priceCatalog.value.plants || {}).map(([type, rec]) => [
+      type,
+      fmtMoney(rec.stagePrices?.seed),
+      fmtMoney(rec.stagePrices?.seedling),
+      fmtMoney(rec.stagePrices?.sapling),
+    ])
+)
+
+const animalsHeaders = ['Type', 'Stage', 'Buy']
+const animalsRows = computed(() => {
+  const rows = []
+  for (const [type, rec] of Object.entries(priceCatalog.value.animals || {})) {
+    for (const [stage, price] of Object.entries(rec.stagePrices || {})) {
+      rows.push([type, stage, fmtMoney(price)])
+    }
+  }
+  return rows
+})
 
 const today = computed(() => {
   const d = game.currentDate
@@ -52,69 +84,27 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
 
     <section class="panel">
       <h3>Price Catalog</h3>
-      <div class="grid">
-        <div class="card">
-          <h4>Inputs & Utilities</h4>
-          <table class="kv">
-            <thead>
-            <tr>
-              <th>Item</th>
-              <th>Buy</th>
-              <th>Sell</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(v,k) in priceCatalog.inputs" :key="k">
-              <td>{{ k }}</td>
-              <td>{{ fmtMoney(v?.buy ?? v) }}</td>
-              <td>{{ fmtMoney(v?.sell ?? (k === 'electricitySellPerKWh' ? v : null)) }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <h4>Plants (seed, seedling/sapling)</h4>
-          <table class="kv">
-            <thead>
-            <tr>
-              <th>Type</th>
-              <th v-for="st in ['seed','seedling','sapling']" :key="st">{{ st }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(rec, type) in priceCatalog.plants" :key="type">
-              <td>{{ type }}</td>
-              <td>{{ fmtMoney(rec.stagePrices?.seed) }}</td>
-              <td>{{ fmtMoney(rec.stagePrices?.seedling) }}</td>
-              <td>{{ fmtMoney(rec.stagePrices?.sapling) }}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <h4>Animals (by stage)</h4>
-          <table class="kv">
-            <thead>
-            <tr>
-              <th>Type</th>
-              <th>Stage</th>
-              <th>Buy</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template v-for="(rec, type) in priceCatalog.animals" :key="type">
-              <tr v-for="(price, stage) in rec.stagePrices" :key="type+'-'+stage">
-                <td>{{ type }}</td>
-                <td>{{ stage }}</td>
-                <td>{{ fmtMoney(price) }}</td>
-              </tr>
-            </template>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <simpleTable
+          title="Inputs & Utilities"
+          :headers="inputsHeaders"
+          :data="inputsRows"
+          :startOpen="true"
+          class="noToggle"
+      />
+      <simpleTable
+          title="Plants (seed, seedling/sapling)"
+          :headers="plantsHeaders"
+          :data="plantsRows"
+          :startOpen="true"
+          class="noToggle"
+      />
+      <simpleTable
+          title="Animals (by stage)"
+          :headers="animalsHeaders"
+          :data="animalsRows"
+          :startOpen="true"
+          class="noToggle"
+      />
     </section>
 
     <section class="panel">
@@ -204,12 +194,6 @@ const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
   grid-template-columns: repeat(4, auto);
   gap: 1rem;
   align-items: center;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: .8rem;
 }
 
 .list {
