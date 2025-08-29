@@ -167,7 +167,7 @@ function handlePhaseChange() {
   if (next === 0) { // Phase 0 — Analytics
     // auto-open
     on('log')
-    setLayoutWidth('full')
+    setLayoutWidth('single')
     // available but closed
     off('analytics');
     off('weather');
@@ -187,7 +187,7 @@ function handlePhaseChange() {
     }, 500)
 
   } else if (next === 1) { // Phase 1 — Optimization
-    setLayoutWidth('double')
+    setLayoutWidth('single')
     // auto-open planners
     on('animals');
     on('plants');
@@ -196,7 +196,7 @@ function handlePhaseChange() {
     off('weather');
     off('news');
     off('market');
-    off('analytics');
+    on('analytics');
     off('log')
     // not allowed
     disable('assemblies');
@@ -205,7 +205,7 @@ function handlePhaseChange() {
     eventBus.emit('log', {engine: 'optimizations', msg: 'Running simulations...'})
 
   } else if (next === 2) { // Phase 2 — Operations
-    setLayoutWidth('single')
+    setLayoutWidth('double')
     // auto-open ops
     on('assemblies');
     on('gate')

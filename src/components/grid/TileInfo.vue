@@ -1,6 +1,6 @@
 <!-- src/components/grid/TileInfo.vue -->
 <script setup>
-import { computed } from 'vue'
+import {computed, ref} from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
 
@@ -11,6 +11,7 @@ const currentTile = computed(() => {
   const t = map.selectedTile
   return t && typeof t === 'object' && 'value' in t ? t.value : t
 })
+const turnPhase = computed(() => game.turnPhase)
 
 const selectedKey = computed(() =>
     currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
@@ -136,7 +137,7 @@ function fmt(entry) {
           <thead>
           <tr>
             <th>Path</th>
-            <th>Previous</th>
+            <th>{{turnPhase}} {{turnPhase === 0 ? 'Previous' : turnPhase === 1 ? 'Projected' : 'Planned'}}</th>
             <th>Current</th>
             <th>Δ</th>
           </tr>
