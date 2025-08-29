@@ -147,6 +147,7 @@ const subcomponents = {
       <div class="sectionBody">
         <component
             v-for="(subsection) in section.subcomponents"
+            :key="subsection.type + '-' + (subsection.title || '')"
             :is="subcomponents[subsection.type]"
             :data="subsection.data"
             :title="subsection.title"
