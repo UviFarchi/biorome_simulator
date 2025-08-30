@@ -29,19 +29,5 @@ const rows = computed(() =>
 </template>
 
 <style scoped>
-.operations {
-  color: purple;
-}
 
-.analytics {
-  color: orange;
-}
-
-.optimizations {
-  color: green;
-}
-
-.simulation {
-  color: yellow;;
-}
 </style>

@@ -2,12 +2,16 @@
 import {computed, ref} from 'vue'
 import eventBus from '@/eventBus.js'
 import {mapStore} from '@/stores/map.js'
+import { gameStore } from '@/stores/game.js'
 import TerrainBackdrop from '@/components/grid/TerrainBackdrop.vue'
 import TileInfo from '@/components/grid/TileInfo.vue'
 
 const map = mapStore()
+const game = gameStore()
+
 const size = computed(() => map.size)
-const flatTiles = computed(() => map.tiles.flat())
+const flatTiles = computed(() => (game.turnPhase === 1 ? map.optimizedTiles : map.tiles).flat())
+
 
 function isSelected(tile) {
   return map.selectedTile.value?.row === tile.row && map.selectedTile.value?.col === tile.col
@@ -54,7 +58,7 @@ function closeModal(){
       <div v-for="tile in flatTiles"
            :key="`${tile.row}-${tile.col}`"
            :class="['cell', { active: isSelected(tile) }, {unsurveyed: !isSurveyed(tile)}]"
-           :title="`R${tile.row+1} C${tile.col+1} | ${tile.topography.elevation.env.toFixed(1)} m`"
+           :title="`Row: ${tile.row+1} Column: ${tile.col+1}`"
            @click="clickTile(tile)">
         <div class="icons">
           <span v-if="tile.plants">{{ tile.plants.map(p => p.icon) }}</span>

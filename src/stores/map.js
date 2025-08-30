@@ -13,7 +13,7 @@ export const mapStore = defineStore('mapStore', () => {
         cellSize: 100
     }
 const previousDayTiles=[]
-const optimizedTiles=[]
+const optimizedTiles=ref([])
     const tiles = ref(
         Array.from({length: size.value}, (_, row) =>
                 Array.from({length: size.value}, (_, col) => ({

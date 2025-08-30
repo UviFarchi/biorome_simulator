@@ -59,7 +59,6 @@ function restart() {
 const spinnerOn = ref(false);
 
 function toggleSpinner(on) {
-  console.log('spinner', on)
   spinnerOn.value = on
 }
 
@@ -197,8 +196,6 @@ onBeforeUnmount(() => {
                   :disabled="!allowedSet.has('gate')"
                   @click.stop="eventBus.emit('overlay', { target: 'gate' })">
           </button>
-
-
           <div class="label">Gate</div>
         </div>
         <hr/>

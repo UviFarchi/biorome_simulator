@@ -153,27 +153,20 @@
 .kv.inner td { border: 0; padding: 2px 0; }
 .kv.inner.onecol td { white-space: normal; }
 
-.card {
-  background: black;
-  border-radius: var(--radius);
-  box-shadow: 0 1px 4px #0001;
-  padding: 0.7em 0.8em;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #2a3b45;
+.operations {
+  color: purple;
 }
 
-.card--horizontal {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.8em;
-  padding: 0.4em 0.8em;
+.analytics {
+  color: orange;
 }
 
-.card--vertical {
-  align-items: center;
-  gap: 0.5em;
-  justify-content: space-between;
+.optimizations {
+  color: green;
+}
+
+.simulation {
+  color: yellow;;
 }
 
 .btn {

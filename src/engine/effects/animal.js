@@ -5,9 +5,11 @@ function foodConsumption(context) {
 }
 
 export default {
-    cow: [{target: 'resources', property: 'food', delta: foodConsumption},   ],
+    cow: [
+        {target: 'resources', property: 'food', delta: foodConsumption},
+    ],
     goat:
-        [{target: 'resources', property: 'food', delta: -1},       ],
+        [{target: 'soil', property: 'organicCarbon', delta: +1},       ],
     sheep:
         [{target: 'resources', property: 'food', delta: -1},       ],
     pig:
