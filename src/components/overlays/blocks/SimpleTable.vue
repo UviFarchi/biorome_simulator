@@ -17,15 +17,36 @@ const isOpen = ref(!!props.startOpen)
 
 const maxColumns = computed(() => {
   const headerLen = Array.isArray(props.headers) ? props.headers.length : 0
-  const rowMax = props.data.reduce((m, r) => Math.max(m, Array.isArray(r) ? r.length : 0), 0)
+  const rowMax = props.data.reduce((m, r) => {
+    const cells = Array.isArray(r)
+        ? r
+        : Array.isArray(r?.cells)
+            ? r.cells
+            : Array.isArray(r?.values)
+                ? r.values
+                : []
+    return Math.max(m, cells.length)
+  }, 0)
   return Math.max(headerLen, rowMax, 1)
 })
 
 const normalizedRows = computed(() =>
     props.data.map((row) => {
-      const arr = Array.isArray(row) ? row.slice(0, maxColumns.value) : [row]
+      let className = ''
+      let cells
+
+      if (Array.isArray(row)) {
+        cells = row
+      } else if (row && typeof row === 'object') {
+        className = row.className || row.class || ''
+        cells = Array.isArray(row.cells) ? row.cells : Array.isArray(row.values) ? row.values : [row]
+      } else {
+        cells = [row]
+      }
+
+      const arr = cells.slice(0, maxColumns.value)
       while (arr.length < maxColumns.value) arr.push('—')
-      return arr
+      return { className, cells: arr }
     })
 )
 
@@ -56,8 +77,8 @@ function display(cell) {
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(row, rIdx) in normalizedRows" :key="'r-'+rIdx">
-        <td v-for="(cell, cIdx) in row" :key="'c-'+rIdx+'-'+cIdx" class="wrap">{{ display(cell) }}</td>
+      <tr v-for="(row, rIdx) in normalizedRows" :key="'r-'+rIdx" :class="row.className">
+        <td v-for="(cell, cIdx) in row.cells" :key="'c-'+rIdx+'-'+cIdx" class="wrap">{{ display(cell) }}</td>
       </tr>
       <tr v-if="!normalizedRows.length">
         <td :colspan="maxColumns">—</td>
