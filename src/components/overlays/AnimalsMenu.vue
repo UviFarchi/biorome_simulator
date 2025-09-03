@@ -3,13 +3,13 @@ import {computed} from 'vue'
 import {mapStore} from '@/stores/map.js'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-// Using same import pattern seen elsewhere in the project
-import {animal as animalsStore} from '@/stores/animal.js'
+import {animalStore} from '@/stores/animal.js'
+import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
 
 const map = mapStore()
 const game = gameStore()
 const market = marketStore()
-const animals = animalsStore()
+const animals = animalStore()
 
 const currentTile = computed(() => {
   const selected = map.selectedTile
@@ -21,18 +21,10 @@ const selectedTileKey = computed(() => {
 })
 
 const animalTypesList = animals.animalTypes
-console.log(animalTypesList)
 
 function addAnimalToTile(animalType, growthStage) {
   const tile = currentTile.value
-
-  if (!tile) return
-
-  const baseAnimal = animalTypesList.find(a => a.type === animalType)
-  if (!baseAnimal) return
-
-  const animalToAdd = { ...baseAnimal, growthStage }
-  tile.animals.push(animalToAdd)
+  tile.animals.projected.push(makeInstance('animal', animalType, growthStage))
 }
 
 </script>

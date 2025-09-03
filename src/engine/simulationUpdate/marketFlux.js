@@ -2,8 +2,8 @@
 import {v4 as uuidv4} from 'uuid'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-import {plant as plantsStore} from '@/stores/plant.js'
-import {animal as animalsStore} from '@/stores/animal.js'
+import {plantStore} from '@/stores/plant.js'
+import {animalStore} from '@/stores/animal.js'
 
 // ——— utils
 const iso = d => new Date(d).toISOString().slice(0, 10)
@@ -23,22 +23,23 @@ function eventPriceModifier(game, productType) {
 
 function basePriceDict(plants, animals) {
     const pp = plants.products ?? {}   // plant products dict (key → {basePrice})
-    const ap = animals.products ?? {}  // animal products dict (key → {basePrice})  :contentReference[oaicite:2]{index=2}
+    const ap = animals.products ?? {}  // animal products dict (key → {basePrice})
     return {...pp, ...ap}
 }
 
 // ——— plant buy prices: only seed + seedling/sapling
 function plantStagePrices(plants, productPrices) {
     const out = {}
-    const list = plants.plantTypes || []                                          // :contentReference[oaicite:3]{index=3}
+    const list = plants.plantTypes || []
     for (const p of list) {
         const type = p.type
         const stages = p.growthStages || []
-        const days = p.daysPerDevStage || []
+        const days = p.daysPerGrowthStage || []
         const productKey = p.productKey
         const base = productKey ? productPrices[productKey]?.basePrice : undefined
         if (!type || !stages.length || !productKey || typeof base !== 'number') continue
 
+    // same multipliers as before, now applied to per-ha quantities
         const isPerennial = (p.plantMaterialKey === 'wood') || days.some(d => (d || 0) >= 1000) || stages.includes('sapling')
         const kSeed = isPerennial ? 2.0 : 1.5
         const kSeedling = isPerennial ? 10.0 : 4.0
@@ -46,14 +47,19 @@ function plantStagePrices(plants, productPrices) {
         const purch = []
         const prices = {}
         if (stages.includes('seed')) {
-            prices.seed = Math.max(1, Math.round(base * kSeed));
+      const qtyKgPerHa = Number(p.seedRate_kg_per_ha || 0)           // kg/ha
+      prices.seed = Math.max(1, Math.round(base * kSeed * qtyKgPerHa))
             purch.push('seed')
         }
+
+    // second buyable stage can be 'seedling' or 'sapling' depending on species
         if (stages.includes('seedling')) {
-            prices.seedling = Math.max(1, Math.round(base * kSeedling));
+      const qtyUnitsPerHa = Number(p.seedlingDensity_per_ha || 0)     // units/ha
+      prices.seedling = Math.max(1, Math.round(base * kSeedling * qtyUnitsPerHa))
             purch.push('seedling')
         } else if (stages.includes('sapling')) {
-            prices.sapling = Math.max(1, Math.round(base * kSeedling));
+      const qtyUnitsPerHa = Number(p.seedlingDensity_per_ha || 0)
+      prices.sapling = Math.max(1, Math.round(base * kSeedling * qtyUnitsPerHa))
             purch.push('sapling')
         }
 
@@ -65,7 +71,7 @@ function plantStagePrices(plants, productPrices) {
 // ——— animal buy prices: scale by adult-revenue anchor
 function animalStagePrices(animals, productPrices) {
     const out = {}
-    const list = animals.animalTypes || []                                        // :contentReference[oaicite:4]{index=4}
+    const list = animals.animalTypes || []
     for (const a of list) {
         const type = a.type
         const stages = a.growthStages || []
@@ -95,18 +101,19 @@ function animalStagePrices(animals, productPrices) {
     return out
 }
 
-function inputsCatalog(market) {
-    const extras = market.extraBuyables || []                                     // feed, fertilizer  :contentReference[oaicite:5]{index=5}
+function resourcesCatalog(game, market) {
+    const base = market.baseResources || {}
     const out = {}
-    for (const x of extras) if (x?.type && typeof x?.basePrice === 'number') out[x.type] = x.basePrice
-    const u = market.utilityPrices || {}                                          // electricity, water, waste  :contentReference[oaicite:6]{index=6}
-    return {
-        ...out,
-        electricityBuyPerKWh: u.electricityBuyPerKWh ?? 0,
-        electricitySellPerKWh: u.electricitySellPerKWh ?? 0,
-        waterBuyPerM3: u.waterBuyPerM3 ?? 0,
-        wasteDisposalPerTon: u.wasteDisposalPerTon ?? 0
+    for (const k of Object.keys(base)) {
+        const b = base[k]
+        const noise = 0.9 + Math.random() * 0.2
+        const mod = eventPriceModifier(game, k)
+        out[k] = {
+            label: b.label, unit: b.unit, icon: b.icon, shelfLifeDays: b.shelfLifeDays,
+            unitPrice: Number((b.basePrice * noise * mod).toFixed(2)),
+        }
     }
+    return out
 }
 
 function pruneExpired(market, todayISO) {
@@ -169,10 +176,10 @@ function genContractOffers(game, market, productPrices, n = 1) {
 
 // ——— public API
 export function marketFlux() {
-    const game = gameStore()          // currentDate, currentEvents.market  :contentReference[oaicite:7]{index=7}
-    const market = marketStore()      // offers, contracts, utilities, extras  :contentReference[oaicite:8]{index=8}
-    const plants = plantsStore()      // plantTypes + products
-    const animals = animalsStore()    // animalTypes + products              :contentReference[oaicite:10]{index=10}
+    const game = gameStore()          // currentDate, currentEvents.market
+    const market = marketStore()      // offers, contracts, utilities, extras
+    const plants = plantStore()      // plantTypes + products
+    const animals = animalStore()    // animalTypes + products
 
     const today = iso(game.currentDate)
     if (market.lastMarketDate === today) return {ran: false, reason: 'already_ran'}
@@ -223,9 +230,8 @@ export function marketFlux() {
     const prices = basePriceDict(plants, animals)
     const plantPrices = plantStagePrices(plants, prices)
     const animalPrices = animalStagePrices(animals, prices)
-    const inputs = inputsCatalog(market)
-
-    market.priceCatalog = {plants: plantPrices, animals: animalPrices, inputs}
+    const resources = resourcesCatalog(game, market)
+    market.priceCatalog = { plants: plantPrices, animals: animalPrices, resources }
 
     // 3) new offers
     genOpenOffers(game, market, prices, 1)

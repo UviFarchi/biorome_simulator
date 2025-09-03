@@ -1,15 +1,15 @@
-<!-- src/components/overlays/PlantsMenu.vue -->
 <script setup>
 import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
-import { plant as plantsStore } from '@/stores/plant.js'
+import { plantStore } from '@/stores/plant.js'
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 
 const map = mapStore()
 const game = gameStore()
 const market = marketStore()
-const plants = plantsStore()
+const plants = plantStore()
 
 const currentTile = computed(() => {
   const selected = map.selectedTile
@@ -21,28 +21,19 @@ const selectedTileKey = computed(() => {
 })
 
 const plantTypesList = plants.plantTypes
-const plantCatalog = computed(() => market.priceCatalog?.plants || {})
-
-function purchasableStages(plantType) {
-  const record = plantCatalog.value[plantType]
-  return Array.isArray(record?.purchasableStages) ? record.purchasableStages : []
-}
-
-function stagePrice(plantType, stage) {
-  const record = plantCatalog.value[plantType]
-  return record?.stagePrices?.[stage] ?? null
-}
 
 function addPlantToTile(plantType, growthStage) {
   const tile = currentTile.value
-  if (!tile) return
+  tile.plants.projected.push(makeInstance('plant', plantType, growthStage))
+}
 
-  const basePlant = plantTypesList.find(p => p.type === plantType)
-  if (!basePlant) return
-
-  if (!Array.isArray(tile.plants)) tile.plants = []
-  const plantToAdd = { ...basePlant, growthStage }
-  tile.plants.push(plantToAdd)
+function plantStagePrice(plant, growthStage) {
+  const entry = market.priceCatalog.plants?.[plant.type]
+  const sp = entry?.stagePrices
+  if (!sp) return 'No price'
+  return Array.isArray(sp)
+      ? sp[plant.growthStages.indexOf(growthStage)] ?? 'No price'
+      : sp[growthStage] ?? 'No price'
 }
 </script>
 
@@ -68,19 +59,20 @@ function addPlantToTile(plantType, growthStage) {
         <div class="card-body">
           <div class="phase-buttons">
             <button
-                v-for="growthStage in purchasableStages(plant.type)"
-                :key="growthStage"
-                class="phase-button"
-                :disabled="!selectedTileKey"
-                @click="addPlantToTile(plant.type, growthStage)"
+                v-for="growthStage in plant.growthStages.slice(0, 2)"
+            :key="growthStage"
+            class="phase-button"
+            :disabled="!selectedTileKey"
+            @click="addPlantToTile(plant.type, growthStage)"
             >
-              <span class="phase-label">{{ growthStage }}</span>
-              <span class="phase-price">
-                {{ stagePrice(plant.type, growthStage) ?? 'No price' }}
+            <span class="phase-label">{{ growthStage }}</span>
+            <span class="phase-price">
+                {{ plantStagePrice(plant, growthStage) }}
               </span>
             </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -115,46 +107,21 @@ function addPlantToTile(plantType, growthStage) {
   justify-content: space-between;
 }
 
-.card-title {
-  font-weight: 600;
-}
+.card-title { font-weight: 600; }
+.card-icon { font-size: 20px; }
 
-.card-icon {
-  font-size: 20px;
-}
-
-.phase-buttons {
-  display: grid;
-  gap: 6px;
-}
+.phase-buttons { display: grid; gap: 6px; }
 
 .phase-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 8px 10px; border-radius: 8px;
   border: 1px solid var(--border, #2c3e50);
-  background: transparent;
-  cursor: pointer;
-  color: white;
+  background: transparent; cursor: pointer; color: white;
 }
+.phase-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.phase-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.phase-label { font-weight: 500; }
+.phase-price { font-variant-numeric: tabular-nums; }
 
-.phase-label {
-  font-weight: 500;
-}
-
-.phase-price {
-  font-variant-numeric: tabular-nums;
-}
-
-.hint {
-  opacity: 0.8;
-}
+.hint { opacity: 0.8; }
 </style>

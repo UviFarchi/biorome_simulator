@@ -29,7 +29,7 @@ export function produceReport() {
         currentDateISO
     )
 
-    const tileDiff    = buildTileDiff(currentGrid2D, map.optimizedTiles || [], currentDateISO)
+    const tileDiff    = buildTileDiff(currentDateISO)
     const resourceUse = buildResourceUse(currentGrid2D, currentDateISO)
 
     game.analyticsReport = { dataMissing, weather, market, ecology, tileDiff, resourceUse }

@@ -4,7 +4,7 @@ export const actionRequirementsStore = defineStore('actionRequirementsStore', ()
     return {
 
         harvest: {
-            // plant products
+            // plantStore products
             hay: [{type: 'transport'}, {type: 'battery'}, {type: 'cutter', subtype: 'rotating'}],
             corn_cob: [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
                 type: 'arm',
@@ -88,7 +88,7 @@ export const actionRequirementsStore = defineStore('actionRequirementsStore', ()
             }, {type: 'gripper'}, {type: 'cart'}],
 
 
-            // plant
+            // plantStore
             'corn': [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
                 type: 'arm',
                 subtype: 'medium'

@@ -42,8 +42,8 @@ export const gameStore = defineStore('gameStore', () => {
     const bioromizationStage = ref(0)
     const bioromizationStages = ref(['discovery', 'design', 'deployment'])
 
-    //turnPhase set to 3 to allow for first turn to start from phase 1
-    const turnPhase = ref(-1)
+    //phase set to 3 to allow for first turn to start from phase 1
+    const phase = ref(-1)
     const engines = ref(['analytics', 'optimizations', 'operations'])
 
     const userName = ref('')
@@ -63,7 +63,7 @@ export const gameStore = defineStore('gameStore', () => {
         difficulty,
         bioromizationStage,
         bioromizationStages,
-        turnPhase,
+        phase,
         engines,
         currentEvents,
         stageChangeCalendar,

@@ -1,15 +1,8 @@
 // UI-ready builder stub for the “Tile-by-tile diff” section
 import eventBus from '@/eventBus.js'
 
-/**
- * For now there is no optimization phase, so we return placeholders.
- * Keep the API stable so the UI can switch to these fields later.
- *
- * @param {Array<Array<Object>>} currentGrid2D
- * @param {Array<Array<Object>>} optimizedGrid2D
- * @param {string} currentDateISO  YYYY-MM-DD
- */
-export function buildTileDiff(currentGrid2D, optimizedGrid2D, currentDateISO) {
+
+export function buildTileDiff() {
     eventBus.emit('log', { engine: 'analytics', msg: 'Building Tile Diff Report (stub)' })
 
     // Simple overview table for the UI (SimpleTable.vue)

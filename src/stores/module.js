@@ -548,6 +548,6 @@ export const moduleStore = defineStore('moduleStore', () => {
     }]
 
 
-    const currentAssembly = ref([])
+
     return {availableModules,  premadeAssemblies, currentAssembly, constants}
 })

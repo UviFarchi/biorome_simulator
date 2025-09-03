@@ -13,7 +13,7 @@ export const REQUIRED = {
         'aggregateStability','hydraulicConductivity','soilTemperature',
         'microbialCFU_good','microbialCFU_bad','mycorrhizalColonization','earthwormCount'
     ],
-    resources: ['water','waste','electricity','food'],
+    resources: ['water','waste','electricity','feed'],
     plantHealth: true,
     animalHealth: true
 }

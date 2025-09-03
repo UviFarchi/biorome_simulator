@@ -43,18 +43,14 @@ export const marketStore = defineStore('marketStore', () => {
     const harvestedProducts = ref([])
 
     const notifications = ref([])
-    const extraBuyables = ref([
-        {type: 'feed', basePrice: 2, icon: '🍽️', shelfLife: 30},
-        {type: 'fertilizer', basePrice: 2, icon: '💩', shelfLife: 30},
-    ])
-
-    const utilityPrices = ref({
-        electricityBuyPerKWh: 0.19,
-        electricitySellPerKWh: 0.19,
-        waterBuyPerM3: 3.50,
-        wasteDisposalPerTon: 100
+    const baseResources = ref({
+        feed: {label: 'Feed', unit: 'kg', basePrice: 2.00, icon: '🍽️', shelfLifeDays: 30},
+        fertilizer: {label: 'Fertilizer', unit: 'kg', basePrice: 2.00, icon: '💩', shelfLifeDays: 30},
+        electricity: {label: 'Electricity', unit: 'kWh', basePrice: 0.19, icon: '⚡'},
+        water: {label: 'Water', unit: 'm³', basePrice: 3.50, icon: '💧'},
+        waste: {label: 'Waste dispo', unit: 't', basePrice: 100, icon: '🗑️'},
     })
-    const priceCatalog = ref({ plants: {}, animals: {}, inputs: {} })
+    const priceCatalog = ref({plants: {}, animals: {}, resources: {}})
     const lastMarketDate = ref(null)
     //TODO => Push daily market values into market history and keep for 7 game days.
     const marketHistory = []
@@ -63,8 +59,7 @@ export const marketStore = defineStore('marketStore', () => {
         contracts,
         openMarketOffers,
         harvestedProducts,
-        extraBuyables,
-        utilityPrices,
+        baseResources,
         notifications,
         priceCatalog,
         lastMarketDate,

@@ -14,9 +14,7 @@ import PlantsMenu from '@/components/overlays/PlantsMenu.vue'
 import FarmGate from '@/components/overlays/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
 import {loadAllStores} from '@/utils.js'
-
 import Market from '@/components/overlays/Market.vue'
-import ResourcesMenu from '@/components/overlays/ResourcesMenu.vue'
 import News from '@/components/overlays/News.vue'
 import {produceReport} from "@/engine/phases/analytics/produceReport.js";
 import updateGame from "@/engine/simulationUpdate/updateGame.js";
@@ -43,7 +41,6 @@ const compByKey = {
   weather: WeatherPanel,
   log: EventLog,
   analytics: AnalyticsReport,
-  resources: ResourcesMenu,
   market: Market,
   animals: AnimalsMenu,
   plants: PlantsMenu,
@@ -158,7 +155,7 @@ function switchLane(key) {
 function handlePhaseChange() {
   eventBus.emit('spinner', true)
   const engines = game.engines
-  const next = ((game.turnPhase + 1) % engines.length + engines.length) % engines.length
+  const next = ((game.phase + 1) % engines.length + engines.length) % engines.length
 
   const on = (target) => eventBus.emit('overlay', {target, show: true, enable: true})
   const off = (target) => eventBus.emit('overlay', {target, show: false, enable: true})
@@ -223,7 +220,7 @@ function handlePhaseChange() {
     eventBus.emit('log', {engine: 'operations', msg: 'Executing instructions...'})
   }
 
-  game.turnPhase = next
+  game.phase = next
   setTimeout(() => {
     eventBus.emit('spinner', false)
   }, 1000)
@@ -232,14 +229,14 @@ function handlePhaseChange() {
 onMounted(() => {
   eventBus.on('overlay', toggleOverlay)
   eventBus.on('phase', handlePhaseChange)
-  eventBus.on('layout', setLayoutWidth)   // ← add
+  eventBus.on('layout', setLayoutWidth)
   loadAllStores()
 })
 
 onBeforeUnmount(() => {
   eventBus.off('overlay', toggleOverlay)
   eventBus.off('phase', handlePhaseChange)
-  eventBus.off('layout', setLayoutWidth)  // ← add
+  eventBus.off('layout', setLayoutWidth)
 })
 
 
@@ -259,6 +256,7 @@ onBeforeUnmount(() => {
 
         <div v-for="k in lanes.left" :key="'L-'+k" class="overlay-wrapper">
           <div class="overlay-controls">
+            <!--TODO: make overlay half height-->
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
             <button v-if="isSingleWidth" @click="switchLane(k)" aria-label="Switch lane">→</button>

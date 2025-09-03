@@ -5,7 +5,7 @@ import {gameStore} from '@/stores/game.js'
 import {clearSavedStores, loadAllStores} from '@/utils.js'
 
 const game = gameStore()
-const phase = computed(() => game.turnPhase)
+const phase = computed(() => game.phase)
 const currentPhaseLabel = computed(() => game.engines[(phase.value) % game.engines.length])
 const nextPhaseLabel = computed(() => game.engines[(phase.value + 1) % game.engines.length])
 
@@ -17,15 +17,15 @@ const stageLabel = computed(() => game.bioromizationStages[game.bioromizationSta
 // Active highlight per overlay (toggled via existing `overlay` events)
 const open = reactive({
   weather: false, news: false, log: false, analytics: false,
-  market: false, gate: false, resources: false, animals: false, plants: false, assemblies: false
+  market: false, gate: false, animals: false, plants: false, assemblies: false
 })
-
+const bioromeTest = ref(false)
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
   if (phase.value === 0) {
     return new Set(['weather', 'news', 'log', 'analytics', 'market']) // analytics enabled, user may open
   } else if (phase.value === 1) {
-    return new Set(['weather', 'news', 'log', 'analytics', 'market', 'animals', 'plants', 'resources'])
+    return new Set(['weather', 'news', 'log', 'analytics', 'market', 'animals', 'plants', 'assemblies'])
   } else { // phase 2
     return new Set(['weather', 'news', 'log', 'market', 'assemblies', 'gate'])
   }
@@ -70,6 +70,123 @@ onMounted(() => {
 onBeforeUnmount(() => {
   eventBus.off('spinner', toggleSpinner)
 })
+
+
+/*** TEST MODE ***/
+import {mapStore} from '@/stores/map.js'
+import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
+
+const map = mapStore()
+const testTimerId = ref(null)
+
+function getTileAt(row, col) {
+  const grid = Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
+  return grid?.[row]?.[col] || null
+}
+
+function addTestEntitiesToTile(row, col) {
+  const tile = getTileAt(row, col)
+  if (!tile) return
+
+  tile.plants.real ||= []
+  tile.animals.real ||= []
+  tile.assemblies ||= []
+
+
+  if (!tile.plants.real.some(p => p.type === 'tomato' && p.growthStage === 'mature')) {
+    tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
+  }
+
+  // Animal: cow @ heifer (minimal instance shape)
+  if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
+// Animal: cow @ heifer
+    if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
+      tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
+    }
+  }
+
+  // Assembly: fixed id
+  if (!tile.assemblies.some(s => s.id === 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')) {
+    tile.assemblies.push({
+      id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
+      modules: [
+        {type: 'transport', subtype: 'ground'},
+        {type: 'arm', subtype: 'medium'},
+        {type: 'tool', subtype: 'seeder'},
+        {type: 'tool', subtype: 'borer'}
+      ],
+      name: 'Seed Planter',
+      deployed: false,
+      built: false,
+      moves: 1,
+      actions: 1,
+      orders: ['feed', 'acidify']
+    })
+  }
+}
+
+function removeTestEntitiesFromTile(row, col) {
+  const tile = getTileAt(row, col)
+  if (!tile) return
+  if (Array.isArray(tile.plants.real)) tile.plants.real = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
+  if (Array.isArray(tile.animals.real)) tile.animals.real = tile.animals.real.filter(a => !(a.type === 'cow' && a.growthStage === 'heifer'))
+  if (Array.isArray(tile.assemblies)) tile.assemblies = tile.assemblies.filter(s => s.id !== 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')
+}
+
+function syncMeasuredToEnvOnce() {
+  const addOneDayISO = () => {
+    const d = new Date(game.currentDate)
+    d.setDate(d.getDate() + 1)
+    return d.toISOString()
+  }
+  const stamp = addOneDayISO()
+
+  const syncNode = (n) => {
+    if (!n || typeof n !== 'object') return
+    if ('env' in n && n.measured && typeof n.measured === 'object') {
+      n.measured.value = n.env
+      n.measured.date = stamp
+      return
+    }
+    if (Array.isArray(n)) {
+      n.forEach(syncNode);
+      return
+    }
+    for (const k in n) syncNode(n[k])
+  }
+
+  const grid = Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
+  if (!grid) return
+  for (const row of grid) {
+    for (const tile of row) {
+      syncNode(tile.topography)
+      syncNode(tile.soil)
+      syncNode(tile.resources)
+      syncNode(tile.plants.real)
+      syncNode(tile.animals.real)
+    }
+  }
+}
+
+function startTestingSync() {
+  if (testTimerId.value) return
+  addTestEntitiesToTile(2, 1)
+  syncMeasuredToEnvOnce()
+  testTimerId.value = setInterval(syncMeasuredToEnvOnce, 1000)
+}
+
+function stopTestingSync() {
+  if (testTimerId.value) {
+    clearInterval(testTimerId.value)
+    testTimerId.value = null
+  }
+  removeTestEntitiesFromTile(2, 1)
+}
+
+watch(bioromeTest, on => (on ? startTestingSync() : stopTestingSync()), {immediate: true})
+onBeforeUnmount(stopTestingSync)
+
+
 </script>
 
 
@@ -83,6 +200,11 @@ onBeforeUnmount(() => {
           <div class="optionsMenu" role="menu">
             <button role="menuitem" @click.stop="restart">Restart</button>
             <button role="menuitem">Tutorial Mode</button>
+            <button role="menuitem"
+                    :class="{ active: bioromeTest }"
+                    @click.stop="bioromeTest = !bioromeTest">
+              Testing Mode
+            </button>
           </div>
         </div>
       </div>
@@ -90,13 +212,14 @@ onBeforeUnmount(() => {
         <div class="subpanel-title">Layout</div>
         <div class="layout-controls">
           <button class="layout-btn" @click.stop="eventBus.emit('layout','single')" title="Single width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="singleLayoutTitle" focusable="false" style="pointer-events:none">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="singleLayoutTitle"
+                 focusable="false" style="pointer-events:none">
               <title id="singleLayoutTitle">Single layout</title>
               <!-- frame -->
               <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
               <!-- lanes -->
-              <rect x="0.5"   y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <rect x="33.5"  y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <rect x="0.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <rect x="33.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
               <!-- grid (center 19 units wide) -->
               <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
                 <!-- horizontals -->
@@ -110,12 +233,13 @@ onBeforeUnmount(() => {
             </svg>
           </button>
           <button class="layout-btn" @click.stop="eventBus.emit('layout','double')" title="Double width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="doubleLayoutTitle" focusable="false" style="pointer-events:none">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="doubleLayoutTitle"
+                 focusable="false" style="pointer-events:none">
               <title id="doubleLayoutTitle">Double layout</title>
               <!-- frame -->
               <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
               <!-- wide left lane -->
-              <rect x="0.5"  y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85"/>
+              <rect x="0.5" y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85"/>
               <!-- narrow grid on right (14 units) -->
               <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
                 <!-- horizontals -->
@@ -129,7 +253,8 @@ onBeforeUnmount(() => {
             </svg>
           </button>
           <button class="layout-btn" @click.stop="eventBus.emit('layout','full')" title="Full width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="fullLayoutTitle" focusable="false" style="pointer-events:none">
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="fullLayoutTitle"
+                 focusable="false" style="pointer-events:none">
               <title id="fullLayoutTitle">Full layout</title>
               <!-- frame -->
               <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
@@ -199,14 +324,6 @@ onBeforeUnmount(() => {
           <div class="label">Gate</div>
         </div>
         <hr/>
-        <div class="controlItem">
-          <button id="showResources" class="controlButton"
-                  :class="stateClass('resources')"
-                  :disabled="!allowedSet.has('resources')"
-                  @click.stop="eventBus.emit('overlay', { target: 'resources' })">
-          </button>
-          <div class="label">Resources</div>
-        </div>
         <div class="controlItem">
           <button id="showAnimals" class="controlButton"
                   :class="stateClass('animals')"
@@ -352,6 +469,10 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
+.optionsMenu button.active {
+  background: #97ffb0;
+}
+
 .menu-wrap:focus-within .optionsMenu {
   display: block;
 }
@@ -495,8 +616,9 @@ onBeforeUnmount(() => {
   font-family: monospace;
 }
 
-.layout-btn svg{
+.layout-btn svg {
   color: black;
 }
+
 
 </style>

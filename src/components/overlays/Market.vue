@@ -30,13 +30,13 @@ const openOffers = computed(() =>
         .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate))
 )
 
-const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, inputs: {} })
+const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, resources: {} })
 const harvested = computed(() => market.harvestedProducts || []) // [{ type, qty, shelfLife? }]
 
 // Price catalog tables
 const inputsHeaders = ['Item', 'Buy', 'Sell']
 const inputsRows = computed(() =>
-    Object.entries(priceCatalog.value.inputs || {}).map(([k, v]) => [
+    Object.entries(priceCatalog.value.resources || {}).map(([k, v]) => [
       k,
       fmtMoney(v?.buy ?? v),
       fmtMoney(v?.sell ?? (k === 'electricitySellPerKWh' ? v : null)),

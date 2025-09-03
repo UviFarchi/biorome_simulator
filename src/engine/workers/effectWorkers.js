@@ -23,11 +23,7 @@ const EFFECT_CATALOGS = {
 const EXECUTION_ORDER = ['weather','assemblies','topography','soil','animals','plants','resources']
 
 self.onmessage = (event) => {
-    const tiles = event?.data?.tiles
-    if (!Array.isArray(tiles)) {
-        self.postMessage([])
-        return
-    }
+    const tiles = event.data.tiles
     // Process tiles in the order received
     const t0 = performance.now?.() ?? Date.now()
     const processed = tiles.map(applyEffectsToTile)

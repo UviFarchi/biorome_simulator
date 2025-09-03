@@ -1,32 +1,36 @@
 <script setup>
-import { onMounted, watch, ref } from 'vue'
+import {onMounted, watch, ref, computed} from 'vue'
 import { mapStore } from '@/stores/map.js'
+import {gameStore} from "@/stores/game.js";
 
 const canvas = ref(null)
 const map = mapStore()
-
+const game = gameStore()
+const phase = computed(() => game.phase)
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
 
-// Tunable palette for stronger separation
-const palette = {
-  landHueLow: 240,     // green lowlands
-  landHueHigh: 0,     // red-brown highlands (wider span than before)
-  landSat: 1,       // more saturated land colors
-  gamma: 0.6,          // <1 exaggerates contrast; >1 flattens
-  quantizeBands: 0,    // set for stepped topo bands; 0 disables
-  lightBase: 0.58,     // base lightness at low elevation
-  lightRange: 0.28,    // how much lightness drops with elevation
-  shadeStrength: 0.30, // influence of hillshade (0..1)
 
+const palette = computed(() => ({
+  landHueLow: phase.value === 1 ? 220 : 240,
+  landHueHigh: 20,
+  landSat: 1,
+  gamma: phase.value === 1 ? 0.45 : 0.6,     // smaller = more contrast
+  quantizeBands: phase.value === 1 ? 6 : 0,
+  lightBase: 0.58,
+  lightRange: 0.28,
+  shadeStrength: 0.30,
   waterHue: 205,
   waterSat: 0.75,
   waterLightBase: 0.62,
   waterLightRange: 0.30
-}
+}))
+
 
 function paint () {
   const el = canvas.value
   if (!el) return
+  const pal = palette.value
+// use pal.quantizeBands, pal.landHueLow, etc.
 
   const tiles = map.tiles
   const rows = tiles.length, cols = rows ? tiles[0].length : 0
@@ -111,22 +115,22 @@ function paint () {
       if (e <= wt) {
         // water: darker as it gets deeper
         const depth = clamp((wt - e) / Math.max(1, espan * 0.15), 0, 1)
-        const L = palette.waterLightBase - palette.waterLightRange * depth
-        ;[r, g, b] = hslToRgb(palette.waterHue, palette.waterSat, L)
+        const L = pal.waterLightBase - pal.waterLightRange * depth
+        ;[r, g, b] = hslToRgb(pal.waterHue, pal.waterSat, L)
       } else {
         // land: wider hue span, optional quantization, gamma curve, hillshade
         let t = clamp((e - emin) / espan, 0, 1)
-        if (palette.quantizeBands > 1) {
-          t = Math.round(t * (palette.quantizeBands - 1)) / (palette.quantizeBands - 1)
+        if (pal.quantizeBands > 1) {
+          t = Math.round(t * (pal.quantizeBands - 1)) / (pal.quantizeBands - 1)
         }
-        t = Math.pow(t, palette.gamma)
+        t = Math.pow(t, pal.gamma)
 
-        const hue = palette.landHueLow + (palette.landHueHigh - palette.landHueLow) * t
-        const lightNoShade = palette.lightBase + palette.lightRange * (1 - t)
+        const hue = pal.landHueLow + (pal.landHueHigh - pal.landHueLow) * t
+        const lightNoShade = pal.lightBase + pal.lightRange * (1 - t)
         const sh = clamp(shade(u, v), 0, 1)
-        const light = lightNoShade * (1 - palette.shadeStrength * (1 - sh))
+        const light = lightNoShade * (1 - pal.shadeStrength * (1 - sh))
 
-        ;[r, g, b] = hslToRgb(hue, palette.landSat, light)
+        ;[r, g, b] = hslToRgb(hue, pal.landSat, light)
       }
 
       data[p++] = r | 0
@@ -140,6 +144,8 @@ function paint () {
 
 onMounted(paint)
 watch(() => [map.size, map.tiles], paint, { deep: true })
+watch(phase, paint)
+
 </script>
 
 

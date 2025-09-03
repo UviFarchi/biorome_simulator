@@ -1,4 +1,4 @@
-// src/utils.js
+
 import { assemblyRequirementsStore } from '@/stores/assemblyRequirements.js'
 import { mapStore }                 from '@/stores/map.js'
 import { gameStore }              from '@/stores/game.js'
@@ -7,7 +7,7 @@ import { weatherStore }             from '@/stores/weather.js'
 import { moduleStore }             from '@/stores/module.js'
 import eventBus                     from '@/eventBus.js'
 
-// ---------- Store registry + memoization ----------
+
 const factoryByName = Object.fromEntries(
     Object.entries({
         assemblyRequirementsStore,
@@ -15,7 +15,6 @@ const factoryByName = Object.fromEntries(
         mapStore,
         marketStore,
         weatherStore,
-        moduleStore,
     }).map(([exportedName, factoryFn]) => [exportedName.replace(/Store$/, ''), factoryFn])
 )
 
@@ -114,7 +113,6 @@ function saveAllStores() {
         map:       getStore('map').$state,
         market:    getStore('market').$state,
         weather:   getStore('weather').$state,
-        modules:   getStore('module').$state,
     }
     localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
     eventBus.emit('log', { engine: 'simulation', msg: 'State saved' })
@@ -132,8 +130,6 @@ function loadAllStores() {
     if (data.map)       getStore('map').$patch(data.map)
     if (data.market)    getStore('market').$patch(data.market)
     if (data.weather)   getStore('weather').$patch(data.weather)
-    if (data.modules)   getStore('module').$patch(data.modules)
-
     eventBus.emit('log', { engine: 'simulation', msg: 'State loaded' })
     return true
 }
@@ -142,6 +138,8 @@ function clearSavedStores() {
     localStorage.removeItem(SAVE_KEY)
     eventBus.emit('log', { engine: 'simulation', msg: 'Saved state cleared' })
 }
+
+
 
 // ---------- Exports ----------
 export {

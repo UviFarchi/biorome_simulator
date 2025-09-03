@@ -59,7 +59,7 @@ export const assemblyRequirementsStore = defineStore('assemblyRequirementsStore'
         'rfid:*':        { allow: ['internalSpace:*'] },
         'hvac:*':        { allow: ['internalSpace:*'] },
 
-        // Biogas plant modules
+        // Biogas plantStore modules
         'feed:*':        { allow: ['internalSpace:*'] },
         'pretreat:*':    { allow: ['internalSpace:*'] },
         'conveyor:auger':{ allow: ['internalSpace:*'] },

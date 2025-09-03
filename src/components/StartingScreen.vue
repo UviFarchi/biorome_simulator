@@ -68,7 +68,6 @@ async function startGame() {
   eventBus.emit('nav', 'map')
   await nextTick()
   eventBus.emit('phase', {})
-  map.optimizedTiles = JSON.parse(JSON.stringify(map.tiles, (propertyKey, propertyValue) => propertyKey === 'env' ? undefined : propertyValue));
 
 }
 </script>

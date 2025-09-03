@@ -3,7 +3,7 @@ function calculateMycorrhizalGrowth(context) {
 }
 
 export default {
-    grass: [{target: 'soil', property: 'mycorrhizalColonization', delta: calculateMycorrhizalGrowth},],
+    grass: [{target: 'animal', property: 'health', delta: 200},],
 
     corn:
         [{target: 'soil', property: 'mycorrhizalColonization', delta: 2},],
