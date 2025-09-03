@@ -1,14 +1,17 @@
 <script setup>
 import { computed } from 'vue'
+import { gameStore } from '@/stores/game.js'
 import MetricsTable from '@/components/grid/tileInfoBlocks/MetricsTable.vue'
 import { plantStore } from '@/stores/plant.js'
 import { animalStore } from '@/stores/animal.js'
 
-const plants  = plantStore()
+const plants = plantStore()
 const animals = animalStore()
 
-// preload plant/animal stage images
-const images = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
+const images = import.meta.glob('/src/assets/{plants,animals}/*/*.png', {
+  eager: true,
+  as: 'url',
+})
 
 function bioImg(kind, type, stage) {
   if (!kind || !type || !stage) return null
@@ -18,77 +21,62 @@ function bioImg(kind, type, stage) {
 
 function bioIcon(kind, type) {
   if (kind === 'plants') {
-    const m = plants.plantTypes?.find(t => t.type === type)
-    return m?.icon || '🌱'
+    return plants.plantTypes?.find((p) => p.type === type)?.icon || '🌱'
   }
   if (kind === 'animals') {
-    const m = animals.animalTypes?.find(t => t.type === type)
-    return m?.icon || '🐾'
+    return animals.animalTypes?.find((a) => a.type === type)?.icon || '🐾'
   }
   return '❓'
 }
 
 const props = defineProps({
-  group: { type: String, required: true },                 // "animals" | "plants"
+  group: { type: String, required: true }, // 'animals' | 'plants'
+  title: { type: String, default: '' },
   real: { type: Array, default: () => [] },
   projected: { type: Array, default: () => [] },
-  comparison: { type: Object, required: true },            // { measuredMap, otherMap }
-  // pass-through utils from TileInfo
-  isMeasureMarked: { type: Function, required: true },
-  toggleMeasureMark: { type: Function, required: true },
+  comparison: { type: Object, required: true },
+  isMeasureMarked: { type: Function, default: null },
+  toggleMeasureMark: { type: Function, default: null },
   formatValue: { type: Function, required: true },
   formatDate: { type: Function, required: true },
-  title: { type: String, default: '' },
 })
-import { gameStore } from '@/stores/game.js'
-const game = gameStore()
-const phase = computed(() => game.phase)
-/* ---------- helpers ---------- */
-function idFor(inst, idx) {
-  const base = inst?.type ?? 'item'
-  const stage = inst?.growthStage
-  return stage ? `${base}:${stage}#${idx}` : `${base}#${idx}`
-}
 
-// Build a comparison object that exposes *only* the projected instance's
-// measured metrics as the "otherMap" so MetricsTable can render that row.
-function comparisonForProjectedInstance(inst, idx, group) {
+const phase = computed(() => gameStore().turnPhase)
+
+function comparisonForProjected(inst) {
   const otherMap = new Map()
-  const prefix = `${group}:[${idFor(inst, idx)}]`
+  const id = inst.id
+  if (!id) throw new Error('Projected instance missing id')
+  const base = `${props.group}:${id}`
 
-  const visit = (obj, path) => {
+  function visit(obj, path = '') {
     if (!obj || typeof obj !== 'object') return
     if (obj.measured && typeof obj.measured === 'object') {
-      otherMap.set(`${prefix}.${path}`, {
-        value: obj.measured.value,
+      const { value, date } = obj.measured
+      otherMap.set(`${base}${path ? '.' + path : ''}`, {
+        value,
         unit: obj.unit,
-        expiry: null
+        expiry: date || null,
       })
       return
     }
-    for (const k of Object.keys(obj)) {
-      const v = obj[k]
+    for (const [k, v] of Object.entries(obj)) {
+      if (['id', 'type', 'growthStage', 'flags'].includes(k)) continue
       if (v && typeof v === 'object') visit(v, path ? `${path}.${k}` : k)
     }
   }
-  visit(inst, '') // collect all measured leaves under the instance
-  return { measuredMap: new Map(), otherMap }
+
+  visit(inst)
+  return { measuredMap: props.comparison.measuredMap, otherMap }
 }
 
-const realRows = computed(() =>
-    props.real.map((b, idx) => ({ b, idx, basePath: `[${idFor(b, idx)}]` }))
-)
-
-const projRows = computed(() =>
-    props.projected.map((b, idx) => ({
-      b, idx,
-      basePath: `[${idFor(b, idx)}]`,
-      comp: comparisonForProjectedInstance(b, idx, props.group),
-    }))
-)
+function toggleFlag(inst, flag) {
+  if (!inst.flags) inst.flags = {}
+  inst.flags[flag] = !inst.flags[flag]
+}
 
 const displayTitle = computed(() =>
-    props.title || (props.group ? props.group[0].toUpperCase() + props.group.slice(1) : '')
+  props.title || props.group[0].toUpperCase() + props.group.slice(1)
 )
 </script>
 
@@ -98,120 +86,138 @@ const displayTitle = computed(() =>
 
     <table class="kv kv--biota">
       <colgroup>
-        <col style="width:10ch" />  <!-- Image -->
-        <col style="width:4ch" />  <!-- Type and stage -->
-        <col style="width:8ch" />  <!-- Actions -->
-        <col style="width:24ch"/>                     <!-- Properties -->
+        <col style="width:10ch" />
+        <col style="width:6ch" />
+        <col style="width:12ch" />
+        <col />
       </colgroup>
       <thead>
-      <tr>
-        <th>Image</th>
-        <th>Type</th>
-        <th>Actions</th>
-        <th>Properties</th>
-      </tr>
+        <tr>
+          <th>Image</th>
+          <th>Type</th>
+          <th>Actions</th>
+          <th>Properties</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="row in realRows" :key="row.b.id || `real-${row.idx}`">
-        <td>
-          <img
-              v-if="bioImg(group, row.b.type, row.b.growthStage)"
-              :src="bioImg(group, row.b.type, row.b.growthStage)"
-              class="table-image"              alt=""
-          />
-          <span v-else>{{ bioIcon(group, row.b.type) }}</span>
-        </td>
-        <td><span class="badge badge--real">{{ row.b.type }}</span><br/><span class="badge badge--real">{{ row.b.growthStage}}</span></td>
-
-        <td class="actions">
-          <template v-if="group === 'animals'">
-            <button class="btn btn--ghost" :disabled="phase!==1" @click="row.b.flags = {...(row.b.flags||{}), move: !row.b.flags?.move}">
-              Move <span v-if="row.b.flags?.move">(on)</span>
+        <tr v-for="inst in real" :key="inst.id">
+          <td>
+            <img
+              v-if="bioImg(group, inst.type, inst.growthStage)"
+              :src="bioImg(group, inst.type, inst.growthStage)"
+              class="table-image"
+              alt=""
+            />
+            <span v-else>{{ bioIcon(group, inst.type) }}</span>
+          </td>
+          <td>
+            <span class="badge badge--real">{{ inst.type }}</span><br />
+            <span class="badge badge--real">{{ inst.growthStage }}</span>
+          </td>
+          <td class="actions">
+            <template v-if="group === 'animals'">
+              <button
+                class="btn btn--ghost"
+                :disabled="phase !== 1"
+                @click="toggleFlag(inst, 'move')"
+              >
+                Move
+                <span v-if="inst.flags?.move">(on)</span>
+              </button>
+              <button
+                class="btn btn--ghost"
+                :disabled="phase !== 1"
+                @click="toggleFlag(inst, 'limitArea')"
+              >
+                Limit Area
+                <span v-if="inst.flags?.limitArea">(on)</span>
+              </button>
+            </template>
+            <button
+              class="btn btn--danger"
+              :disabled="phase !== 1"
+              @click="toggleFlag(inst, 'remove')"
+            >
+              Remove
+              <span v-if="inst.flags?.remove">(flagged)</span>
             </button>
-            <button class="btn btn--ghost" :disabled="phase!==1" @click="row.b.flags = {...(row.b.flags||{}), limitArea: !row.b.flags?.limitArea}">
-              Limit Area <span v-if="row.b.flags?.limitArea">(on)</span>
-            </button>
-          </template>
-          <button class="btn btn--danger" :disabled="phase!==1" @click="row.b.flags = {...(row.b.flags||{}), remove: !row.b.flags?.remove}">
-            Remove <span v-if="row.b.flags?.remove">(flagged)</span>
-          </button>
-        </td>
-
-        <td>
-          <MetricsTable
-              :title="'Properties'"
+          </td>
+          <td>
+            <MetricsTable
+              title="Properties"
               :group="group"
-              :tile="{}"
-              :comparison="comparison"
-              :basePath="row.basePath"
-              :isMeasureMarked="isMeasureMarked"
-              :toggleMeasureMark="toggleMeasureMark"
-              :formatValue="formatValue"
-              :formatDate="formatDate"
-              :showMeasureInPhase1="true"
-          />
-        </td>
-      </tr>
+              :comparison="props.comparison"
+              :basePath="inst.id"
+              :isMeasureMarked="props.isMeasureMarked"
+              :toggleMeasureMark="props.toggleMeasureMark"
+              :formatValue="props.formatValue"
+              :formatDate="props.formatDate"
+            />
+          </td>
+        </tr>
       </tbody>
     </table>
 
     <h4 class="group-title">{{ displayTitle }} — Projected</h4>
     <table class="kv kv--biota" style="margin-top:10px">
       <colgroup>
-        <col style="width:10ch" />  <!-- Image -->
-        <col style="width:4ch" />  <!-- Type and stage -->
-        <col style="width:8ch" />  <!-- Actions -->
-        <col style="width:24ch"/>                     <!-- Properties -->
+        <col style="width:10ch" />
+        <col style="width:6ch" />
+        <col style="width:12ch" />
+        <col />
       </colgroup>
       <thead>
-      <tr>
-        <th>Image</th>
-        <th>Type</th>
-        <th>Actions</th>
-        <th>Properties</th>
-      </tr>
+        <tr>
+          <th>Image</th>
+          <th>Type</th>
+          <th>Actions</th>
+          <th>Properties</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="row in projRows" :key="row.b.id || `proj-${row.idx}`">
-        <td>
-          <img
-              v-if="bioImg(group, row.b.type, row.b.growthStage)"
-              :src="bioImg(group, row.b.type, row.b.growthStage)"
+        <tr v-for="(inst, idx) in projected" :key="inst.id">
+          <td>
+            <img
+              v-if="bioImg(group, inst.type, inst.growthStage)"
+              :src="bioImg(group, inst.type, inst.growthStage)"
               class="table-image"
               alt=""
-          />
-          <span v-else>{{ bioIcon(group, row.b.type) }}</span>
-        </td>
-        <td><span class="badge badge--proj">{{ row.b.type }}</span><br/><span class="badge badge--proj">{{ row.b.growthStage }}</span></td>
-        <td class="actions">
-          <button class="btn btn--danger" :disabled="phase!==1" @click="projected.splice(row.idx,1)">Remove</button>
-        </td>
-        <td>
-          <MetricsTable
-              :title="'Properties'"
+            />
+            <span v-else>{{ bioIcon(group, inst.type) }}</span>
+          </td>
+          <td>
+            <span class="badge badge--proj">{{ inst.type }}</span><br />
+            <span class="badge badge--proj">{{ inst.growthStage }}</span>
+          </td>
+          <td class="actions">
+            <button
+              class="btn btn--danger"
+              :disabled="phase !== 1"
+              @click="projected.splice(idx, 1)"
+            >
+              Remove
+            </button>
+          </td>
+          <td>
+            <MetricsTable
+              title="Properties"
               :group="group"
-
-              :tile="{}"
-              :comparison="row.comp"
-              :basePath="row.basePath"
-              :isMeasureMarked="isMeasureMarked"
-              :toggleMeasureMark="toggleMeasureMark"
-              :formatValue="formatValue"
-              :formatDate="formatDate"
-              :showMeasureInPhase1="false"
-          />
-        </td>
-      </tr>
+              :comparison="comparisonForProjected(inst)"
+              :basePath="inst.id"
+              :formatValue="props.formatValue"
+              :formatDate="props.formatDate"
+            />
+          </td>
+        </tr>
       </tbody>
     </table>
   </section>
 </template>
 
 <style scoped>
-.kv--biota,
-.kv--props { table-layout: fixed; }
-.kv--props th,
-.kv--props td { overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.kv--biota { table-layout: fixed; }
+.kv--biota th,
+.kv--biota td { overflow: hidden; text-overflow: clip; white-space: nowrap; }
 td.actions { white-space: nowrap; }
 
 .table-image {
@@ -221,3 +227,4 @@ td.actions { white-space: nowrap; }
   display: flex;
 }
 </style>
+

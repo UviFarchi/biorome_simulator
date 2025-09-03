@@ -1,131 +1,121 @@
 <script setup>
 import { computed } from 'vue'
 import { gameStore } from '@/stores/game.js'
+
 const props = defineProps({
-  title: { type: String, required: true },          // e.g., "Resources" | "Soil" | "Topography"
-  group: { type: String, required: true },          // "resources" | "soil" | "topography" | "plants" | "animals"
-  tile: { type: Object, required: true },
-  comparison: { type: Object, required: true },     // { measuredMap, otherMap }
-  basePath: { type: String, default: '' },          // optional subtree filter (prefix match)
-  isMeasureMarked: { type: Function, required: true },
-  toggleMeasureMark: { type: Function, required: true },
+  title: { type: String, required: true },
+  group: { type: String, required: true },
+  comparison: { type: Object, required: true }, // { measuredMap, otherMap }
+  basePath: { type: String, default: '' },
+  isMeasureMarked: { type: Function, default: null },
+  toggleMeasureMark: { type: Function, default: null },
   formatValue: { type: Function, required: true },
   formatDate: { type: Function, required: true },
 })
 
-const game = gameStore()
-const phase = computed(() => game.phase)
-function keyMatchesBase(path, base) {
-  if (!base) return true
-  return path.startsWith(base)
-}
+const phase = computed(() => gameStore().turnPhase)
+
+const showMeasure = computed(
+  () => phase.value === 1 && props.isMeasureMarked && props.toggleMeasureMark
+)
+
+const headerLabel = computed(() =>
+  phase.value === 0 ? 'Previous' : phase.value === 1 ? 'Projected' : 'Planned'
+)
 
 const rows = computed(() => {
   const { measuredMap, otherMap } = props.comparison
   const prefix = `${props.group}:`
-
-  const keys = new Set(
-      [...measuredMap.keys(), ...otherMap.keys()]
-          .filter(k => k.startsWith(prefix))
-          .filter(k => keyMatchesBase(k.slice(prefix.length), props.basePath))
-  )
+  const keys = new Set([...measuredMap.keys(), ...otherMap.keys()])
 
   const out = []
   for (const key of keys) {
+    if (!key.startsWith(prefix)) continue
+    if (
+      props.basePath &&
+      !key.startsWith(`${prefix}${props.basePath}.`)
+    )
+      continue
+
     const curr = measuredMap.get(key) || null
     const othr = otherMap.get(key) || null
 
-    const currNum = (typeof curr?.value === 'number') ? curr.value : null
-    const othrNum = (typeof othr?.value === 'number') ? othr.value : null
+    const currNum =
+      typeof curr?.value === 'number' && Number.isFinite(curr.value)
+        ? curr.value
+        : null
+    const othrNum =
+      typeof othr?.value === 'number' && Number.isFinite(othr.value)
+        ? othr.value
+        : null
 
     let deltaNum = null
-    if (phase === 0) {
-      if (currNum != null || othrNum != null) deltaNum = (currNum ?? 0) - (othrNum ?? 0)
-    } else {
-      // Phase 1/2: if no projected/planned value provided, treat as "no change"
-      if (othrNum == null) deltaNum = 0
-      else if (currNum == null) deltaNum = null
-      else deltaNum = othrNum - currNum
+    if (currNum != null && othrNum != null) {
+      deltaNum = phase.value === 0 ? currNum - othrNum : othrNum - currNum
     }
 
-    const expiry = props.formatDate(curr?.expiry ?? curr?.measured?.date ?? null)
+    let path = key.slice(prefix.length)
+    if (props.basePath) path = path.slice(props.basePath.length + 1)
 
     out.push({
       key,
-      path: key.slice(prefix.length),
-      prevText: props.formatValue(othr),
-      currText: props.formatValue(curr),
-      expiry,
+      path,
+      curr,
+      othr,
       deltaNum,
-      deltaText:
-          (deltaNum == null)
-              ? 'No data points'
-              : (deltaNum === 0 ? '0' : Number(deltaNum).toFixed(2)),
-      changed: Number.isFinite(deltaNum) && deltaNum !== 0,
     })
   }
+
   out.sort((a, b) => a.path.localeCompare(b.path))
   return out
 })
-
-const showMeasure = computed(() => phase === 1)
-
-
-const displayTitle = computed(() =>
-     props.title || (props.group ? props.group[0].toUpperCase() + props.group.slice(1) : '')
-    )
 </script>
 
 <template>
   <section class="group-section">
-    <h5 class="group-title">{{ displayTitle }}</h5>
+    <h5 class="group-title">{{ title }}</h5>
 
     <table class="kv">
       <thead>
-      <tr v-if="phase === 0">
-        <th>Path</th><th>Previous</th><th>Current</th><th>Expiry</th><th>Δ</th>
-      </tr>
-      <tr v-else-if="phase === 1">
-        <th>Path</th><th>Projected</th><th>Current</th><th>Expiry</th><th>Δ</th>
-        <th v-if="showMeasure" class="center">Measure</th>
-      </tr>
-      <tr v-else>
-        <th>Path</th><th>Expiry</th><th>Current</th><th>Projected</th><th>Δ</th>
-      </tr>
+        <tr>
+          <th>Path</th>
+          <th>{{ headerLabel }}</th>
+          <th>Current</th>
+          <th>Expiry</th>
+          <th>Δ</th>
+          <th v-if="showMeasure" class="center">Measure</th>
+        </tr>
       </thead>
 
       <tbody>
-      <tr v-for="r in rows" :key="r.key"
-          :class="['row', props.group, r.changed ? 'changed' : '', (typeof r.deltaNum==='number' && r.deltaNum!==0) ? (r.deltaNum>0?'up':'down') : '']">
-        <td>{{ r.path }}</td>
-
-        <template v-if="phase === 0">
-          <td>{{ r.prevText }}</td>
-          <td>{{ r.currText }}</td>
-          <td>{{ r.expiry }}</td>
-          <td>{{ r.deltaText }}</td>
-        </template>
-
-        <template v-else-if="phase === 1">
-          <td>{{ r.prevText }}</td>
-          <td>{{ r.currText }}</td>
-          <td>{{ r.expiry }}</td>
-          <td>{{ r.deltaText }}</td>
-          <td v-if="showMeasure" class="center">
-            <input type="checkbox"
-                   :checked="isMeasureMarked(r.key)"
-                   @change="toggleMeasureMark(r.key)" />
+        <tr v-for="r in rows" :key="r.key">
+          <td>{{ r.path }}</td>
+          <td>{{ props.formatValue(r.othr) }}</td>
+          <td>{{ props.formatValue(r.curr) }}</td>
+          <td>{{ props.formatDate(r.curr?.expiry) }}</td>
+          <td>
+            {{
+              r.deltaNum == null
+                ? 'No data points'
+                : r.deltaNum === 0
+                ? '0'
+                : r.deltaNum.toFixed(2)
+            }}
           </td>
-        </template>
-
-        <template v-else>
-          <td>{{ r.prevText }}</td>
-          <td>{{ r.currText }}</td>
-          <td>{{ r.expiry }}</td>
-          <td>{{ r.deltaText }}</td>
-        </template>
-      </tr>
+          <td v-if="showMeasure" class="center">
+            <input
+              type="checkbox"
+              :checked="props.isMeasureMarked(r.key)"
+              @change="props.toggleMeasureMark(r.key)"
+            />
+          </td>
+        </tr>
       </tbody>
     </table>
   </section>
 </template>
+
+<style scoped>
+.center { text-align: center; }
+</style>
+
