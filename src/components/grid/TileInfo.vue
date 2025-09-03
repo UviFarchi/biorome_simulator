@@ -3,272 +3,312 @@
 import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
-
 import { plantStore } from '@/stores/plant.js'
 import { animalStore } from '@/stores/animal.js'
 
 import animalEffects from '@/engine/effects/animal.js'
-import plantEffects  from '@/engine/effects/plant.js'
+import plantEffects from '@/engine/effects/plant.js'
 import resourceEffects from '@/engine/effects/resource.js'
 
 import MetricsTable from '@/components/grid/tileInfoBlocks/MetricsTable.vue'
-import BiotaTable    from '@/components/grid/tileInfoBlocks/BiotaTable.vue'
+import BiotaTable from '@/components/grid/tileInfoBlocks/BiotaTable.vue'
 
-const map   = mapStore()
-const game  = gameStore()
-const plantsStore  = plantStore()
-const animalsStore = animalStore()
+const map = mapStore()
+const game = gameStore()
+const plants = plantStore()
+const animals = animalStore()
 
-/* ========= selection & phase ========= */
-
+/* ---------------- selection & phase ---------------- */
 const currentTile = computed(() => {
   const t = map.selectedTile
   return t && typeof t === 'object' && 'value' in t ? t.value : t
 })
+
 const turnPhase = computed(() => game.turnPhase)
 
 const selectedKey = computed(() =>
-    currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
+  currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
 )
 
 const previousTile = computed(() => {
   if (!currentTile.value) return null
-  const grid = Array.isArray(map.previousDayTiles) ? map.previousDayTiles : map.previousDayTiles?.value
+  const grid = Array.isArray(map.previousDayTiles)
+    ? map.previousDayTiles
+    : map.previousDayTiles?.value
   return grid?.[currentTile.value.row]?.[currentTile.value.col] || null
 })
 
-/* ========= measured (real) ========= */
-
+/* ---------------- measured map ---------------- */
 function collectMeasured(tile) {
   const out = new Map()
   if (!tile) return out
 
-  const visit = (obj, group, prefix) => {
+  function walkAbiotic(obj, group, path = '') {
     if (!obj || typeof obj !== 'object') return
-
-    // leaf metric: { unit, measured:{ value, date, collect } }
     if (obj.measured && typeof obj.measured === 'object') {
       const { value, date } = obj.measured
-      out.set(`${group}:${prefix || group}`, {
+      out.set(`${group}:${path}`, {
         value,
         unit: obj.unit,
-        expiry: date || null
+        expiry: date || null,
       })
       return
     }
-
-    if (Array.isArray(obj)) {
-      obj.forEach((item, i) => {
-        const base  = item?.type
-        const stage = item?.growthStage
-        const id = item?.id || `${base ?? 'item'}#${i}`
-        const tag = stage ? `${base}:${stage}#${id}` : `${base ?? 'item'}#${id}`
-        visit(item, group, prefix ? `${prefix}[${tag}]` : `[${tag}]`)
-      })
-      return
-    }
-
-    for (const k of Object.keys(obj)) {
-      const v = obj[k]
-      const path = prefix ? `${prefix}.${k}` : k
-      if (v && typeof v === 'object') visit(v, group, path)
+    for (const [k, v] of Object.entries(obj)) {
+      if (v && typeof v === 'object') {
+        walkAbiotic(v, group, path ? `${path}.${k}` : k)
+      }
     }
   }
 
-  // abiotic
-  visit(tile.topography ?? {}, 'topography', '')
-  visit(tile.soil ?? {},       'soil',       '')
-  visit(tile.resources ?? {},  'resources',  '')
+  function walkInstance(inst, group) {
+    if (!inst || typeof inst !== 'object') return
+    const id = inst.id
+    if (!id) throw new Error(`Instance missing id in ${group}`)
+    const base = `${group}:${id}`
 
-  // biotic (REAL only)
-  visit(tile.plants?.real  ?? [], 'plants',  '')
-  visit(tile.animals?.real ?? [], 'animals', '')
+    function visit(obj, path = '') {
+      if (!obj || typeof obj !== 'object') return
+      if (obj.measured && typeof obj.measured === 'object') {
+        const { value, date } = obj.measured
+        out.set(`${base}${path ? '.' + path : ''}`, {
+          value,
+          unit: obj.unit,
+          expiry: date || null,
+        })
+        return
+      }
+      for (const [k, v] of Object.entries(obj)) {
+        if (['id', 'type', 'growthStage', 'flags'].includes(k)) continue
+        if (v && typeof v === 'object') {
+          visit(v, path ? `${path}.${k}` : k)
+        }
+      }
+    }
+
+    visit(inst)
+  }
+
+  walkAbiotic(tile.soil, 'soil')
+  walkAbiotic(tile.topography, 'topography')
+  walkAbiotic(tile.resources, 'resources')
+
+  ;(tile.animals?.real || []).forEach((a) => walkInstance(a, 'animals'))
+  ;(tile.plants?.real || []).forEach((p) => walkInstance(p, 'plants'))
 
   return out
 }
 
-/* ========= helpers for phase 1/2 overlay ========= */
-
-const specByAnimalType = computed(() => {
+/* ---------------- helpers for phase overlays ---------------- */
+const animalSpecs = computed(() => {
   const m = new Map()
-  for (const s of (animalsStore.animalTypes || [])) m.set(s.type, s)
+  for (const s of animals.animalTypes || []) m.set(s.type, s)
   return m
 })
 
-const specByPlantType = computed(() => {
+const plantSpecs = computed(() => {
   const m = new Map()
-  for (const s of (plantsStore.plantTypes || [])) m.set(s.type, s)
+  for (const s of plants.plantTypes || []) m.set(s.type, s)
   return m
 })
-
-function applyDelta(deltaByKey, key, add) {
-  deltaByKey.set(key, (deltaByKey.get(key) || 0) + add)
-}
-
-function metricKeyFromEffect(eff) {
-  // eff: { target:'soil'|'topography'|'resources'|'animals'|'plants', property:'ph'... }
-  return `${eff.target}:${eff.property}`
-}
 
 function diffById(realArr, projArr) {
-  const r = Array.isArray(realArr) ? realArr : []
-  const p = Array.isArray(projArr) ? projArr : []
-  const rById = new Map(r.filter(x => x && x.id).map(x => [x.id, x]))
-  const pById = new Map(p.filter(x => x && x.id).map(x => [x.id, x]))
+  const real = Array.isArray(realArr) ? realArr : []
+  const proj = Array.isArray(projArr) ? projArr : []
+  const realMap = new Map()
+  const projMap = new Map()
 
-  const added   = []
+  for (const r of real) {
+    if (!r?.id) throw new Error('Real instance missing id')
+    realMap.set(r.id, r)
+  }
+  for (const p of proj) {
+    if (!p?.id) throw new Error('Projected instance missing id')
+    projMap.set(p.id, p)
+  }
+
+  const added = []
   const removed = []
-  for (const [id, inst] of pById) if (!rById.has(id)) added.push(inst)
-  for (const [id, inst] of rById) if (!pById.has(id)) removed.push(inst)
+  for (const [id, inst] of projMap) if (!realMap.has(id)) added.push(inst)
+  for (const [id, inst] of realMap) if (!projMap.has(id)) removed.push(inst)
   return { added, removed }
 }
 
-function runInstanceEffects({ category, instance, spec, deltaByKey, tileLike }) {
-  const catalog = (category === 'animals') ? animalEffects : plantEffects
-  const list = catalog?.[spec?.type] || []
-  for (const eff of list) {
-    const d = (typeof eff.delta === 'function')
-        ? eff.delta({ tile: tileLike, subject: spec, instance, key: spec.type, category })
-        : eff.delta
-    if (typeof d !== 'number' || !Number.isFinite(d)) continue
-    applyDelta(deltaByKey, metricKeyFromEffect(eff), d)
+function runEffects({ list, ctx, sign, deltaByKey }) {
+  for (const eff of list || []) {
+    let d = typeof eff.delta === 'function' ? eff.delta(ctx) : eff.delta
+    if (!Number.isFinite(d)) throw new Error('Effect delta is not finite')
+    const key = `${eff.target}:${eff.property}`
+    deltaByKey.set(key, (deltaByKey.get(key) || 0) + sign * d)
   }
 }
 
-/* ========= build “otherMap” for phase 1/2 ========= */
-
-function buildOtherMapForPhase12(tile) {
+function buildOtherMapForPhase(tile) {
   const measuredMap = collectMeasured(tile)
+  const otherMap = new Map(measuredMap)
   const deltaByKey = new Map()
 
-  // animals: project add/remove by *id* to preserve growthStage
+  // animals
   {
-    const { added, removed } = diffById(tile.animals?.real, tile.animals?.projected)
+    const { added, removed } = diffById(
+      tile.animals?.real,
+      tile.animals?.projected
+    )
     for (const inst of added) {
-      const spec = specByAnimalType.value.get(inst.type)
-      if (!spec) continue
-      runInstanceEffects({ category: 'animals', instance: inst, spec, deltaByKey, tileLike: tile })
+      const spec = animalSpecs.value.get(inst.type)
+      runEffects({
+        list: animalEffects?.[spec?.type],
+        ctx: {
+          tile,
+          category: 'animals',
+          key: spec?.type,
+          subject: inst,
+          spec,
+        },
+        sign: 1,
+        deltaByKey,
+      })
     }
     for (const inst of removed) {
-      const spec = specByAnimalType.value.get(inst.type)
-      if (!spec) continue
-      // subtract the effect of removed instances
-      const before = new Map()
-      runInstanceEffects({ category: 'animals', instance: inst, spec, deltaByKey: before, tileLike: tile })
-      for (const [k, v] of before) applyDelta(deltaByKey, k, -v)
+      const spec = animalSpecs.value.get(inst.type)
+      runEffects({
+        list: animalEffects?.[spec?.type],
+        ctx: {
+          tile,
+          category: 'animals',
+          key: spec?.type,
+          subject: inst,
+          spec,
+        },
+        sign: -1,
+        deltaByKey,
+      })
     }
   }
 
-  // plants: same logic
+  // plants
   {
-    const { added, removed } = diffById(tile.plants?.real, tile.plants?.projected)
+    const { added, removed } = diffById(
+      tile.plants?.real,
+      tile.plants?.projected
+    )
     for (const inst of added) {
-      const spec = specByPlantType.value.get(inst.type)
-      if (!spec) continue
-      runInstanceEffects({ category: 'plants', instance: inst, spec, deltaByKey, tileLike: tile })
+      const spec = plantSpecs.value.get(inst.type)
+      runEffects({
+        list: plantEffects?.[spec?.type],
+        ctx: {
+          tile,
+          category: 'plants',
+          key: spec?.type,
+          subject: inst,
+          spec,
+        },
+        sign: 1,
+        deltaByKey,
+      })
     }
     for (const inst of removed) {
-      const spec = specByPlantType.value.get(inst.type)
-      if (!spec) continue
-      const before = new Map()
-      runInstanceEffects({ category: 'plants', instance: inst, spec, deltaByKey: before, tileLike: tile })
-      for (const [k, v] of before) applyDelta(deltaByKey, k, -v)
+      const spec = plantSpecs.value.get(inst.type)
+      runEffects({
+        list: plantEffects?.[spec?.type],
+        ctx: {
+          tile,
+          category: 'plants',
+          key: spec?.type,
+          subject: inst,
+          spec,
+        },
+        sign: -1,
+        deltaByKey,
+      })
     }
   }
 
-  // resource planned uses (if any)
-  {
-    const uses = tile?.resources?.projectedUses
-    if (Array.isArray(uses) && uses.length) {
-      const qtyBy = {}
-      for (const u of uses) {
-        const k = u?.key
-        const q = Number(u?.qty)
-        if (!k || !Number.isFinite(q) || q === 0) continue
-        qtyBy[k] = (qtyBy[k] || 0) + q
+  // resources projected values & effects
+  function walkResource(obj, path = '') {
+    if (!obj || typeof obj !== 'object') return
+    if (
+      Object.prototype.hasOwnProperty.call(obj, 'projected') &&
+      typeof obj.projected === 'number' &&
+      Number.isFinite(obj.projected)
+    ) {
+      const key = path
+      const entryKey = `resources:${key}`
+      otherMap.set(entryKey, {
+        value: obj.projected,
+        unit: obj.unit,
+        expiry: null,
+      })
+
+      const list = resourceEffects?.[key] || []
+      const ctx = {
+        tile,
+        category: 'resources',
+        key,
+        subject: { qty: obj.projected },
+        spec: null,
       }
-      for (const [rtype, qty] of Object.entries(qtyBy)) {
-        const list = resourceEffects?.[rtype] || []
-        for (const eff of list) {
-          const d = (typeof eff.delta === 'function')
-              ? eff.delta({ qty, tile })
-              : eff.delta
-          if (typeof d !== 'number' || !Number.isFinite(d)) continue
-          applyDelta(deltaByKey, metricKeyFromEffect(eff), qty * d)
-        }
-      }
+      runEffects({ list, ctx, sign: 1, deltaByKey })
+    }
+    for (const [k, v] of Object.entries(obj)) {
+      if (['measured', 'projected', 'unit', 'env'].includes(k)) continue
+      if (v && typeof v === 'object') walkResource(v, path ? `${path}.${k}` : k)
     }
   }
+  walkResource(tile.resources || {}, '')
 
-  // overlay deltas on measured → otherMap
-  const otherMap = new Map(measuredMap)
-  for (const [key, d] of deltaByKey) {
+  // apply deltas to otherMap
+  for (const [key, d] of deltaByKey.entries()) {
     const entry = otherMap.get(key)
-    if (entry && typeof entry.value === 'number' && Number.isFinite(entry.value)) {
+    if (entry && typeof entry.value === 'number') {
       otherMap.set(key, { ...entry, value: entry.value + d })
     } else if (!otherMap.has(key)) {
-      // create placeholder if effect touches a metric that had no measurement yet
       otherMap.set(key, { value: d, unit: undefined, expiry: null })
     }
   }
+
   return otherMap
 }
 
-/* ========= comparison by phase ========= */
-
+/* ---------------- comparison by phase ---------------- */
 const comparison = computed(() => {
   const tile = currentTile.value
   if (!tile) return { label: '—', measuredMap: new Map(), otherMap: new Map() }
 
   const measuredMap = collectMeasured(tile)
 
-  // Phase 0: Previous vs Current
   if (turnPhase.value === 0) {
-    const prevMap = previousTile.value ? collectMeasured(previousTile.value) : new Map()
-    return { label: 'Previous', measuredMap, otherMap: prevMap }
+    const prev = previousTile.value
+    const otherMap = prev ? collectMeasured(prev) : new Map()
+    return { label: 'Previous', measuredMap, otherMap }
   }
 
-  // Phase 1/2: Projected/Planned vs Current
-  const otherMap = buildOtherMapForPhase12(tile)
-  const label = (turnPhase.value === 1) ? 'Projected' : 'Planned'
+  const otherMap = buildOtherMapForPhase(tile)
+  const label = turnPhase.value === 1 ? 'Projected' : 'Planned'
   return { label, measuredMap, otherMap }
 })
 
-/* ========= measure toggles ========= */
-
+/* ---------------- measure toggles ---------------- */
 function resolveNodeByMetricKey(tile, metricKey) {
-  const [group, rawPath] = metricKey.split(':', 2)
-  if (!tile || !group || !rawPath) return null
+  const [group, path] = metricKey.split(':', 2)
+  if (!group || !path) return null
 
-  let node = (group === 'animals')
-      ? tile.animals?.real
-      : (group === 'plants')
-          ? tile.plants?.real
-          : tile[group]
-
-  if (node == null) return null
-
-  const segments = []
-  let buf = '', inBracket = false
-  for (const ch of rawPath) {
-    if (ch === '[') inBracket = true
-    if (ch === ']') inBracket = false
-    if (ch === '.' && !inBracket) { segments.push(buf); buf = '' }
-    else buf += ch
-  }
-  if (buf) segments.push(buf)
-
-  for (const seg of segments) {
-    if (seg.startsWith('[') && seg.endsWith(']')) {
-      // segment like: "[type:stage#<id>]" or "[type#<id>]"
-      const hash = seg.lastIndexOf('#')
-      if (hash < 0) return null
-      const id = seg.slice(hash + 1, -1)
-      if (!Array.isArray(node)) return null
-      node = node.find(x => String(x?.id) === id)
-    } else {
+  if (group === 'animals' || group === 'plants') {
+    const [id, ...rest] = path.split('.')
+    const arr = tile[group]?.real
+    const inst = Array.isArray(arr) ? arr.find((x) => String(x.id) === id) : null
+    if (!inst) return null
+    let node = inst
+    for (const seg of rest) {
       node = node?.[seg]
+      if (node == null) return null
     }
+    return node
+  }
+
+  let node = tile[group]
+  for (const seg of path.split('.')) {
+    node = node?.[seg]
     if (node == null) return null
   }
   return node
@@ -287,8 +327,7 @@ function toggleMeasureMark(metricKey) {
   node.measured.collect = !node.measured.collect
 }
 
-/* ========= formatting ========= */
-
+/* ---------------- formatting helpers ---------------- */
 function formatDate(iso) {
   if (!iso) return '—'
   try {
@@ -301,7 +340,7 @@ function formatDate(iso) {
 }
 
 function formatValue(entry) {
-  if (!entry) return 'No entry'
+  if (!entry) return 'No data'
   const { value, unit } = entry
   if (typeof value === 'number' && Number.isFinite(value)) {
     return `${value.toFixed(2)}${unit ? ' ' + unit : ''}`
@@ -320,61 +359,57 @@ function formatValue(entry) {
 
     <div>
       <MetricsTable
-          title="Resources"
-          group="resources"
-          :tile="currentTile"
-          :comparison="comparison"
-          :isMeasureMarked="isMeasureMarked"
-          :toggleMeasureMark="toggleMeasureMark"
-          :formatValue="formatValue"
-          :formatDate="formatDate"
+        title="Resources"
+        group="resources"
+        :comparison="comparison"
+        :isMeasureMarked="isMeasureMarked"
+        :toggleMeasureMark="toggleMeasureMark"
+        :formatValue="formatValue"
+        :formatDate="formatDate"
       />
       <MetricsTable
-          title="Topography"
-          group="topography"
-          :tile="currentTile"
-          :comparison="comparison"
-          :isMeasureMarked="isMeasureMarked"
-          :toggleMeasureMark="toggleMeasureMark"
-          :formatValue="formatValue"
-          :formatDate="formatDate"
+        title="Topography"
+        group="topography"
+        :comparison="comparison"
+        :isMeasureMarked="isMeasureMarked"
+        :toggleMeasureMark="toggleMeasureMark"
+        :formatValue="formatValue"
+        :formatDate="formatDate"
       />
       <MetricsTable
-          title="Soil"
-          group="soil"
-          :tile="currentTile"
-          :comparison="comparison"
-          :isMeasureMarked="isMeasureMarked"
-          :toggleMeasureMark="toggleMeasureMark"
-          :formatValue="formatValue"
-          :formatDate="formatDate"
+        title="Soil"
+        group="soil"
+        :comparison="comparison"
+        :isMeasureMarked="isMeasureMarked"
+        :toggleMeasureMark="toggleMeasureMark"
+        :formatValue="formatValue"
+        :formatDate="formatDate"
       />
 
       <BiotaTable
-          title="Plants"
-          group="plants"
-          :real="currentTile.plants?.real ?? []"
-          :projected="currentTile.plants?.projected ?? []"
-          :comparison="comparison"
-          :isMeasureMarked="isMeasureMarked"
-          :toggleMeasureMark="toggleMeasureMark"
-          :formatValue="formatValue"
-          :formatDate="formatDate"
+        title="Plants"
+        group="plants"
+        :real="currentTile.plants?.real ?? []"
+        :projected="currentTile.plants?.projected ?? []"
+        :comparison="comparison"
+        :isMeasureMarked="isMeasureMarked"
+        :toggleMeasureMark="toggleMeasureMark"
+        :formatValue="formatValue"
+        :formatDate="formatDate"
       />
       <BiotaTable
-          title="Animals"
-          group="animals"
-          :real="currentTile.animals?.real ?? []"
-          :projected="currentTile.animals?.projected ?? []"
-          :comparison="comparison"
-          :isMeasureMarked="isMeasureMarked"
-          :toggleMeasureMark="toggleMeasureMark"
-          :formatValue="formatValue"
-          :formatDate="formatDate"
+        title="Animals"
+        group="animals"
+        :real="currentTile.animals?.real ?? []"
+        :projected="currentTile.animals?.projected ?? []"
+        :comparison="comparison"
+        :isMeasureMarked="isMeasureMarked"
+        :toggleMeasureMark="toggleMeasureMark"
+        :formatValue="formatValue"
+        :formatDate="formatDate"
       />
     </div>
   </div>
-
   <div v-else class="panel panel--fill">No tile selected.</div>
 </template>
 
@@ -423,3 +458,4 @@ function formatValue(entry) {
   font-weight: 600;
 }
 </style>
+
