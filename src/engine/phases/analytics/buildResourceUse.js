@@ -2,7 +2,7 @@
 import eventBus from '@/eventBus.js'
 
 /**
- * Sum current (measured) vs projected resource values across the grid.
+ * Sum current (measured) vs optimized resource values across the grid.
  * Shows both columns regardless of phase; UI can decide which to display.
  *
  * @param {Array<Array<Object>>} currentGrid2D
@@ -30,7 +30,7 @@ export function buildResourceUse(currentGrid2D, currentDateISO) {
       if (!node || typeof node !== 'object' || !('measured' in node)) continue
       const unit = node.unit || ''
       const curr = Number.isFinite(node.measured?.value) ? Number(node.measured.value) : null
-      const proj = Number.isFinite(node.projected) ? Number(node.projected) : null
+      const proj = Number.isFinite(node.optimized) ? Number(node.optimized) : null
 
       if (!totals[key]) totals[key] = { unit, curr: 0, proj: 0, hasCurr: false, hasProj: false }
       if (curr != null) { totals[key].curr += curr; totals[key].hasCurr = true }
@@ -57,7 +57,7 @@ export function buildResourceUse(currentGrid2D, currentDateISO) {
     })
 
     const todaySimpleTable = {
-    headers: ['Resource', 'Current', 'Projected', 'Δ'],
+    headers: ['Resource', 'Current', 'Optimized', 'Δ'],
     rows: rowsToday.length ? rowsToday : [['No resources', '—', '—', '—']]
     }
 

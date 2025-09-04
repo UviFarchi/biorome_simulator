@@ -17,7 +17,7 @@ import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
 import { animalStore } from '@/stores/animal.js'
 import { plantStore} from '@/stores/plant.js'
-import { getAdjacentTiles } from '@/utils.js'
+import { getAdjacentTiles } from '@/utils/tileHelpers.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 
 import eventBus from '@/eventBus.js'

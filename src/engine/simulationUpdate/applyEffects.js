@@ -116,7 +116,7 @@ function safeTileSnapshot(tile) {
 }
 
 // Merge worker/single-thread processed tile back into original shape
-// Only real arrays are updated; projected (if present) is passed through unchanged.
+// Only real arrays are updated; optimized (if present) is passed through unchanged.
 function mergeProcessedIntoOriginal(original, processed) {
     const out = {...original}
     if (processed.topography) out.topography = processed.topography
@@ -128,20 +128,16 @@ function mergeProcessedIntoOriginal(original, processed) {
     if (original.animals && !Array.isArray(original.animals)) {
         out.animals = {
             real: Array.isArray(processed.animals) ? processed.animals : realArray(original.animals),
-            projected: original.animals.projected // pass-through
+            optimized: original.animals.optimized // pass-through
         }
-    } else if (Array.isArray(processed.animals)) {
-        out.animals = processed.animals // legacy all-real shape
     }
 
     // plants
     if (original.plants && !Array.isArray(original.plants)) {
         out.plants = {
             real: Array.isArray(processed.plants) ? processed.plants : realArray(original.plants),
-            projected: original.plants.projected // pass-through
+            optimized: original.plants.optimized // pass-through
         }
-    } else if (Array.isArray(processed.plants)) {
-        out.plants = processed.plants // legacy all-real shape
     }
 
     return out

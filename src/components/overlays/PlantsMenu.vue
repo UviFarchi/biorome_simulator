@@ -24,7 +24,7 @@ const plantTypesList = plants.plantTypes
 
 function addPlantToTile(plantType, growthStage) {
   const tile = currentTile.value
-  tile.plants.projected.push(makeInstance('plant', plantType, growthStage))
+  tile.plants.optimized.push(makeInstance('plant', plantType, growthStage))
 }
 
 function plantStagePrice(plant, growthStage) {

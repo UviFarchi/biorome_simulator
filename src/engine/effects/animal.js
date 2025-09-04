@@ -1,7 +1,7 @@
 function feedConsumption(context) {
     const subject = context.subject
     console.log(subject)
-    const perStage = subject.feedPerGrowthStage?.[subject.growthStages.indexOf(subject.growthStage)] || 0;
+    const perStage = subject.feedPerGrowthStage?.[subject.growthStages.indexOf(context.instance.growthStage)] || 0;
     return -perStage;
 }
 

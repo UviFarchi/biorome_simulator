@@ -10,7 +10,7 @@ const measuredField = (unit, env = 0) => ({
     env,
     unit,
     measured: {value: null, date: null, collect: false},
-    projected: null,
+    optimized: null,
 })
 
 function makeInstance(domain, type, growthStage) {

@@ -2,7 +2,7 @@
 import {reactive, computed, onMounted, onBeforeUnmount, watch, ref} from 'vue'
 import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
-import {clearSavedStores, loadAllStores} from '@/utils.js'
+import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
 
 const game = gameStore()
 const phase = computed(() => game.phase)
@@ -90,39 +90,31 @@ function addTestEntitiesToTile(row, col) {
 
   tile.plants.real ||= []
   tile.animals.real ||= []
-  tile.assemblies ||= []
+  tile.assemblies.real ||= []
 
 
-  if (!tile.plants.real.some(p => p.type === 'tomato' && p.growthStage === 'mature')) {
-    tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
-  }
-
-  // Animal: cow @ heifer (minimal instance shape)
+  tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
   if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
-// Animal: cow @ heifer
-    if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
-      tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
-    }
+    tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
   }
 
-  // Assembly: fixed id
-  if (!tile.assemblies.some(s => s.id === 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')) {
-    tile.assemblies.push({
-      id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
-      modules: [
-        {type: 'transport', subtype: 'ground'},
-        {type: 'arm', subtype: 'medium'},
-        {type: 'tool', subtype: 'seeder'},
-        {type: 'tool', subtype: 'borer'}
-      ],
-      name: 'Seed Planter',
-      deployed: false,
-      built: false,
-      moves: 1,
-      actions: 1,
-      orders: ['feed', 'acidify']
-    })
-  }
+
+  tile.assemblies.real.push({
+    id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
+    modules: [
+      {type: 'transport', subtype: 'ground'},
+      {type: 'arm', subtype: 'medium'},
+      {type: 'tool', subtype: 'seeder'},
+      {type: 'tool', subtype: 'borer'}
+    ],
+    name: 'Seed Planter',
+    deployed: false,
+    built: false,
+    moves: 1,
+    actions: 1,
+    orders: ['feed', 'acidify']
+  })
+
 }
 
 function removeTestEntitiesFromTile(row, col) {
@@ -130,7 +122,7 @@ function removeTestEntitiesFromTile(row, col) {
   if (!tile) return
   if (Array.isArray(tile.plants.real)) tile.plants.real = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
   if (Array.isArray(tile.animals.real)) tile.animals.real = tile.animals.real.filter(a => !(a.type === 'cow' && a.growthStage === 'heifer'))
-  if (Array.isArray(tile.assemblies)) tile.assemblies = tile.assemblies.filter(s => s.id !== 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')
+  if (Array.isArray(tile.assemblies.real)) tile.assemblies.real = tile.assemblies.real.filter(s => s.id !== 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')
 }
 
 function syncMeasuredToEnvOnce() {

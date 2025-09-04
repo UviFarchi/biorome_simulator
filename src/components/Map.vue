@@ -13,7 +13,7 @@ import AnimalsMenu from '@/components/overlays/AnimalsMenu.vue'
 import PlantsMenu from '@/components/overlays/PlantsMenu.vue'
 import FarmGate from '@/components/overlays/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
-import {loadAllStores} from '@/utils.js'
+import {loadAllStores} from '@/utils/persistance.js'
 import Market from '@/components/overlays/Market.vue'
 import News from '@/components/overlays/News.vue'
 import {produceReport} from '@/engine/phases/analytics/produceReport.js';

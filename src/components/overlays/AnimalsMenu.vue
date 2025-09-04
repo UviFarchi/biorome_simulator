@@ -24,7 +24,7 @@ const animalTypesList = animals.animalTypes
 
 function addAnimalToTile(animalType, growthStage) {
   const tile = currentTile.value
-  tile.animals.projected.push(makeInstance('animal', animalType, growthStage))
+  tile.animals.optimized.push(makeInstance('animal', animalType, growthStage))
 }
 
 </script>

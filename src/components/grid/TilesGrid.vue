@@ -70,13 +70,13 @@ const isBiota = x => x && typeof x === 'object' && typeof x.type === 'string'
 const list = arr => (Array.isArray(arr) ? arr.filter(isBiota) : [])
 
 function resKeys(t) {
-  return Object.keys(t?.resources || {}).filter(k => k !== 'projectedUses')
+  return Object.keys(t?.resources || {}).filter(k => k !== 'optimizedUses')
 }
 function resReal(tile, k) {
   return tile.resources?.[k]?.measured?.value ?? null
 }
 function resProj(tile, k) {
-  return tile.resources?.[k]?.projected ?? null
+  return tile.resources?.[k]?.optimized ?? null
 }
 function fmt(v) {
   return v == null ? '-' : v
@@ -143,7 +143,7 @@ function fmt(v) {
                 </span>
               </template>
               <template v-else-if="phase === 1">
-                <span v-for="(a,i) in list(tile.animals?.projected)" :key="`a-p-${tile.row}-${tile.col}-${i}`" class="proj">
+                <span v-for="(a,i) in list(tile.animals?.optimized)" :key="`a-p-${tile.row}-${tile.col}-${i}`" class="proj">
                   <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
                   <span v-else>{{ bioIcon('animals', a.type) }}</span>
                 </span>
@@ -153,7 +153,7 @@ function fmt(v) {
                   <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img" alt=""/>
                   <span v-else>{{ bioIcon('animals', a.type) }}</span>
                 </span>
-                <span v-for="(a,i) in list(tile.animals?.projected)" :key="`a-bp-${tile.row}-${tile.col}-${i}`" class="proj">
+                <span v-for="(a,i) in list(tile.animals?.optimized)" :key="`a-bp-${tile.row}-${tile.col}-${i}`" class="proj">
                   <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
                   <span v-else>{{ bioIcon('animals', a.type) }}</span>
                 </span>
@@ -169,7 +169,7 @@ function fmt(v) {
                 </span>
               </template>
               <template v-else-if="phase === 1">
-                <span v-for="(p,i) in list(tile.plants?.projected)" :key="`p-p-${tile.row}-${tile.col}-${i}`" class="proj">
+                <span v-for="(p,i) in list(tile.plants?.optimized)" :key="`p-p-${tile.row}-${tile.col}-${i}`" class="proj">
                   <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
                   <span v-else>{{ bioIcon('plants', p.type) }}</span>
                 </span>
@@ -179,7 +179,7 @@ function fmt(v) {
                   <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img" alt=""/>
                   <span v-else>{{ bioIcon('plants', p.type) }}</span>
                 </span>
-                <span v-for="(p,i) in list(tile.plants?.projected)" :key="`p-bp-${tile.row}-${tile.col}-${i}`" class="proj">
+                <span v-for="(p,i) in list(tile.plants?.optimized)" :key="`p-bp-${tile.row}-${tile.col}-${i}`" class="proj">
                   <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
                   <span v-else>{{ bioIcon('plants', p.type) }}</span>
                 </span>
@@ -189,7 +189,7 @@ function fmt(v) {
             <!-- Row 4: Assemblies -->
             <div class="row">
               <span v-if="tile.assemblies?.length" class="assemblies-icons">
-                {{ tile.assemblies.map(() => '🤖').join('') }}
+                {{ tile.assemblies.real.map(() => '🤖').join('') }}
               </span>
             </div>
 
@@ -275,7 +275,7 @@ function fmt(v) {
   font-variant-numeric: tabular-nums;
 }
 .row-res .val.real { color: black; }
-.row-res .val.proj { color: #7a5cff; } /* projected text */
+.row-res .val.proj { color: #7a5cff; } /* optimized text */
 .row-res .proj .icon-img { opacity: .7; filter: hue-rotate(270deg) saturate(1.2); }
 .row-res .both .icon-img { opacity: 1; }
 .row-res .sep { opacity: .7; padding: 0 .1em; }

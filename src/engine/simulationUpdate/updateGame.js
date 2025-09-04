@@ -1,4 +1,4 @@
-import {saveAllStores} from '@/utils.js';
+import {saveAllStores} from '@/utils/persistance.js';
 import {applyEffects} from '@/engine/simulationUpdate/applyEffects.js';
 import {gameStore} from '@/stores/game.js';
 import getWeather from '@/engine/simulationUpdate/getWeather.js';
