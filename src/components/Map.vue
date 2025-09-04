@@ -16,8 +16,8 @@ import TilesGrid from '@/components/grid/TilesGrid.vue'
 import {loadAllStores} from '@/utils.js'
 import Market from '@/components/overlays/Market.vue'
 import News from '@/components/overlays/News.vue'
-import {produceReport} from "@/engine/phases/analytics/produceReport.js";
-import updateGame from "@/engine/simulationUpdate/updateGame.js";
+import {produceReport} from '@/engine/phases/analytics/produceReport.js';
+import updateGame from '@/engine/simulationUpdate/updateGame.js';
 
 const game = gameStore()
 const map = mapStore()
@@ -256,7 +256,6 @@ onBeforeUnmount(() => {
 
         <div v-for="k in lanes.left" :key="'L-'+k" class="overlay-wrapper">
           <div class="overlay-controls">
-            <!--TODO: make overlay half height-->
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
             <button v-if="isSingleWidth" @click="switchLane(k)" aria-label="Switch lane">→</button>
@@ -304,7 +303,7 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: 1fr max-content 1fr; /* center sizes to grid’s content */
   align-items: start;
-
+  height: 100%;
 
   overflow: hidden; /* keep the page from double-scrolling */
 }
@@ -317,20 +316,31 @@ onBeforeUnmount(() => {
 
 /* lanes fill leftover space on both sides */
 .lane {
-  display: grid;
-  grid-auto-rows: max-content;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   min-width: 0;
-  max-height: calc(100vh);
-  overflow: auto; /* lane scroll */
+  height: 100%;
+  overflow: hidden; /* let overlays handle their own scroll */
   overscroll-behavior: contain; /* keep scroll in lane */
   z-index: 2;
 }
 
-/* every overlay scrolls inside itself and never overflows outside its lane */
+/* every overlay takes proportional height and scrolls inside itself */
+.overlay-wrapper {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.overlay-controls {
+  flex: 0 0 auto;
+}
+
 .overlay {
-  max-height: 100%;
+  flex: 1 1 0;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   border-radius: 12px;
