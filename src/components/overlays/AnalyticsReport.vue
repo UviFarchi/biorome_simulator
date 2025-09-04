@@ -227,11 +227,17 @@ const subcomponents = {
 
 /* Collapsible body */
 .sectionBody {
-
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   overflow-y: auto;
   overflow-x: hidden;
   transition: max-height .26s ease;
   padding: 0 12px; /* reserved space; will be applied when open */
+}
+
+.sectionBody > :deep(.lane-fit) {
+  flex: 1 1 300px;
 }
 .reportSection.active .sectionBody {
   padding: 10px 12px 12px;
