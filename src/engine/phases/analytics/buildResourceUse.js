@@ -1,5 +1,6 @@
 // UI-ready builder for the “Resource use” section
 import eventBus from '@/eventBus.js'
+import { formatNumber } from '@/utils/formatting.js'
 
 /**
  * Sum current (measured) vs optimized resource values across the grid.
@@ -11,7 +12,7 @@ import eventBus from '@/eventBus.js'
 export function buildResourceUse(currentGrid2D, currentDateISO) {
   eventBus.emit('log', { engine: 'analytics', msg: 'Building Resource Use Report' })
 
-  const fmt = (n) => (Number.isFinite(n) ? n.toFixed(2) : '—')
+    const fmt = (n) => formatNumber(n, 2)
 
   // totals[key] = { unit, curr:number|null, proj:number|null }
   const totals = Object.create(null)

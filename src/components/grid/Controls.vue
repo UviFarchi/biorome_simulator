@@ -3,6 +3,7 @@ import {reactive, computed, onMounted, onBeforeUnmount, watch, ref} from 'vue'
 import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
+import { formatDateLocale, formatDateTime } from '@/utils/formatting.js'
 
 const game = gameStore()
 const phase = computed(() => game.phase)
@@ -129,7 +130,7 @@ function syncMeasuredToEnvOnce() {
   const addOneDayISO = () => {
     const d = new Date(game.currentDate)
     d.setDate(d.getDate() + 1)
-    return d.toISOString()
+    return formatDateTime(d)
   }
   const stamp = addOneDayISO()
 
@@ -348,10 +349,10 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel">
         <div class="infoScreen" title="Gold">Operator:<br/>{{ userAvatar }} {{ userName }} <br/>💰{{ gold }}</div>
         <div class="infoScreen">Stage: <br/> {{ stageLabel?.toUpperCase() }}</div>
-        <div class="infoScreen">Date:<br/>{{
-            game.currentDate.toLocaleDateString('en-GB')
-          }}<br/>Turn:{{ game.currentTurn }}
-        </div>
+          <div class="infoScreen">Date:<br/>{{
+              formatDateLocale(game.currentDate)
+            }}<br/>Turn:{{ game.currentTurn }}
+          </div>
         <div class="infoScreen">Phase:<br/>{{ currentPhaseLabel?.toUpperCase() }}</div>
 
 

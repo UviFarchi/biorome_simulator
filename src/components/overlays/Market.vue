@@ -3,9 +3,14 @@ import { computed } from 'vue'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
 import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
+import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js'
 
 const game = gameStore()
 const market = marketStore()
+
+const fmtMoney = n => formatMoney(n)
+const fmtNum = n => formatNumber(n)
+const fmtDate = d => formatDateLocale(d)
 
 // Group contracts
 const offeredContracts = computed(() =>
@@ -64,21 +69,13 @@ const animalsRows = computed(() => {
   return rows
 })
 
-const today = computed(() => {
-  const d = game.currentDate
-  return d ? new Date(d).toISOString().slice(0, 10) : ''
-})
-
-const fmtMoney = n => typeof n === 'number' ? `${Math.round(n)}💰` : '—'
-const fmtNum = n => typeof n === 'number' ? Math.round(n) : '—'
-const fmtDate = s => s ? new Date(s).toLocaleDateString() : ''
 </script>
 <template>
   <div class="market-overlay">
     <header class="bar">
       <div><strong>Market</strong></div>
-      <div>Gold: <strong>{{ Math.round(game.gold) }}</strong></div>
-      <div>Today: {{ fmtDate(today) }}</div>
+      <div>Gold: <strong>{{ fmtNum(game.gold) }}</strong></div>
+      <div>Today: {{ fmtDate(game.currentDate) }}</div>
       <div>Last flux: {{ fmtDate(market.lastMarketDate) }}</div>
     </header>
 

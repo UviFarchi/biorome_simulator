@@ -4,9 +4,10 @@ import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
 import {plantStore} from '@/stores/plant.js'
 import {animalStore} from '@/stores/animal.js'
+import { formatDate } from '@/utils/formatting.js'
 
 // ——— utils
-const iso = d => new Date(d).toISOString().slice(0, 10)
+const iso = formatDate
 const rint = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a
 const pick = arr => arr[Math.floor(Math.random() * arr.length)]
 

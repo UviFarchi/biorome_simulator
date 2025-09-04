@@ -7,14 +7,13 @@ import { buildMarket } from './buildMarket.js'
 import { buildEcology } from './buildEcology.js'
 import { buildTileDiff } from './buildTileDiff.js'
 import { buildResourceUse } from './buildResourceUse.js'
-
-const iso = (d) => new Date(d).toISOString().slice(0, 10)
+import { formatDate } from '@/utils/formatting.js'
 
 export function produceReport() {
     const game = gameStore()
     const map = mapStore()
 
-    const currentDateISO = iso(game.currentDate || Date.now())
+    const currentDateISO = formatDate(game.currentDate || Date.now())
     const currentGrid2D = Array.isArray(map.tiles) ? map.tiles : (map.tiles?.value || [])
     const previousGrid2D = Array.isArray(map.previousDayTiles) ? map.previousDayTiles : (map.previousDayTiles?.value || [])
 
