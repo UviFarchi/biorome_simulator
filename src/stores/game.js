@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import {computed, ref, watch} from 'vue'
+import { formatDate } from '@/utils/formatting.js'
 
 export const gameStore = defineStore('gameStore', () => {
     const gold = ref(300000)
@@ -29,7 +30,7 @@ export const gameStore = defineStore('gameStore', () => {
         }
     ])
     const stageChangeCalendar = [];
-    const startDate = ref(new Date().toISOString().slice(0, 10))
+    const startDate = ref(formatDate(new Date()))
     const currentTurn = ref(0)
     const currentDate = computed(() => {
         const d = new Date(startDate.value);
