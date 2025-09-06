@@ -74,6 +74,9 @@ async function startGame() {
 
 
 <template>
+  <div>
+    <h1>Biorome - The Game</h1>
+    <h2>Agrobots' LandOS Simulator</h2>
   <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
     <div>
       <label for="userName">Your Name:</label>
@@ -108,6 +111,7 @@ async function startGame() {
   </form>
   <div v-if="resuming" class="terrain-overlay">Loading save…</div>
   <div v-else-if="terrainGeneration" class="terrain-overlay">Generating terrain…</div>
+  </div>
 </template>
 
 <style scoped>
@@ -144,4 +148,6 @@ async function startGame() {
 .start-btn:hover {
   background: #5c940d;
 }
+
+h1 ,h2 {text-align: center;}
 </style>

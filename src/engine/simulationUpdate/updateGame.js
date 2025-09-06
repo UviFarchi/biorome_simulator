@@ -17,7 +17,7 @@ export default async function () {
     await yieldUI();
     const game = gameStore()
     const map = mapStore()
-    map.previousDayTiles = JSON.parse(JSON.stringify(map.tiles))
+
     game.analyticsReport.value = {}
     game.currentTurn += 1;
     const currentDate = game.currentDate

@@ -9,7 +9,7 @@ let game;
 const measuredField = (unit, env = 0) => ({
     env,
     unit,
-    measured: {value: null, date: null, collect: false},
+    measured: {value: null, history: [], date: null, collect: false},
     optimized: null,
 })
 

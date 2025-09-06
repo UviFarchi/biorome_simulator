@@ -15,10 +15,9 @@ export function produceReport() {
 
     const currentDateISO = formatDate(game.currentDate || Date.now())
     const currentGrid2D = Array.isArray(map.tiles) ? map.tiles : (map.tiles?.value || [])
-    const previousGrid2D = Array.isArray(map.previousDayTiles) ? map.previousDayTiles : (map.previousDayTiles?.value || [])
 
     const dataMissing = buildDataMissing(currentGrid2D, currentDateISO)
-    const weather = buildWeather(previousGrid2D, currentGrid2D, game.currentEvents?.weather || [], currentDateISO)
+    const weather = buildWeather(currentGrid2D, game.currentEvents?.weather || [], currentDateISO)
 
     // New sections
     const market = buildMarket(game.currentEvents?.market || [], currentDateISO)

@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onBeforeUnmount, ref, computed} from 'vue'
+import {onMounted, onBeforeUnmount, ref, computed, watch} from 'vue'
 import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {mapStore} from '@/stores/map.js'
@@ -226,17 +226,75 @@ function handlePhaseChange() {
   }, 1000)
 }
 
+
+const historyLength = 7;
+
+function pushHistory(newProp, oldProp) {
+  console.log(newProp.key, newProp.measured.value,oldProp.measured.value)
+  const mNew = newProp.measured;
+  const mOld = oldProp?.measured;
+  if (mOld && "value" in mOld) {
+    mNew.history.push({ value: mOld.value, date: mOld.date ?? null });
+    if (mNew.history.length > historyLength) mNew.history.shift();
+  }
+}
+
+function processBlock(newBlock, oldBlock) {
+  if (!newBlock || !oldBlock) return;            // expected during init
+  for (const key of Object.keys(newBlock)) {
+    const np = newBlock[key];
+    const op = oldBlock[key];
+    if (np?.measured && op?.measured) pushHistory(np, op);
+  }
+}
+
+function processBiota(newArr, oldArr) {
+  const n = Array.isArray(newArr) ? newArr : [];
+  const o = Array.isArray(oldArr) ? oldArr : [];
+  const len = Math.min(n.length, o.length);      // align by index
+  for (let i = 0; i < len; i++) {
+    const ni = n[i], oi = o[i];
+    if (!ni || !oi) continue;
+    for (const k of Object.keys(ni)) {
+      const nv = ni[k], ov = oi[k];
+      if (nv?.measured && ov?.measured) pushHistory(nv, ov);
+    }
+  }
+}
+
+let stop;
+
 onMounted(() => {
   eventBus.on('overlay', toggleOverlay)
   eventBus.on('phase', handlePhaseChange)
   eventBus.on('layout', setLayoutWidth)
   loadAllStores()
+  stop = watch(
+      () => map.tiles,
+      (newTiles, oldTiles) => {
+        for (let r = 0; r < newTiles.length; r++) {
+          for (let c = 0; c < newTiles[r].length; c++) {
+            const nt = newTiles[r][c];
+            const ot = oldTiles?.[r]?.[c];
+            if (!nt || !ot) continue; // expected at init or regen
+            processBlock(nt.soil,       ot.soil);
+            processBlock(nt.topography, ot.topography);
+            processBlock(nt.resources,  ot.resources);
+            processBiota(nt.plants ?? nt.plant,   ot.plants ?? ot.plant);
+            processBiota(nt.animals ?? nt.animal, ot.animals ?? ot.animal);
+          }
+        }
+      },
+      { deep: true }
+  );
 })
 
 onBeforeUnmount(() => {
+
   eventBus.off('overlay', toggleOverlay)
   eventBus.off('phase', handlePhaseChange)
   eventBus.off('layout', setLayoutWidth)
+  stop?.()
 })
 
 

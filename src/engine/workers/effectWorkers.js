@@ -2,13 +2,13 @@
 // Worker that applies effects per tile. Imports FX catalogs locally.
 // Logs key stages for debugging.
 
-import animalEffects     from '@/engine/effects/animal.js'
-import assemblyEffects   from '@/engine/effects/assembly.js'
-import plantEffects      from '@/engine/effects/plant.js'
-import resourceEffects   from '@/engine/effects/resource.js'
-import soilEffects       from '@/engine/effects/soil.js'
-import topographyEffects from '@/engine/effects/topography.js'
-import weatherEffects    from '@/engine/effects/weather.js'
+import animalEffects     from '@/engine/effects/animalEffects.js'
+import assemblyEffects   from '@/engine/effects/assemblyEffects.js'
+import plantEffects      from '@/engine/effects/plantEffects.js'
+import resourceEffects   from '@/engine/effects/resourceEffects.js'
+import soilEffects       from '@/engine/effects/soilEffects.js'
+import topographyEffects from '@/engine/effects/topographyEffects.js'
+import weatherEffects    from '@/engine/effects/weatherEffects.js'
 
 const EFFECT_CATALOGS = {
     animals:    animalEffects,
