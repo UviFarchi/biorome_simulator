@@ -24,12 +24,21 @@ const selectedTileKey = computed(() => {
 const animalTypesList = animals.animalTypes
 
 function addAnimalToTile(animalType, growthStage) {
-  const tile = currentTile.value;
+  const tile = currentTile.value
   const domain = 'animal'
-  tile.animals.optimized.push(makeInstance(domain, animalType, growthStage))
-  applyOptimizationEffects(domain, animalType, tile);
-}
 
+  // capture instance
+  const inst = makeInstance(domain, animalType, growthStage)
+
+  // push into optimized list
+  tile.animals.optimized.push(inst)
+
+
+  //Pass animal model
+  const model = animalTypesList.filter(animal => animal.type === animalType)[0]
+  // pass instance as subject
+  applyOptimizationEffects(domain, animalType, tile, inst, model)
+}
 </script>
 
 <template>

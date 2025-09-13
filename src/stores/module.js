@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const moduleStore = defineStore('moduleStore', () => {
-   //TODO: Refactor stores so that the ones that are actually changed during game play (game, map,weather and market) are kept as Pinia stores, while the others can be static JSON.
 
     const constants = ref({
         units: { electricity: 'kWh', water: 'm³', waste: 'ton', batteryPack: 'pack' },

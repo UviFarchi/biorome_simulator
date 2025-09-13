@@ -92,31 +92,38 @@ function getAdjacentTiles(tile, tilesGrid) {
 
 const stageImages = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
 
-function getImageOrIcon(kind, type, stage) {
-    if (kind && type && stage) {
-        const key = `/src/assets/${kind}/${type}/${stage}.png`
+function getImageOrIcon(domain, type, stage) {
+    if (domain && type && stage) {
+        const key = `/src/assets/${domain}/${type}/${stage}.png`
         if (stageImages[key]) return stageImages[key]
     }
-    if (kind === 'plants') {
+    if (domain === 'plants') {
         const match = plantStore().plantTypes?.find(t => t.type === type)
         return match?.icon || '🌱'
     }
-    if (kind === 'animals') {
+    if (domain === 'animals') {
         const match = animalStore().animalTypes?.find(t => t.type === type)
         return match?.icon || '🐾'
     }
     return '❓'
 }
 
-function applyOptimizationEffects(domain, type, tile){
-const effectsToApply = effects[domain][type];
+function applyOptimizationEffects(domain, type, tile, subject, model) {
+    const effectsToApply = effects[domain][type] || []
 
-for (const effect of effectsToApply){
-    const target = effect.target;
-    const property = effect.property;
-    const currentValue = tile[target][property].measured.value;
-    tile[target][property].optimized = currentValue + effect.delta
+    for (const effect of effectsToApply) {
+        const target = effect.target
+        const property = effect.property
+
+        const delta = (typeof effect.delta === 'function')
+            ? effect.delta({ tile, subject, type, domain, model })
+            : effect.delta
+
+        const currentValue = tile[target][property].measured.value
+        //TODO => make optimized into an object that can have both the value and an array of the things having a projected effect on it.
+        tile[target][property].optimized = currentValue + delta
+    }
 }
-}
+
 
 export {getAdjacentTiles, getImageOrIcon, measureTileProperty, applyOptimizationEffects}

@@ -5,6 +5,7 @@ import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
 import { plantStore } from '@/stores/plant.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
+import {applyOptimizationEffects} from "@/utils/tileHelpers.js";
 
 const map = mapStore()
 const game = gameStore()
@@ -24,7 +25,19 @@ const plantTypesList = plants.plantTypes
 
 function addPlantToTile(plantType, growthStage) {
   const tile = currentTile.value
-  tile.plants.optimized.push(makeInstance('plant', plantType, growthStage))
+  const domain = 'plant'
+
+  // capture instance
+  const inst = makeInstance(domain, plantType, growthStage)
+
+  // push into optimized list
+  tile.plants.optimized.push(inst)
+
+
+  //Pass plant model
+  const model = plantTypesList.filter(plant => plant.type === plantType)[0]
+  // pass instance as subject
+  applyOptimizationEffects(domain, plantType, tile, inst, model)
 }
 
 function plantStagePrice(plant, growthStage) {

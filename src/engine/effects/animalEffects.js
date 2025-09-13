@@ -1,6 +1,7 @@
 function feedConsumption(context) {
-    const subject = context.subject
-    const perStage = subject.feedPerGrowthStage?.[subject.growthStages.indexOf(context.instance.growthStage)] || 0;
+    const subject = context.subject;
+    const model = context.model;
+    const perStage = model.feedPerGrowthStage?.[model.growthStages.indexOf(subject.growthStage)];
     return -perStage;
 }
 
