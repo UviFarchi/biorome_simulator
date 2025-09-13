@@ -15,8 +15,8 @@
 
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import { animalStore } from '@/stores/animal.js'
-import { plantStore} from '@/stores/plant.js'
+import { animalTypes } from '@/data/animals.data.js'
+import { plantTypes} from '@/data/plants.data.js'
 import { getAdjacentTiles } from '@/utils/tileHelpers.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 
@@ -141,8 +141,6 @@ const EVENTS = [
 export default function ecosystemEvents() {
     const game = gameStore()
     const map = mapStore()
-    const animals = animalStore()
-    const plants = plantStore()
 
     // Flatten to a single array for habitat filtering and sampling
     const allTilesFlat = map?.tiles?.flat?.() ?? []
@@ -165,8 +163,8 @@ export default function ecosystemEvents() {
         const seedTiles = sampleUniqueTiles(habitatPool, targetTileCount)
 
         const catalog = eventDef.entity === 'animal'
-            ? (animals.animalTypes ?? [])
-            : (plants.plantTypes ?? [])
+            ? animalTypes
+            : plantTypes
 
         const specByType = new Map(catalog.map(spec => [spec.type, spec]))
         const availableCandidates = eventDef.candidates.filter(t => specByType.has(t))

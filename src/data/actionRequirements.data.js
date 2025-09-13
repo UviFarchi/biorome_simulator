@@ -1,7 +1,4 @@
-import {defineStore} from 'pinia'
-
-export const actionRequirementsStore = defineStore('actionRequirementsStore', () => {
-    return {
+    export const actionRequirements = {
 
         harvest: {
             // plantStore products
@@ -216,4 +213,3 @@ export const actionRequirementsStore = defineStore('actionRequirementsStore', ()
             }, {type: 'tool', subtype: 'anchor_driver'}]
         },
     }
-})

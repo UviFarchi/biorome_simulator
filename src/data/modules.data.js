@@ -1,12 +1,7 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-
-export const moduleStore = defineStore('moduleStore', () => {
-
-    const constants = ref({
+export const constants = {
         units: { electricity: 'kWh', water: 'm³', waste: 'ton', batteryPack: 'pack' },
         battery: { moduleKey: 'battery', kWhPerPack: 5 }
-    })
+    }
 
     // ---- BATTERY / BASES / SUPPORTS ----
     const batteryAndBases = [
@@ -523,7 +518,7 @@ export const moduleStore = defineStore('moduleStore', () => {
             requires:['internalSpace','battery'], count:0 },
     ]
 
-    const availableModules = ref([
+export const moduleTypes = [
         ...batteryAndBases,
         ...arms,
         ...tools,
@@ -536,9 +531,9 @@ export const moduleStore = defineStore('moduleStore', () => {
         ...biogas,
         ...mycelium,
         ...collar
-    ])
+    ]
 
-    const premadeAssemblies = [
+export const premadeAssemblies = [
         {
         usage: 'Animal Geofencing Collar',
         modules: [{type: 'collar'}, {type: 'battery'}, {type: 'alarm', subtype: 'audio'}, {
@@ -548,5 +543,3 @@ export const moduleStore = defineStore('moduleStore', () => {
 
 
 
-    return {availableModules,  premadeAssemblies,  constants}
-})

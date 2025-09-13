@@ -3,15 +3,13 @@ import {computed} from 'vue'
 import {mapStore} from '@/stores/map.js'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-import {animalStore} from '@/stores/animal.js'
+import { animalTypes } from '@/data/animals.data.js'
 import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from "@/utils/tileHelpers.js";
+import {applyOptimizationEffects} from '@/utils/tileHelpers.js';
 
 const map = mapStore()
 const game = gameStore()
 const market = marketStore()
-const animals = animalStore()
-
 const currentTile = computed(() => {
   const selected = map.selectedTile
   return selected && typeof selected === 'object' && 'value' in selected ? selected.value : selected
@@ -21,7 +19,7 @@ const selectedTileKey = computed(() => {
   return currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
 })
 
-const animalTypesList = animals.animalTypes
+const animalTypesList = animalTypes
 
 function addAnimalToTile(animalType, growthStage) {
   const tile = currentTile.value

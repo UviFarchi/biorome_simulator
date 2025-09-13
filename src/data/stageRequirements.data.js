@@ -1,7 +1,4 @@
-import {defineStore} from 'pinia'
-
-export const stageRequirementsStore = defineStore('stageRequirementsStore', () => {
-    return {
+    export const stageRequirements = {
         stage: {
             discovery: {
                 milestones: [
@@ -23,4 +20,3 @@ export const stageRequirementsStore = defineStore('stageRequirementsStore', () =
             }
         }
     }
-})

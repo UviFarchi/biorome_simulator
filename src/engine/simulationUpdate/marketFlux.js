@@ -2,8 +2,8 @@
 import {v4 as uuidv4} from 'uuid'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-import {plantStore} from '@/stores/plant.js'
-import {animalStore} from '@/stores/animal.js'
+import { plantTypes, products as plantProducts } from '@/data/plants.data.js'
+import { animalTypes, products as animalProducts } from '@/data/animals.data.js'
 import { formatDate } from '@/utils/formatting.js'
 
 // ——— utils
@@ -179,8 +179,8 @@ function genContractOffers(game, market, productPrices, n = 1) {
 export function marketFlux() {
     const game = gameStore()          // currentDate, currentEvents.market
     const market = marketStore()      // offers, contracts, utilities, extras
-    const plants = plantStore()      // plantTypes + products
-    const animals = animalStore()    // animalTypes + products
+    const plants = { plantTypes, products: plantProducts }      // plantTypes + products
+    const animals = { animalTypes, products: animalProducts }   // animalTypes + products
 
     const today = iso(game.currentDate)
     if (market.lastMarketDate === today) return {ran: false, reason: 'already_ran'}

@@ -1,7 +1,9 @@
+import { assemblyRequirements } from '@/data/assemblyRequirements.data.js'
+
 // ---------- Requirements helpers ----------
 function assemblyMeetsRequirements(assembly, requirementType, requirementName) {
     if (!assembly || !Array.isArray(assembly.modules)) return false
-    const requirementsRoot = getStore('assemblyRequirements')
+    const requirementsRoot = assemblyRequirements
     const requirementList =
         requirementsRoot[requirementType] && requirementsRoot[requirementType][requirementName]
             ? requirementsRoot[requirementType][requirementName]
@@ -17,7 +19,7 @@ function assemblyMeetsRequirements(assembly, requirementType, requirementName) {
 }
 
 function getRequirements(requirementType, requirementName) {
-    const requirementsRoot = getStore('assemblyRequirements')
+    const requirementsRoot = assemblyRequirements
     const group = requirementsRoot[requirementType]
     if (!group || !group[requirementName]) {
         throw new Error(`No requirements for ${requirementType}.${requirementName}`)

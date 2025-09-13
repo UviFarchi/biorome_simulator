@@ -1,16 +1,12 @@
 
-import { assemblyRequirementsStore } from '@/stores/assemblyRequirements.js'
 import { mapStore }                 from '@/stores/map.js'
 import { gameStore }              from '@/stores/game.js'
 import { marketStore }              from '@/stores/market.js'
-
-import { moduleStore }             from '@/stores/module.js'
 import eventBus                     from '@/eventBus.js'
 
 
 const factoryByName = Object.fromEntries(
     Object.entries({
-        assemblyRequirementsStore,
         gameStore,
         mapStore,
         marketStore
