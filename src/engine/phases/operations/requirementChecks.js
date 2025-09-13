@@ -1,4 +1,4 @@
-import { assemblyRequirements } from '@/data/assemblyRequirements.data.js'
+import { assemblyRequirements } from '@/dict/assemblyRequirements.js'
 
 // ---------- Requirements helpers ----------
 function assemblyMeetsRequirements(assembly, requirementType, requirementName) {

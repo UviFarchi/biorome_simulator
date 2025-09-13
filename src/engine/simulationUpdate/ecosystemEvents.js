@@ -15,8 +15,8 @@
 
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import { animalTypes } from '@/data/animals.data.js'
-import { plantTypes} from '@/data/plants.data.js'
+import { animalTypes } from '@/dict/animalModels.js'
+import { plantTypes} from '@/dict/plantModels.js'
 import { getAdjacentTiles } from '@/utils/tileHelpers.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 

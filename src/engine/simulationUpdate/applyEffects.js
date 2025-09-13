@@ -11,12 +11,14 @@ import resourceEffects from '@/engine/effects/resourceEffects.js'
 import soilEffects from '@/engine/effects/soilEffects.js'
 import topographyEffects from '@/engine/effects/topographyEffects.js'
 import weatherEffects from '@/engine/effects/weatherEffects.js'
+
 import {roundN} from "@/utils/formatting.js";
 
 const MAX_WORKERS = Math.min(4, navigator.hardwareConcurrency || 4)
 
 const createWorker = () =>
     new Worker(new URL('../workers/effectWorkers.js', import.meta.url), {type: 'module'})
+
 
 export async function applyEffects() {
     const map = mapStore()
@@ -220,7 +222,7 @@ function runApplyEffectsSingleThread(tiles2D) {
 
                     for (const eff of effectList) {
                         const delta = (typeof eff.delta === 'function')
-                            ? eff.delta({tile: working, subject, key, category})
+                            ? eff.delta({tile: working, subject, type: key, category})
                             : eff.delta
 
                         if (eff.target === 'animals') {

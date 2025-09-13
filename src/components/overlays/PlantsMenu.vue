@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
-import { plantTypes } from '@/data/plants.data.js'
+import { plantTypes } from '@/dict/plantModels.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 import {applyOptimizationEffects} from '@/utils/tileHelpers.js';
 
@@ -35,7 +35,7 @@ function addPlantToTile(plantType, growthStage) {
   //Pass plant model
   const model = plantTypesList.filter(plant => plant.type === plantType)[0]
   // pass instance as subject
-  applyOptimizationEffects(domain, plantType, tile, inst, model)
+  applyOptimizationEffects(domain, plantType, tile, inst)
 }
 
 function plantStagePrice(plant, growthStage) {

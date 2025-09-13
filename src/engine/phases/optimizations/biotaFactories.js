@@ -1,5 +1,5 @@
-import { animalTypes } from '@/data/animals.data.js'
-import { plantTypes } from '@/data/plants.data.js'
+import { animalTypes } from '@/dict/animalModels.js'
+import { plantTypes } from '@/dict/plantModels.js'
 import {gameStore} from '@/stores/game.js';
 import {v4 as uuidv4} from 'uuid'
 

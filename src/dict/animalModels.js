@@ -1,4 +1,4 @@
-export const products = {
+ const products = {
         milk: {icon: '🥛', label: 'Milk', basePrice: 3, shelfLife: 2},
         goat_milk: {icon: '🥛', label: 'Goat milk', basePrice: 4, shelfLife: 2},
         eggs: {icon: '🥚', label: 'Eggs', basePrice: 2, shelfLife: 3},
@@ -9,7 +9,7 @@ export const products = {
 
 
 
-export const animalTypes = [
+ const animalTypes = [
         {
             type: 'cow',
             icon: '🐄',
@@ -543,3 +543,5 @@ export const animalTypes = [
             habitat: 'land'
         }
     ]
+
+ export {products, animalTypes}

@@ -188,15 +188,15 @@ function handlePhaseChange() {
     // auto-open planners
     on('animals');
     on('plants');
-    on('resources')
+    on('assemblies');
     // available but closed
     off('weather');
     off('news');
     off('market');
-    on('analytics');
+    off('analytics');
     off('log')
     // not allowed
-    disable('assemblies');
+
     disable('gate')
 
     eventBus.emit('log', {engine: 'optimizations', msg: 'Running simulations...'})

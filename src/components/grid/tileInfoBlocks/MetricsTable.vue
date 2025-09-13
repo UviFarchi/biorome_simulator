@@ -1,19 +1,18 @@
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import {computed, ref, onMounted, onBeforeUnmount, nextTick} from 'vue'
 
 
-import { mapStore } from '@/stores/map.js'
+import {mapStore} from '@/stores/map.js'
 import {roundN} from "@/utils/formatting.js";
 
 const map = mapStore()
 
 const props = defineProps({
-  title: { type: String, required: true },
-  data: { type: Object, required: true }
+  title: {type: String, required: true},
+  data: {type: Object, required: true}
 })
 
 const fieldData = computed(() => props.data || {})
-
 
 
 // --- column selection for delta via header clicks ---
@@ -45,11 +44,11 @@ function getHistoryData(property) {
   const len = history.length
   let sum = 0
   const values = new Array(len)
-  const dates  = new Array(len)
+  const dates = new Array(len)
   for (let i = 0; i < len; i++) {
     const vNum = Number(history[i]?.value)
     values[i] = Number.isFinite(vNum) ? vNum : '-'
-    dates[i]  = history[i]?.date
+    dates[i] = history[i]?.date
     if (Number.isFinite(vNum)) sum += vNum
   }
   const meanNum = len ? sum / len : null
@@ -57,7 +56,7 @@ function getHistoryData(property) {
   const lastNum = len ? Number(history[0]?.value) : null
   const last = Number.isFinite(lastNum) ? Number(lastNum) : null
   const digest = values.join('|') + '::' + dates.join('|')
-  return { last, mean, values, dates, digest }
+  return {last, mean, values, dates, digest}
 }
 
 function getDelta(property) {
@@ -75,18 +74,17 @@ function getDelta(property) {
           rightIdx === 3 ? h.mean :
               rightIdx === 4 ? property?.measured?.value :
                   rightIdx === 5 ? property?.optimized : null
-console.log(a,b)
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null
   return Number(b - a)
 }
-
+//TODO => Recalculate Optimized values so that they are always computed on top of the current. For example, if an animal is projected to have an effect on a property, that effect is always on top of the current value, not set once.
 function formatDelta(value) {
   return value === null ? 'Not enough data' : value
 }
 
 function isNonZeroDelta(property) {
   const d = getDelta(property)
-  return d !== null && d !== 0       // now correct; no string/number mismatch
+  return d !== null && d !== 0
 }
 
 
@@ -172,7 +170,7 @@ function isNonZeroDelta(property) {
         <td :title="selectedColumns.length === 2
               ? `Δ = col${selectedColumns[1]} − col${selectedColumns[0]}`
               : 'Select two columns by clicking their headers'">
-    {{ formatDelta(getDelta(property)) }}
+          {{ formatDelta(getDelta(property)) }}
         </td>
 
 
@@ -183,10 +181,9 @@ function isNonZeroDelta(property) {
 </template>
 
 
-
 <style>
-.metrics-table-wrapper th, .metrics-table-wrapper td{
-  border:1px solid green;
+.metrics-table-wrapper th, .metrics-table-wrapper td {
+  border: 1px solid green;
   border-collapse: collapse;
   margin: 0;
 }

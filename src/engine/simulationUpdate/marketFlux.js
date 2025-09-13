@@ -2,8 +2,8 @@
 import {v4 as uuidv4} from 'uuid'
 import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
-import { plantTypes, products as plantProducts } from '@/data/plants.data.js'
-import { animalTypes, products as animalProducts } from '@/data/animals.data.js'
+import { plantTypes, products as plantProducts } from '@/dict/plantModels.js'
+import { animalTypes, products as animalProducts } from '@/dict/animalModels.js'
 import { formatDate } from '@/utils/formatting.js'
 
 // ——— utils

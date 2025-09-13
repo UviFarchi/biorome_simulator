@@ -22,7 +22,7 @@ export const gameStore = defineStore('gameStore', () => {
             ],
             name: 'Seed Planter',
             deployed: false,
-            built: false,
+            built: true,
             moves: 1,
             actions: 1,
             orders: []

@@ -1,7 +1,7 @@
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import { plantTypes } from '@/data/plants.data.js'
-import { animalTypes } from '@/data/animals.data.js'
+import { plantTypes } from '@/dict/plantModels.js'
+import { animalTypes } from '@/dict/animalModels.js'
 import { formatDateTime, roundN } from '@/utils/formatting.js'
 import plantEffects from '@/engine/effects/plantEffects.js';
 import animalEffects from '@/engine/effects/animalEffects.js';
@@ -10,6 +10,10 @@ import assemblyEffects from '@/engine/effects/assemblyEffects.js';
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries
 const effects = {plant:plantEffects, animal:animalEffects,assembly: assemblyEffects}
+const types = {
+    plants: Object.fromEntries(plantTypes.map(m => [m.type, m])),
+    animals: Object.fromEntries(animalTypes.map(m => [m.type, m]))
+}
     /**
  * Record a new measurement for a given tile property.
  * @param {Object} propertyObj - The tile property object (must contain .env and .measured).
@@ -96,26 +100,22 @@ function getImageOrIcon(domain, type, stage) {
         const key = `/src/assets/${domain}/${type}/${stage}.png`
         if (stageImages[key]) return stageImages[key]
     }
-    if (domain === 'plants') {
-        const match = plantTypes?.find(t => t.type === type)
-        return match?.icon || '🌱'
-    }
-    if (domain === 'animals') {
-        const match = animalTypes?.find(t => t.type === type)
-        return match?.icon || '🐾'
-    }
-    return '❓'
+else{
+    const match = types[domain][type]
+        return match.icon || '❓'
 }
 
-function applyOptimizationEffects(domain, type, tile, subject, model) {
+
+}
+
+function applyOptimizationEffects(domain, type, tile, subject) {
     const effectsToApply = effects[domain][type] || []
 
     for (const effect of effectsToApply) {
         const target = effect.target
         const property = effect.property
-
         const delta = (typeof effect.delta === 'function')
-            ? effect.delta({ tile, subject, type, domain, model })
+            ? effect.delta({ tile, subject, type, domain})
             : effect.delta
 
         const currentValue = tile[target][property].measured.value

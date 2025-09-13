@@ -1,4 +1,4 @@
-export const constants = {
+const constants = {
         units: { electricity: 'kWh', water: 'm³', waste: 'ton', batteryPack: 'pack' },
         battery: { moduleKey: 'battery', kWhPerPack: 5 }
     }
@@ -518,7 +518,7 @@ export const constants = {
             requires:['internalSpace','battery'], count:0 },
     ]
 
-export const moduleTypes = [
+const moduleTypes = [
         ...batteryAndBases,
         ...arms,
         ...tools,
@@ -533,7 +533,7 @@ export const moduleTypes = [
         ...collar
     ]
 
-export const premadeAssemblies = [
+ const premadeAssemblies = [
         {
         usage: 'Animal Geofencing Collar',
         modules: [{type: 'collar'}, {type: 'battery'}, {type: 'alarm', subtype: 'audio'}, {
@@ -543,3 +543,4 @@ export const premadeAssemblies = [
 
 
 
+export {constants, moduleTypes, premadeAssemblies}

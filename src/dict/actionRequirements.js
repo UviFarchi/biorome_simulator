@@ -1,7 +1,25 @@
-    export const actionRequirements = {
-
-        harvest: {
-            // plantStore products
+export const actionRequirements = {
+    soil: {
+        fertilize: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
+            type: 'tool', subtype: 'pitchfork'
+        }, {type: 'battery'}],
+        irrigate: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
+            type: 'tool', subtype: 'pitchfork'
+        }, {type: 'battery'}],
+        drain: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
+            type: 'tool', subtype: 'pitchfork'
+        }, {type: 'battery'}]
+    },
+    topography: {
+        flatten: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
+            type: 'tool', subtype: 'pitchfork'
+        }, {type: 'battery'}],
+        terrace: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
+            type: 'tool', subtype: 'pitchfork'
+        }, {type: 'battery'}]
+    },
+    plants: {
+        harvestProduct: {
             hay: [{type: 'transport'}, {type: 'battery'}, {type: 'cutter', subtype: 'rotating'}],
             corn_cob: [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
                 type: 'arm',
@@ -82,10 +100,9 @@
             grape: [{type: 'transport'}, {type: 'battery'}, {
                 type: 'arm',
                 subtype: 'small'
-            }, {type: 'gripper'}, {type: 'cart'}],
-
-
-            // plantStore
+            }, {type: 'gripper'}, {type: 'cart'}]
+        },
+        removePlant: {
             'corn': [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
                 type: 'arm',
                 subtype: 'medium'
@@ -158,9 +175,22 @@
             'grape_vine': [{type: 'transport'}, {type: 'battery'}, {
                 type: 'arm',
                 subtype: 'small'
-            }, {type: 'gripper'}, {type: 'cart'}],
+            }, {type: 'gripper'}, {type: 'cart'}]
+        },
+        sow: {
+            seed: [{type: 'transport'}, {type: 'arm'}, {type: 'seeder'}, {type: 'borer'}],
+            seedling: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'gripper'}],
 
-            // animal products
+        }
+    },
+    animal: {
+        move: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'alarm', subtype: 'electric'}],
+        limitArea: [{type: 'collar'}, {type: 'alarm', subtype: 'electric'}, {
+            type: 'alarm',
+            subtype: 'sound'
+        }, {type: 'battery'}, {type: 'gps'},],
+
+        harvestProduct: {
             'milk': [{type: 'transport'}, {type: 'battery'}, {type: 'arm', subtype: 'medium'}, {type: 'gripper'}],
             'goat_milk': [{type: 'transport'}, {type: 'battery'}, {type: 'arm', subtype: 'small'}, {type: 'gripper'}],
             'eggs': [{type: 'transport'}, {type: 'battery'}, {type: 'camera', subtype: 'rgb'}, {
@@ -173,6 +203,8 @@
             }, {type: 'suction'}, {type: 'cart'}],
             'honey': [{type: 'transport'}, {type: 'battery'}, {type: 'arm'}, {type: 'gripper'}],
             'wool': [{type: 'transport'}, {type: 'battery'}, {type: 'arm', subtype: 'small'}, {type: 'brush'}],
+        },
+        removeAnimal: {
             'cow': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'goat': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'sheep': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
@@ -183,33 +215,23 @@
             'horse': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'donkey': [{type: 'transport'}, {type: 'battery'}, {type: 'cart', subtype: 'animal'}],
             'bee': [{type: 'transport'}, {type: 'battery'}, {type: 'box', subtype: 'hive'}]
-        },
-        sowing: {
-            seed: [{type: 'transport'}, {type: 'arm'}, {type: 'seeder'}, {type: 'borer'}],
-            seedling: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'gripper'}],
-            fertilize: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {
-                type: 'tool', subtype: 'pitchfork'
-            }, {type: 'battery'}]
-        },
-        animal: {
-            move: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'alarm', subtype: 'electric'}],
-            collar: [{type: 'collar'}, {type: 'alarm', subtype: 'electric'}, {
-                type: 'alarm',
-                subtype: 'sound'
-            }, {type: 'battery'}, {type: 'gps'},],
-            feed: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'tank'}, {type: 'valve'}, {type: 'battery'}]
-        },
-        assemblies: {
-            transportAssembly: [{type: 'transport'}, {type: 'battery'}, {type: 'cart'}, {
-                type: 'arm',
-                subtype: 'heavy'
-            }],
-            buildAssembly: [{type: 'transport'}, {type: 'battery'}, {type: 'arm', subtype: 'heavy'}, {
-                type: 'tool',
-                subtype: 'borer'
-            }, {type: 'tool', subtype: 'digger'}, {type: 'tool', subtype: 'flattener'}, {
-                type: 'tool',
-                subtype: 'grader'
-            }, {type: 'tool', subtype: 'anchor_driver'}]
-        },
+        }
+    },
+    assemblies: {
+        transportAssembly: [{type: 'transport'}, {type: 'battery'}, {type: 'cart'}, {
+            type: 'arm',
+            subtype: 'heavy'
+        }],
+        buildAssembly: [{type: 'transport'}, {type: 'battery'}, {type: 'arm', subtype: 'heavy'}, {
+            type: 'tool',
+            subtype: 'borer'
+        }, {type: 'tool', subtype: 'digger'}, {type: 'tool', subtype: 'flattener'}, {
+            type: 'tool',
+            subtype: 'grader'
+        }, {type: 'tool', subtype: 'anchor_driver'}]
+    },
+    resources:{
+        provideFeed: [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'tank'}, {type: 'valve'}, {type: 'battery'}],
+        storeWater:  [{type: 'transport'}, {type: 'arm'}, {type: 'cart'}, {type: 'tank'}, {type: 'valve'}, {type: 'battery'}]
     }
+}
