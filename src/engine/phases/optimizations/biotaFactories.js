@@ -1,10 +1,13 @@
-import {animalStore} from '@/stores/animal.js'
-import {plantStore} from '@/stores/plant.js'
-import {gameStore} from "@/stores/game.js";
+import { animalTypes } from '@/data/animals.data.js'
+import { plantTypes } from '@/data/plants.data.js'
+import {gameStore} from '@/stores/game.js';
 import {v4 as uuidv4} from 'uuid'
 
-let types = {animal: [], plant: []}
-let lists = {animal: {}, plant: {}}
+const types = {animal: animalTypes, plant: plantTypes}
+const lists = {
+    animal: Object.fromEntries(animalTypes.map(s => [s.type, s])),
+    plant: Object.fromEntries(plantTypes.map(s => [s.type, s]))
+}
 let game;
 const measuredField = (unit, env = 0) => ({
     env,
@@ -14,10 +17,6 @@ const measuredField = (unit, env = 0) => ({
 })
 
 function makeInstance(domain, type, growthStage) {
-    if (types[domain].length < 1) {
-        types[domain] = domain === 'plant' ? plantStore().plantTypes : animalStore().animalTypes;
-        lists[domain] = Object.fromEntries(types[domain].map(s => [s.type, s]))
-    }
     if (!game) {
         game = gameStore()
     }

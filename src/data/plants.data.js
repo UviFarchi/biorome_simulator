@@ -1,7 +1,4 @@
-import {defineStore} from 'pinia'
-import {ref} from 'vue'
-export const plantStore = defineStore('plantStore', () => {
-    const plantTypes = ref(
+export const plantTypes =
         [
             {
                 type: 'grass', icon: '🌱',
@@ -779,8 +776,7 @@ export const plantStore = defineStore('plantStore', () => {
                 habitat: 'land'
             }
         ]
-    )
-    const products = {
+export const products = {
         // Annuals
         hay: {
             icon: '🌱', label: 'Hay', basePrice: 1, shelfLife: 10, harvestType: 'product'
@@ -834,5 +830,3 @@ export const plantStore = defineStore('plantStore', () => {
             icon: '🪵', label: 'Wood', basePrice: 6, shelfLife: 80, harvestType: 'plantStore'
         }
     }
-    return {plantTypes, products}
-})

@@ -1,19 +1,15 @@
-import {defineStore} from 'pinia'
-import {ref} from 'vue'
-
-export const animalStore = defineStore('animalStore', () => {
-    const products = ref({
+export const products = {
         milk: {icon: '🥛', label: 'Milk', basePrice: 3, shelfLife: 2},
         goat_milk: {icon: '🥛', label: 'Goat milk', basePrice: 4, shelfLife: 2},
         eggs: {icon: '🥚', label: 'Eggs', basePrice: 2, shelfLife: 3},
         duck_eggs: {icon: '🥚', label: 'Duck eggs', basePrice: 3, shelfLife: 3},
         honey: {icon: '🍯', label: 'Honey', basePrice: 5, shelfLife: 1000},
         wool: {icon: '🧶', label: 'Wool', basePrice: 7, shelfLife: 1000}
-    });
+    }
 
 
 
-    const animalTypes = ref([
+export const animalTypes = [
         {
             type: 'cow',
             icon: '🐄',
@@ -546,6 +542,4 @@ export const animalStore = defineStore('animalStore', () => {
 
             habitat: 'land'
         }
-    ])
-    return {animalTypes, products}
-})
+    ]

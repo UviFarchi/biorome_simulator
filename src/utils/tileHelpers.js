@@ -1,12 +1,11 @@
-
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import { plantStore } from '@/stores/plant.js'
-import { animalStore } from '@/stores/animal.js'
+import { plantTypes } from '@/data/plants.data.js'
+import { animalTypes } from '@/data/animals.data.js'
 import { formatDateTime, roundN } from '@/utils/formatting.js'
-import plantEffects from "@/engine/effects/plantEffects.js";
-import animalEffects from "@/engine/effects/animalEffects.js";
-import assemblyEffects from "@/engine/effects/assemblyEffects.js";
+import plantEffects from '@/engine/effects/plantEffects.js';
+import animalEffects from '@/engine/effects/animalEffects.js';
+import assemblyEffects from '@/engine/effects/assemblyEffects.js';
 
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries
@@ -98,11 +97,11 @@ function getImageOrIcon(domain, type, stage) {
         if (stageImages[key]) return stageImages[key]
     }
     if (domain === 'plants') {
-        const match = plantStore().plantTypes?.find(t => t.type === type)
+        const match = plantTypes?.find(t => t.type === type)
         return match?.icon || '🌱'
     }
     if (domain === 'animals') {
-        const match = animalStore().animalTypes?.find(t => t.type === type)
+        const match = animalTypes?.find(t => t.type === type)
         return match?.icon || '🐾'
     }
     return '❓'
