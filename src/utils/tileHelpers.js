@@ -1,13 +1,17 @@
-// utils/tileHelpers.js
+
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
 import { plantStore } from '@/stores/plant.js'
 import { animalStore } from '@/stores/animal.js'
 import { formatDateTime, roundN } from '@/utils/formatting.js'
+import plantEffects from "@/engine/effects/plantEffects.js";
+import animalEffects from "@/engine/effects/animalEffects.js";
+import assemblyEffects from "@/engine/effects/assemblyEffects.js";
+
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries
-
-/**
+const effects = {plant:plantEffects, animal:animalEffects,assembly: assemblyEffects}
+    /**
  * Record a new measurement for a given tile property.
  * @param {Object} propertyObj - The tile property object (must contain .env and .measured).
  * @param {String} propertyKey - The fully qualified property name (e.g. "soil.water").
@@ -104,4 +108,15 @@ function getImageOrIcon(kind, type, stage) {
     return '❓'
 }
 
-export { getAdjacentTiles, getImageOrIcon, measureTileProperty }
+function applyOptimizationEffects(domain, type, tile){
+const effectsToApply = effects[domain][type];
+
+for (const effect of effectsToApply){
+    const target = effect.target;
+    const property = effect.property;
+    const currentValue = tile[target][property].measured.value;
+    tile[target][property].optimized = currentValue + effect.delta
+}
+}
+
+export {getAdjacentTiles, getImageOrIcon, measureTileProperty, applyOptimizationEffects}
