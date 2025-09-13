@@ -1,7 +1,9 @@
 // utils/tileHelpers.js
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import {formatDateTime, roundN} from '@/utils/formatting.js'
+import { plantStore } from '@/stores/plant.js'
+import { animalStore } from '@/stores/animal.js'
+import { formatDateTime, roundN } from '@/utils/formatting.js'
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries
 
@@ -84,8 +86,22 @@ function getAdjacentTiles(tile, tilesGrid) {
     return adjacent
 }
 
-function getImageOrIcon(){
-    return true
+const stageImages = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
+
+function getImageOrIcon(kind, type, stage) {
+    if (kind && type && stage) {
+        const key = `/src/assets/${kind}/${type}/${stage}.png`
+        if (stageImages[key]) return stageImages[key]
+    }
+    if (kind === 'plants') {
+        const match = plantStore().plantTypes?.find(t => t.type === type)
+        return match?.icon || '🌱'
+    }
+    if (kind === 'animals') {
+        const match = animalStore().animalTypes?.find(t => t.type === type)
+        return match?.icon || '🐾'
+    }
+    return '❓'
 }
 
-export {getAdjacentTiles, getImageOrIcon, measureTileProperty}
+export { getAdjacentTiles, getImageOrIcon, measureTileProperty }
