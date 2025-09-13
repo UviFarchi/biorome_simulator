@@ -549,5 +549,5 @@ export const moduleStore = defineStore('moduleStore', () => {
 
 
 
-    return {availableModules,  premadeAssemblies, currentAssembly, constants}
+    return {availableModules,  premadeAssemblies,  constants}
 })

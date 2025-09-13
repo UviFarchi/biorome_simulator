@@ -1,7 +1,7 @@
 import {saveAllStores} from '@/utils/persistance.js';
 import {applyEffects} from '@/engine/simulationUpdate/applyEffects.js';
 import {gameStore} from '@/stores/game.js';
-import getWeather from '@/engine/simulationUpdate/getWeather.js';
+import calculateWeather from '@/engine/simulationUpdate/calculateWeather.js';
 import {marketFlux} from '@/engine/simulationUpdate/marketFlux.js';
 import ecosystemEvents from '@/engine/simulationUpdate/ecosystemEvents.js';
 import applyStageChanges from '@/engine/simulationUpdate/applyStageChanges.js';
@@ -56,7 +56,7 @@ export default async function () {
     };
 
     // pipeline (same order)
-    await step('getWeather', getWeather);
+    await step('calculateWeather', calculateWeather);
     await step('ecosystemEvents', ecosystemEvents);
     await step('applyStageChanges', applyStageChanges);
     await step('applyEffects', applyEffects);

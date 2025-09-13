@@ -7,7 +7,7 @@ export default {
     rainfall: [{target: 'topography', property: 'elevation', delta: -1}],
     cloudCover: [{target: 'plants', property: 'health', delta: -1}],
     relHumidity: [{target: 'animals', property: 'health', delta: -1}],
-    windKph: [{target: 'resources', property: 'water', delta: -1}],
+    windSpeed: [{target: 'resources', property: 'water', delta: -1}],
 }
 
 

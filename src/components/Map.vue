@@ -18,7 +18,7 @@ import Market from '@/components/overlays/Market.vue'
 import News from '@/components/overlays/News.vue'
 import {produceReport} from '@/engine/phases/analytics/produceReport.js';
 import updateGame from '@/engine/simulationUpdate/updateGame.js';
-
+// TODO => Add coverage % mechanic to plants, and adjust seed and seedling prices to coverage, as well as yield.
 const game = gameStore()
 const map = mapStore()
 
@@ -181,7 +181,7 @@ function handlePhaseChange() {
     setTimeout(async () => {
       await updateGame();
       produceReport()
-    }, 500)
+    }, 1)
 
   } else if (next === 1) { // Phase 1 — Optimization
     setLayoutWidth('single')
@@ -227,75 +227,20 @@ function handlePhaseChange() {
 }
 
 
-const historyLength = 7;
 
-function pushHistory(newProp, oldProp) {
-  console.log(newProp.key, newProp.measured.value,oldProp.measured.value)
-  const mNew = newProp.measured;
-  const mOld = oldProp?.measured;
-  if (mOld && "value" in mOld) {
-    mNew.history.push({ value: mOld.value, date: mOld.date ?? null });
-    if (mNew.history.length > historyLength) mNew.history.shift();
-  }
-}
-
-function processBlock(newBlock, oldBlock) {
-  if (!newBlock || !oldBlock) return;            // expected during init
-  for (const key of Object.keys(newBlock)) {
-    const np = newBlock[key];
-    const op = oldBlock[key];
-    if (np?.measured && op?.measured) pushHistory(np, op);
-  }
-}
-
-function processBiota(newArr, oldArr) {
-  const n = Array.isArray(newArr) ? newArr : [];
-  const o = Array.isArray(oldArr) ? oldArr : [];
-  const len = Math.min(n.length, o.length);      // align by index
-  for (let i = 0; i < len; i++) {
-    const ni = n[i], oi = o[i];
-    if (!ni || !oi) continue;
-    for (const k of Object.keys(ni)) {
-      const nv = ni[k], ov = oi[k];
-      if (nv?.measured && ov?.measured) pushHistory(nv, ov);
-    }
-  }
-}
-
-let stop;
 
 onMounted(() => {
   eventBus.on('overlay', toggleOverlay)
   eventBus.on('phase', handlePhaseChange)
   eventBus.on('layout', setLayoutWidth)
   loadAllStores()
-  stop = watch(
-      () => map.tiles,
-      (newTiles, oldTiles) => {
-        for (let r = 0; r < newTiles.length; r++) {
-          for (let c = 0; c < newTiles[r].length; c++) {
-            const nt = newTiles[r][c];
-            const ot = oldTiles?.[r]?.[c];
-            if (!nt || !ot) continue; // expected at init or regen
-            processBlock(nt.soil,       ot.soil);
-            processBlock(nt.topography, ot.topography);
-            processBlock(nt.resources,  ot.resources);
-            processBiota(nt.plants ?? nt.plant,   ot.plants ?? ot.plant);
-            processBiota(nt.animals ?? nt.animal, ot.animals ?? ot.animal);
-          }
-        }
-      },
-      { deep: true }
-  );
 })
 
 onBeforeUnmount(() => {
-
   eventBus.off('overlay', toggleOverlay)
   eventBus.off('phase', handlePhaseChange)
   eventBus.off('layout', setLayoutWidth)
-  stop?.()
-})
+  })
 
 
 </script>

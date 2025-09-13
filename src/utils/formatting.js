@@ -10,21 +10,11 @@ function formatDate(d) {
 }
 
 function formatDateLocale(d, locale = 'en-GB') {
-  if (!d) return ''
-  try {
     return new Date(d).toLocaleDateString(locale)
-  } catch {
-    return ''
-  }
 }
 
 function formatDateTime(d) {
-  if (!d) return ''
-  try {
-    return new Date(d).toISOString()
-  } catch {
-    return ''
-  }
+    return new Date(d).toISOString().slice(0, 10)
 }
 
 function formatNumber(n, digits = 0) {
@@ -47,4 +37,12 @@ function formatValue(entry) {
   return `${String(value)}${unit ? ' ' + unit : ''}`
 }
 
-export { formatDate, formatDateLocale, formatDateTime, formatNumber, formatMoney, formatValue }
+
+
+const roundN = (x, decimals = 3) => {
+  const v = Number(x)
+  if (!Number.isFinite(v)) return v
+  const f = Math.pow(10, decimals)
+  return Math.round(v * f) / f
+}
+export { formatDate, formatDateLocale, formatDateTime, formatNumber, formatMoney, formatValue, roundN }

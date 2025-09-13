@@ -3,19 +3,26 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
-import { weatherStore } from '@/stores/weather.js'
+import { mapStore } from '@/stores/map.js'
 import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
 import weatherDays from '@/components/overlays/blocks/WeatherDays.vue'
 
-// TODO => Remake with blocks to unify look, extract as much CSS as possible to main
 const game = gameStore()
-const weather = weatherStore()
+const map = mapStore()
 
 const { currentSeason } = storeToRefs(game)
-const { temperature, rainfall, cloudCover, windKph, relHumidity, currentLabel } = storeToRefs(weather)
+const { currentWeather, weatherHistory, weatherForecast } = storeToRefs(map)
 
-const cloudPct = computed(() => Math.round((cloudCover.value ?? 0) * 100))
-const humidityPct = computed(() => Math.round((relHumidity.value ?? 0) * 100))
+// unwrap current weather fields
+const temperature = computed(() => currentWeather.value?.temperature)
+const rainfall    = computed(() => currentWeather.value?.rainfall)
+const cloudCover  = computed(() => currentWeather.value?.cloudCover)
+const windSpeed     = computed(() => currentWeather.value?.windSpeed)
+const relHumidity = computed(() => currentWeather.value?.relHumidity)
+const currentLabel = computed(() => currentWeather.value?.currentLabel)
+
+const cloudPct = computed(() => Math.round(((cloudCover.value ?? 0) * 100)))
+const humidityPct = computed(() => Math.round(((relHumidity.value ?? 0) * 100)))
 
 // SimpleTable: current stats
 const statsHeaders = ['Metric', 'Value']
@@ -23,16 +30,13 @@ const statsRows = computed(() => ([
   ['Temp', `${temperature.value ?? '—'}°C`],
   ['Rain', `${rainfall.value ?? '—'} mm`],
   ['Cloud', `${cloudPct.value}%`],
-  ['Wind', `${windKph.value ?? '—'} km/h`],
+  ['Wind', `${windSpeed.value ?? '—'} km/h`],
   ['Humidity', `${humidityPct.value}%`]
 ]))
 
-// WeatherDays: history + forecast (same shape as analytics)
-const historyDays = computed(() => game.analyticsReport?.weather?.history || [])
-const forecastDays = computed(() => game.analyticsReport?.weather?.forecast || [])
-
-
-
+// WeatherDays: use store history + forecast
+const historyDays = computed(() => weatherHistory.value || [])
+const forecastDays = computed(() => weatherForecast.value || [])
 </script>
 
 <template>
@@ -47,7 +51,7 @@ const forecastDays = computed(() => game.analyticsReport?.weather?.forecast || [
           {{ currentSeason.icon }}{{ currentSeason.label }}
         </div>
         <div id="weather" class="controlButton">
-          {{ currentLabel.icon }}{{ currentLabel.label }}
+          {{ currentLabel?.icon || '' }}{{ currentLabel?.label || '—' }}
         </div>
       </div>
 
@@ -72,7 +76,6 @@ const forecastDays = computed(() => game.analyticsReport?.weather?.forecast || [
           :startOpen="true"
           class="noToggle"
       />
-
     </div>
   </div>
 </template>

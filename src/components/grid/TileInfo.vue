@@ -24,13 +24,31 @@ On TileInfo There should be:
   <div class="tile-info" v-if="tile">
     <h2>Tile {{ tile.row }}, {{ tile.col }}</h2>
 
-    <!-- Metrics -->
-    <MetricsTable :key="tileKey + ':soil'"       title="Soil"       field="soil" />
-    <MetricsTable :key="tileKey + ':topography'" title="Topography" field="topography" />
-    <MetricsTable :key="tileKey + ':resources'"  title="Resources"  field="resources" />
 
-    <!-- Biota and Assemblies -->
-    <BiotaTable     :key="tileKey + ':biota'"     />
+    <MetricsTable :key="tileKey + ':soil'"       title="Soil"       :data="map.selectedTile.value?.soil || {}" />
+    <MetricsTable :key="tileKey + ':topography'" title="Topography" :data="map.selectedTile.value?.topography || {}" />
+    <MetricsTable :key="tileKey + ':resources'"  title="Resources"  :data="map.selectedTile.value?.resources || {}" />
+
+    <BiotaTable
+        title="Plants"
+        group="plants"
+        :real="map.selectedTile.value?.plants?.real || []"
+        :optimized="map.selectedTile.value?.plants?.optimized || []"
+        :comparison="{ measuredMap: new Map(), otherMap: new Map() }"
+        :formatValue="v => v"
+        :formatDate="d => d"
+    />
+    <BiotaTable
+        title="Animals"
+        group="animals"
+        :real="map.selectedTile.value?.animals?.real || []"
+        :optimized="map.selectedTile.value?.animals?.optimized || []"
+        :comparison="{ measuredMap: new Map(), otherMap: new Map() }"
+        :formatValue="v => v"
+        :formatDate="d => d"
+    />
+
+
     <AssemblyTable  :key="tileKey + ':assemblies'"/>
   </div>
 

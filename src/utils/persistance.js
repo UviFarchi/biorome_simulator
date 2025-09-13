@@ -3,7 +3,7 @@ import { assemblyRequirementsStore } from '@/stores/assemblyRequirements.js'
 import { mapStore }                 from '@/stores/map.js'
 import { gameStore }              from '@/stores/game.js'
 import { marketStore }              from '@/stores/market.js'
-import { weatherStore }             from '@/stores/weather.js'
+
 import { moduleStore }             from '@/stores/module.js'
 import eventBus                     from '@/eventBus.js'
 
@@ -13,8 +13,7 @@ const factoryByName = Object.fromEntries(
         assemblyRequirementsStore,
         gameStore,
         mapStore,
-        marketStore,
-        weatherStore,
+        marketStore
     }).map(([exportedName, factoryFn]) => [exportedName.replace(/Store$/, ''), factoryFn])
 )
 
@@ -41,8 +40,7 @@ function saveAllStores() {
     const payload = {
         game:      getStore('game').$state,
         map:       getStore('map').$state,
-        market:    getStore('market').$state,
-        weather:   getStore('weather').$state,
+        market:    getStore('market').$state
     }
     localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
     eventBus.emit('log', { engine: 'simulation', msg: 'State saved' })

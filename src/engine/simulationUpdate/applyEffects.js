@@ -11,6 +11,7 @@ import resourceEffects from '@/engine/effects/resourceEffects.js'
 import soilEffects from '@/engine/effects/soilEffects.js'
 import topographyEffects from '@/engine/effects/topographyEffects.js'
 import weatherEffects from '@/engine/effects/weatherEffects.js'
+import {roundN} from "@/utils/formatting.js";
 
 const MAX_WORKERS = Math.min(4, navigator.hardwareConcurrency || 4)
 
@@ -202,7 +203,10 @@ function runApplyEffectsSingleThread(tiles2D) {
 
             const bumpGroup = (groupName, prop, delta) => {
                 const grp = working[groupName]
-                if (grp?.[prop]?.env !== undefined) grp[prop].env += delta
+                if (grp?.[prop]?.env !== undefined) {
+                    const next = (grp[prop].env ?? 0) + delta
+                    grp[prop].env = roundN(next)
+                }
             }
 
             for (const category of ORDER) {
@@ -221,14 +225,20 @@ function runApplyEffectsSingleThread(tiles2D) {
 
                         if (eff.target === 'animals') {
                             const targets = subject ? [subject] : working.animals
-                            for (const a of targets) if (a?.[eff.property]?.env !== undefined)
-                                a[eff.property].env = (a[eff.property].env ?? 0) + delta
+                            for (const a of targets) if (a?.[eff.property]?.env !== undefined) {
+                                const next = (a[eff.property].env ?? 0) + delta
+                                a[eff.property].env = roundN(next)
+                            }
+
                             continue
                         }
                         if (eff.target === 'plants') {
                             const targets = subject ? [subject] : working.plants
-                            for (const p of targets) if (p?.[eff.property]?.env !== undefined)
-                                p[eff.property].env = (p[eff.property].env ?? 0) + delta
+                            for (const p of targets) if (p?.[eff.property]?.env !== undefined) {
+                                const next = (p[eff.property].env ?? 0) + delta
+                                p[eff.property].env = roundN(next)
+                            }
+
                             continue
                         }
                         bumpGroup(eff.target, eff.property, delta)

@@ -14,10 +14,10 @@ export function produceReport() {
     const map = mapStore()
 
     const currentDateISO = formatDate(game.currentDate || Date.now())
-    const currentGrid2D = Array.isArray(map.tiles) ? map.tiles : (map.tiles?.value || [])
+    const currentTiles = Array.isArray(map.tiles) ? map.tiles : (map.tiles?.value || [])
 
-    const dataMissing = buildDataMissing(currentGrid2D, currentDateISO)
-    const weather = buildWeather(currentGrid2D, game.currentEvents?.weather || [], currentDateISO)
+    const dataMissing = buildDataMissing(currentTiles, currentDateISO)
+    const weather = buildWeather(currentTiles, game.currentEvents?.weather || [], currentDateISO)
 
     // New sections
     const market = buildMarket(game.currentEvents?.market || [], currentDateISO)
@@ -28,9 +28,9 @@ export function produceReport() {
     )
 
     const tileDiff    = buildTileDiff(currentDateISO)
-    const resourceUse = buildResourceUse(currentGrid2D, currentDateISO)
+    const resourceUse = buildResourceUse(currentTiles, currentDateISO)
 
-    game.analyticsReport = { dataMissing, weather, market, ecology, tileDiff, resourceUse }
+    game.analyticsReport.value = { dataMissing, weather, market, ecology, tileDiff, resourceUse }
     eventBus.emit('overlay', { target: 'analytics', show: true })
     return true
 }

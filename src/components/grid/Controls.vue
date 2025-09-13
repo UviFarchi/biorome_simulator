@@ -72,112 +72,108 @@ onBeforeUnmount(() => {
   eventBus.off('spinner', toggleSpinner)
 })
 
-
 /*** TEST MODE ***/
-import {mapStore} from '@/stores/map.js'
-import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
+import { mapStore } from '@/stores/map.js'
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
+import { measureTileProperty } from '@/utils/tileHelpers.js'
 
 const map = mapStore()
-const testTimerId = ref(null)
 
-function getTileAt(row, col) {
-  const grid = Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
-  return grid?.[row]?.[col] || null
+
+let phaseHandler = null
+
+function getGrid() {
+  return Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
 }
 
 function addTestEntitiesToTile(row, col) {
-  const tile = getTileAt(row, col)
+  const tile = getGrid()?.[row]?.[col]
   if (!tile) return
-
   tile.plants.real ||= []
   tile.animals.real ||= []
   tile.assemblies.real ||= []
-
-
   tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
   if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
     tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
   }
-
-
-  tile.assemblies.real.push({
-    id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
-    modules: [
-      {type: 'transport', subtype: 'ground'},
-      {type: 'arm', subtype: 'medium'},
-      {type: 'tool', subtype: 'seeder'},
-      {type: 'tool', subtype: 'borer'}
-    ],
-    name: 'Seed Planter',
-    deployed: false,
-    built: false,
-    moves: 1,
-    actions: 1,
-    orders: ['feed', 'acidify']
-  })
-
 }
 
 function removeTestEntitiesFromTile(row, col) {
-  const tile = getTileAt(row, col)
+  const tile = getGrid()?.[row]?.[col]
   if (!tile) return
-  if (Array.isArray(tile.plants.real)) tile.plants.real = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
+  if (Array.isArray(tile.plants.real))  tile.plants.real  = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
   if (Array.isArray(tile.animals.real)) tile.animals.real = tile.animals.real.filter(a => !(a.type === 'cow' && a.growthStage === 'heifer'))
-  if (Array.isArray(tile.assemblies.real)) tile.assemblies.real = tile.assemblies.real.filter(s => s.id !== 'af97e85f-4696-4ff2-8f43-3b3e742b94c2')
 }
 
-function syncMeasuredToEnvOnce() {
-  const addOneDayISO = () => {
-    const d = new Date(game.currentDate)
-    d.setDate(d.getDate() + 1)
-    return formatDateTime(d)
-  }
-  const stamp = addOneDayISO()
+/* -------- measure everything on a tile -------- */
 
-  const syncNode = (n) => {
-    if (!n || typeof n !== 'object') return
-    if ('env' in n && n.measured && typeof n.measured === 'object') {
-      n.measured.value = n.env
-      n.measured.date = stamp
-      return
+function measureBlock(blockName, blockObj) {
+  for (const key in blockObj) {
+    const prop = blockObj[key]
+    if (prop && prop.measured && 'env' in prop) {
+      measureTileProperty(prop, `${blockName}.${key}`)
     }
-    if (Array.isArray(n)) {
-      n.forEach(syncNode);
-      return
-    }
-    for (const k in n) syncNode(n[k])
   }
+}
 
-  const grid = Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
+function measureBiotaArray(typeName, arr) {
+  if (!Array.isArray(arr)) return
+  for (const item of arr) {
+    for (const key in item) {
+      const node = item[key]
+      if (node && node.measured && 'env' in node) {
+        measureTileProperty(node, `${typeName}.${key}`)
+      }
+      if (node && typeof node === 'object' && !('measured' in node)) {
+        for (const subKey in node) {
+          const sub = node[subKey]
+          if (sub && sub.measured && 'env' in sub) {
+            measureTileProperty(sub, `${typeName}.${key}.${subKey}`)
+          }
+        }
+      }
+    }
+  }
+}
+
+function measureAllTilesOnce() {
+  const grid = getGrid()
   if (!grid) return
   for (const row of grid) {
     for (const tile of row) {
-      syncNode(tile.topography)
-      syncNode(tile.soil)
-      syncNode(tile.resources)
-      syncNode(tile.plants.real)
-      syncNode(tile.animals.real)
+      measureBlock('topography', tile.topography)
+      measureBlock('soil',        tile.soil)
+      measureBlock('resources',   tile.resources)
+      measureBiotaArray('plants',  tile.plants?.real)
+      measureBiotaArray('animals', tile.animals?.real)
     }
   }
 }
 
+/* -------- phase-driven test mode -------- */
+
 function startTestingSync() {
-  if (testTimerId.value) return
   addTestEntitiesToTile(2, 1)
-  syncMeasuredToEnvOnce()
-  testTimerId.value = setInterval(syncMeasuredToEnvOnce, 1000)
+  measureAllTilesOnce()
+  // handle both empty payloads and payloads that include phase
+  phaseHandler = () => {
+
+    if (game.phase < 1) measureAllTilesOnce()
+  }
+
+  eventBus.on('phase', phaseHandler)
 }
 
 function stopTestingSync() {
-  if (testTimerId.value) {
-    clearInterval(testTimerId.value)
-    testTimerId.value = null
-  }
+  if (phaseHandler) eventBus.off('phase', phaseHandler)
+  phaseHandler = null
   removeTestEntitiesFromTile(2, 1)
 }
 
-watch(bioromeTest, on => (on ? startTestingSync() : stopTestingSync()), {immediate: true})
+// keep your existing test toggle
+watch(bioromeTest, on => (on ? startTestingSync() : stopTestingSync()), { immediate: true })
 onBeforeUnmount(stopTestingSync)
+
 
 
 </script>
@@ -408,10 +404,10 @@ onBeforeUnmount(stopTestingSync)
   padding: 6px 10px;
   border: 2px solid #1f231f;
   border-radius: 8px;
-  background-image: url("@/assets/steel_plate.png");
-  background-size: cover; /* or 'contain' if you prefer */
+  /*background-image: url("@/assets/steel_plate.png");
+  background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat;*/
   flex-wrap: wrap;
 }
 
@@ -419,8 +415,7 @@ onBeforeUnmount(stopTestingSync)
   flex: 0 0 100%;
   text-align: center;
   font-weight: bold;
-  pointer-events: none; /* avoid blocking clicks */
-  text-shadow: 0 0 5px white;
+  pointer-events: none;
   color: black;
   padding: 0;
   margin: 0;
@@ -439,7 +434,6 @@ onBeforeUnmount(stopTestingSync)
 }
 
 
-/* optional: keep small menus anchored inside their panel */
 .menu-wrap {
   position: relative;
 }

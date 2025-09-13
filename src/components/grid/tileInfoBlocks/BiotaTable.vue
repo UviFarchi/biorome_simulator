@@ -1,13 +1,221 @@
+<!-- src/components/grid/tileInfoBlocks/BiotaTable.vue -->
 <script setup>
-/*
-Should call getImageOrIcon from utils/tileHelpers to get the images
- */
+import { computed } from 'vue'
+import MetricsTable from '@/components/grid/tileInfoBlocks/MetricsTable.vue'
+import { plantStore } from '@/stores/plant.js'
+import { animalStore } from '@/stores/animal.js'
+import { gameStore } from '@/stores/game.js'
+
+const plants  = plantStore()
+const animals = animalStore()
+const game    = gameStore()
+const phase   = computed(() => game.phase)
+
+/* stage images + fallbacks */
+const images = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
+function bioImg(kind, type, stage) {
+  if (!kind || !type || !stage) return null
+  const key = `/src/assets/${kind}/${type}/${stage}.png`
+  return images[key] || null
+}
+function bioIcon(kind, type) {
+  if (kind === 'plants') {
+    const match = plants.plantTypes?.find(t => t.type === type)
+    return match?.icon || '🌱'
+  }
+  if (kind === 'animals') {
+    const match = animals.animalTypes?.find(t => t.type === type)
+    return match?.icon || '🐾'
+  }
+  return '❓'
+}
+
+const props = defineProps({
+  group: { type: String, required: true },                 // "animals" | "plants"
+  real: { type: Array, default: () => [] },
+  optimized: { type: Array, default: () => [] },
+  formatValue: { type: Function, required: true },
+  formatDate: { type: Function, required: true },
+  title: { type: String, default: '' },
+})
+const NON_MEASURABLE = new Set(['id','type','dateDeployed','growthStage','flags'])
+
+function biotaBlockMeasured(entity) {
+  const out = {}
+  const seen = new WeakSet()
+
+  const walk = (node, path='') => {
+    if (!node || typeof node !== 'object') return
+    if (seen.has(node)) return
+    seen.add(node)
+
+    // measurable leaf: has measured
+    if (node && typeof node.measured === 'object' && 'value' in node.measured) {
+      const key = path || 'value'
+      out[key] = node   // MetricsTable uses *.measured.*
+      return
+    }
+
+    // skip plain scalars and known structural keys at the top level
+    const entries = Array.isArray(node) ? node.entries() : Object.entries(node)
+    for (const [k, v] of entries) {
+      if (!v) continue
+      if (!path && NON_MEASURABLE.has(k)) continue
+      const nextPath = Array.isArray(node) ? `${path}[${k}]` : (path ? `${path}.${k}` : k)
+      if (typeof v === 'object') walk(v, nextPath)
+    }
+  }
+
+  walk(entity, '')
+  return out
+}
+
+
+/* rows */
+const realRows = computed(() =>
+    props.real.map((instance, index) => ({
+      instance, index, basePath: `[${instance.id}]`,
+    }))
+)
+
+const optimizedRows = computed(() =>
+    props.optimized.map((instance, index) => ({
+      instance,
+      index,
+      basePath: `[${instance.id}]`,
+    }))
+)
+
+const displayTitle = computed(() =>
+    props.title || (props.group ? props.group[0].toUpperCase() + props.group.slice(1) : '')
+)
 </script>
 
 <template>
+  <section class="group-section">
+    <h4 class="group-title">{{ displayTitle }} — On Tile</h4>
 
+    <table class="kv kv--biota">
+      <colgroup>
+        <col style="width:22ch" />  <!-- Entity -->
+        <col />                     <!-- Properties -->
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Entity</th>
+        <th>Properties</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="row in realRows" :key="row.instance.id || `real-${row.index}`">
+        <td class="entity-cell">
+          <div class="entity-header">
+            <span class="badge badge--real">{{ row.instance.growthStage }}</span>
+            <span class="badge badge--real">{{ row.instance.type }}</span>
+          </div>
+          <div class="entity-visual">
+            <img
+                v-if="bioImg(group, row.instance.type, row.instance.growthStage)"
+                :src="bioImg(group, row.instance.type, row.instance.growthStage)"
+                class="entity-image"
+                alt=""
+            />
+            <span v-else class="entity-icon">{{ bioIcon(group, row.instance.type) }}</span>
+          </div>
+          <!-- no buttons for real rows -->
+        </td>
+
+        <td>
+          <MetricsTable title="Properties" field="_biota" :data="biotaBlockMeasured(row.instance)" />
+
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h4 class="group-title">{{ displayTitle }} — Optimized</h4>
+    <table class="kv kv--biota" style="margin-top:10px">
+      <colgroup>
+        <col style="width:22ch" />  <!-- Entity -->
+        <col />                     <!-- Properties -->
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Entity</th>
+        <th>Properties</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="row in optimizedRows" :key="row.instance.id || `proj-${row.index}`">
+        <td class="entity-cell">
+          <div class="entity-header">
+            <span class="badge badge--proj">{{ row.instance.growthStage }}</span>
+            <span class="badge badge--proj">{{ row.instance.type }}</span>
+          </div>
+          <div class="entity-visual">
+            <img
+                v-if="bioImg(group, row.instance.type, row.instance.growthStage)"
+                :src="bioImg(group, row.instance.type, row.instance.growthStage)"
+                class="entity-image"
+                alt=""
+            />
+            <span v-else class="entity-icon">{{ bioIcon(group, row.instance.type) }}</span>
+          </div>
+          <button
+              class="btn btn--danger entity-action"
+              :disabled="phase!==1"
+              @click="optimized.splice(row.index, 1)"
+          >
+            Remove
+          </button>
+        </td>
+
+        <td>
+          <MetricsTable title="Properties" field="_biota" :data="biotaBlockMeasured(row.instance)" />
+
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
 </template>
 
 <style scoped>
+.kv--biota { table-layout: fixed; }
+td.entity-cell { vertical-align: top; }
 
+.entity-header {
+  display: flex;
+  gap: .4em;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.entity-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 6rem;
+  margin-bottom: 6px;
+}
+
+.entity-image {
+  max-height: 10ch;
+  display: block;
+}
+
+.entity-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.entity-action {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.badge { display: inline-flex; align-items: center; gap: .35em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); font-size: .85em; background: rgba(0,0,0,.18); }
+.badge--real { color: var(--ink); background: rgba(0,0,0,.08); }
+.badge--proj { color: white; background: rgba(122,92,255,.22); border-color: rgba(122,92,255,.65); }
 </style>

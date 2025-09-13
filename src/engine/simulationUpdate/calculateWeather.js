@@ -1,5 +1,5 @@
 import {gameStore} from '@/stores/game.js'
-import {weatherStore} from '@/stores/weather.js'
+import {mapStore} from '@/stores/map.js'
 
 // Catalog (can grow)
 const weatherEvents = [
@@ -62,32 +62,32 @@ const seasonalWeather = {
         temperature: {min: 12, max: 22, mean: 17},
         rainfall: {min: 0, max: 8, mean: 2},
         cloudCover: {min: 0.1, max: 0.5, mean: 0.25},
-        windKph: {min: 4, max: 18, mean: 10},
+        windSpeed: {min: 4, max: 18, mean: 10},
         relHumidity: {min: 0.4, max: 0.8, mean: 0.55},
     },
     summer: {
         temperature: {min: 20, max: 35, mean: 28},
         rainfall: {min: 0, max: 5, mean: 1},
         cloudCover: {min: 0, max: 0.4, mean: 0.1},
-        windKph: {min: 2, max: 12, mean: 6},
+        windSpeed: {min: 2, max: 12, mean: 6},
         relHumidity: {min: 0.25, max: 0.7, mean: 0.45},
     },
     autumn: {
         temperature: {min: 10, max: 24, mean: 16},
         rainfall: {min: 0, max: 10, mean: 3},
         cloudCover: {min: 0.1, max: 0.7, mean: 0.35},
-        windKph: {min: 4, max: 20, mean: 11},
+        windSpeed: {min: 4, max: 20, mean: 11},
         relHumidity: {min: 0.35, max: 0.85, mean: 0.6},
     },
     winter: {
         temperature: {min: 1, max: 12, mean: 7},
         rainfall: {min: 0, max: 7, mean: 2},
         cloudCover: {min: 0.3, max: 1, mean: 0.6},
-        windKph: {min: 6, max: 28, mean: 14},
+        windSpeed: {min: 6, max: 28, mean: 14},
         relHumidity: {min: 0.4, max: 0.95, mean: 0.7},
     },
 }
-
+//TODO => Move static structures for events and season parameters to the weather store.
 function selectWeatherLabel(temperature, rainfall, cloudCover) {
 
     switch (true) {
@@ -126,13 +126,17 @@ function selectWeatherLabel(temperature, rainfall, cloudCover) {
     }
 }
 
+
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 const jitter = (mean, min, max) => clamp(mean + (Math.random() - 0.5) * (max - min) / 3, min, max)
 
-export default function getWeather() {
+export default function calculateWeather() {
     const game = gameStore()
-    const weather = weatherStore()
-
+    const map = mapStore()
+    //TODO => Seed weather and market data when generating terrain to remove this turn check
+    if(game.currentTurn !== 0){
+        map.weatherHistory.push(map.currentWeather)
+    }
     const seasonKey = (game.currentSeason?.label || '').toLowerCase() || 'spring'
     const season = seasonalWeather[seasonKey] || seasonalWeather.spring
 
@@ -140,7 +144,7 @@ export default function getWeather() {
     let temperature = Math.round(jitter(season.temperature.mean, season.temperature.min, season.temperature.max))
     let rainfall = Math.round(jitter(season.rainfall.mean, season.rainfall.min, season.rainfall.max))
     let cloudCover = jitter(season.cloudCover.mean, season.cloudCover.min, season.cloudCover.max)
-    let windKph = Math.round(jitter(season.windKph.mean, season.windKph.min, season.windKph.max))
+    let windSpeed = Math.round(jitter(season.windSpeed.mean, season.windSpeed.min, season.windSpeed.max))
     let relHumidity = jitter(season.relHumidity.mean, season.relHumidity.min, season.relHumidity.max)
 
     // 2) Apply ongoing multi-day currentEvents (today counts), then decrement and prune
@@ -153,7 +157,7 @@ export default function getWeather() {
             if (e.parameter === 'temperature') temperature += e.delta
             if (e.parameter === 'rainfall') rainfall += e.delta
             if (e.parameter === 'cloudCover') cloudCover += e.delta
-            if (e.parameter === 'windKph') windKph += e.delta
+            if (e.parameter === 'windSpeed') windSpeed += e.delta
             if (e.parameter === 'relHumidity') relHumidity += e.delta
         }
         appliedEventIds.push(ev.id)
@@ -177,7 +181,7 @@ export default function getWeather() {
                 if (e.parameter === 'temperature') temperature += e.delta
                 if (e.parameter === 'rainfall') rainfall += e.delta
                 if (e.parameter === 'cloudCover') cloudCover += e.delta
-                if (e.parameter === 'windKph') windKph += e.delta
+                if (e.parameter === 'windSpeed') windSpeed += e.delta
                 if (e.parameter === 'relHumidity') relHumidity += e.delta
             }
             // persist if multi-day
@@ -210,18 +214,18 @@ export default function getWeather() {
     const tLo = season.temperature.min - 5
     const tHi = season.temperature.max + 5
     temperature = clamp(temperature, tLo, tHi)
-    windKph = Math.max(0, Math.round(windKph))
+    windSpeed = Math.max(0, Math.round(windSpeed))
 
     // 5) Label via helper
     const label = selectWeatherLabel(temperature, rainfall, cloudCover)
 
     // 6) Commit to store
-    weather.temperature = temperature
-    weather.rainfall = rainfall
-    weather.cloudCover = cloudCover
-    weather.windKph = windKph
-    weather.relHumidity = relHumidity
-    weather.currentLabel = label
+    map.currentWeather.temperature = temperature
+    map.currentWeather.rainfall = rainfall
+    map.currentWeather.cloudCover = cloudCover
+    map.currentWeather.windSpeed = windSpeed
+    map.currentWeather.relHumidity = relHumidity
+    map.currentWeather.currentLabel = label
 
     return {appliedEventIds, startedEventIds}
 }

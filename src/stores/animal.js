@@ -315,7 +315,7 @@ export const animalStore = defineStore('animalStore', () => {
         {
             type: 'dung_beetle',
             icon: '🪲',
-            scientificName: 'Scarabaeus sacer',
+            scientificName: 'Thorectes lusitanicus',
             description: 'A dung beetle, a type of scarab beetle that specializes in collecting and burying animal dung; plays a key role in nutrient cycling on pastures.',
             feed: ['manure'],
 
@@ -334,7 +334,7 @@ export const animalStore = defineStore('animalStore', () => {
             type: 'frog',
             icon: '🐸',
             scientificName: 'Lithobates pipiens',
-            description: 'Northern leopard frog (example species), a common amphibian found near water; eats insects, slugs, and other small invertebrates, benefiting gardens.',
+            description: 'Northern leopard frog, a common amphibian found near water; eats insects, slugs, and other small invertebrates, benefiting gardens.',
             feed: ['insects'],
 
             feedPerGrowthStage: [20, 35, 55, 45],

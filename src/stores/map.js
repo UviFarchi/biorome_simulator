@@ -3,6 +3,8 @@ import {computed, ref} from 'vue'
 import {gameStore} from '@/stores/game.js'
 
 export const mapStore = defineStore('mapStore', () => {
+
+
     const game = gameStore()
 
     const size = ref(6)
@@ -142,5 +144,62 @@ export const mapStore = defineStore('mapStore', () => {
     const station = ref()
     const selectedTile = ref({})
 
-    return {tiles, gate, size, selectedTile, topographyConstraints, station}
+    const measurementExpiry = ref({
+        topography: {
+            elevation: 182,       // ~6 months
+            slope: 182,
+            aspect: 182,
+            drainageIndex: 182,
+            waterTable: 7         // 1 week (water table can fluctuate)
+        },
+        soil: {
+            ph: 30,               // 1 month
+            ec: 30, salinity: 30,
+            cec: 180, organicCarbon: 180,
+            N: 7,  NH4: 7,  P: 7,  K: 7,  DON: 7,   // nutrients: ~1 week
+            Cd: 182, Pb: 182, As: 182,             // heavy metals: ~6 months
+            water: 1,             // soil moisture: 1 day
+            infiltrationRate: 90,
+            bulkDensity: 180,
+            penetrationResistance: 90,
+            aggregateStability: 180,
+            hydraulicConductivity: 180,
+            soilTemperature: 1,   // soil temp: 1 day
+            microbialCFU_good: 7,
+            microbialCFU_bad: 7,
+            mycorrhizalColonization: 30,
+            earthwormCount: 30
+        },
+        resources: {
+            water: 1,    // resource water usage: 1 day
+            waste: 1,
+            electricity: 1,
+            feed: 1,
+            fertilizer: 7
+        },
+        plants: {
+            health: 1,
+            fruiting: { pollinated: 1 }  // nested example for fruiting.pollinated
+        },
+        animals: {
+            health: 1
+        },
+        default: 30   // default expiry (days) if not otherwise specified
+    });
+
+// If an existing expiry config is not present (e.g., on new game), use defaults
+    if (!measurementExpiry.value || Object.keys(measurementExpiry.value).length === 0) {
+        measurementExpiry.value = JSON.parse(JSON.stringify(measurementExpiry.value));  // ensure default applied
+    }
+
+
+
+    const currentWeather = ref({temperature: null, rainfall:null, cloudCover:null, currentLabel:null, windSpeed:null, relHumidity:null, weatherHistory:null})
+    const weatherHistory = ref([])
+//TODO => Implement week long weather forecast by generating 7 days of weather, and then vary the forecast daily to get the real weather.
+    const weatherForecast= ref([])
+
+
+
+    return {tiles, gate, size, selectedTile, topographyConstraints, station, measurementExpiry, currentWeather, weatherHistory, weatherForecast}
 })
