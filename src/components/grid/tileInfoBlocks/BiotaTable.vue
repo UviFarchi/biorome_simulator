@@ -1,34 +1,14 @@
 <!-- src/components/grid/tileInfoBlocks/BiotaTable.vue -->
+<!-- eslint-disable vue/no-mutating-props -->
 <script setup>
+/* eslint-disable vue/no-mutating-props */
 import { computed } from 'vue'
 import MetricsTable from '@/components/grid/tileInfoBlocks/MetricsTable.vue'
-import { plantStore } from '@/stores/plant.js'
-import { animalStore } from '@/stores/animal.js'
 import { gameStore } from '@/stores/game.js'
+import { getImageOrIcon } from '@/utils/tileHelpers.js'
 
-const plants  = plantStore()
-const animals = animalStore()
 const game    = gameStore()
 const phase   = computed(() => game.phase)
-
-/* stage images + fallbacks */
-const images = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
-function bioImg(kind, type, stage) {
-  if (!kind || !type || !stage) return null
-  const key = `/src/assets/${kind}/${type}/${stage}.png`
-  return images[key] || null
-}
-function bioIcon(kind, type) {
-  if (kind === 'plants') {
-    const match = plants.plantTypes?.find(t => t.type === type)
-    return match?.icon || '🌱'
-  }
-  if (kind === 'animals') {
-    const match = animals.animalTypes?.find(t => t.type === type)
-    return match?.icon || '🐾'
-  }
-  return '❓'
-}
 
 const props = defineProps({
   group: { type: String, required: true },                 // "animals" | "plants"
@@ -115,12 +95,12 @@ const displayTitle = computed(() =>
           </div>
           <div class="entity-visual">
             <img
-                v-if="bioImg(group, row.instance.type, row.instance.growthStage)"
-                :src="bioImg(group, row.instance.type, row.instance.growthStage)"
+                v-if="getImageOrIcon(group, row.instance.type, row.instance.growthStage)?.includes('/')"
+                :src="getImageOrIcon(group, row.instance.type, row.instance.growthStage)"
                 class="entity-image"
                 alt=""
             />
-            <span v-else class="entity-icon">{{ bioIcon(group, row.instance.type) }}</span>
+            <span v-else class="entity-icon">{{ getImageOrIcon(group, row.instance.type, row.instance.growthStage) }}</span>
           </div>
           <!-- no buttons for real rows -->
         </td>
@@ -154,12 +134,12 @@ const displayTitle = computed(() =>
           </div>
           <div class="entity-visual">
             <img
-                v-if="bioImg(group, row.instance.type, row.instance.growthStage)"
-                :src="bioImg(group, row.instance.type, row.instance.growthStage)"
+                v-if="getImageOrIcon(group, row.instance.type, row.instance.growthStage)?.includes('/')"
+                :src="getImageOrIcon(group, row.instance.type, row.instance.growthStage)"
                 class="entity-image"
                 alt=""
             />
-            <span v-else class="entity-icon">{{ bioIcon(group, row.instance.type) }}</span>
+            <span v-else class="entity-icon">{{ getImageOrIcon(group, row.instance.type, row.instance.growthStage) }}</span>
           </div>
           <button
               class="btn btn--danger entity-action"

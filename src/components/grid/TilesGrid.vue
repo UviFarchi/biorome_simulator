@@ -3,16 +3,13 @@
 import { computed, ref } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
-import { plantStore } from '@/stores/plant.js'
-import { animalStore } from '@/stores/animal.js'
 import { marketStore } from '@/stores/market.js'
 import TerrainBackdrop from '@/components/grid/TerrainBackdrop.vue'
 import TileInfo from '@/components/grid/TileInfo.vue'
+import { getImageOrIcon } from '@/utils/tileHelpers.js'
 
 const map = mapStore()
 const game = gameStore()
-const plants = plantStore()
-const animals = animalStore()
 const market = marketStore()
 
 const size = computed(() => map.size)
@@ -42,24 +39,7 @@ function closeModal() {
 }
 
 /* ---------- assets ---------- */
-const images = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
 const resImages = import.meta.glob('/src/assets/resources/*.png', { eager: true, as: 'url' })
-
-function bioImg(kind, type, stage) {
-  if (!kind || !type || !stage) return null
-  return images[`/src/assets/${kind}/${type}/${stage}.png`] || null
-}
-function bioIcon(kind, type) {
-  if (kind === 'plants') {
-    const m = plants.plantTypes?.find(t => t.type === type)
-    return m?.icon || '🌱'
-  }
-  if (kind === 'animals') {
-    const m = animals.animalTypes?.find(t => t.type === type)
-    return m?.icon || '🐾'
-  }
-  return '❓'
-}
 function resImg(key) {
   return resImages[`/src/assets/resources/${key}.png`] || null
 }
@@ -138,24 +118,24 @@ function fmt(v) {
             <div class="row">
               <template v-if="phase === 0">
                 <span v-for="(a,i) in list(tile.animals?.real)" :key="`a-r-${tile.row}-${tile.col}-${i}`" class="real">
-                  <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img" alt=""/>
-                  <span v-else>{{ bioIcon('animals', a.type) }}</span>
+                  <img v-if="getImageOrIcon('animals', a.type, a.growthStage)?.includes('/')" :src="getImageOrIcon('animals', a.type, a.growthStage)" class="icon-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('animals', a.type, a.growthStage) }}</span>
                 </span>
               </template>
               <template v-else-if="phase === 1">
                 <span v-for="(a,i) in list(tile.animals?.optimized)" :key="`a-p-${tile.row}-${tile.col}-${i}`" class="proj">
-                  <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
-                  <span v-else>{{ bioIcon('animals', a.type) }}</span>
+                  <img v-if="getImageOrIcon('animals', a.type, a.growthStage)?.includes('/')" :src="getImageOrIcon('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('animals', a.type, a.growthStage) }}</span>
                 </span>
               </template>
               <template v-else>
                 <span v-for="(a,i) in list(tile.animals?.real)" :key="`a-br-${tile.row}-${tile.col}-${i}`" class="real">
-                  <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img" alt=""/>
-                  <span v-else>{{ bioIcon('animals', a.type) }}</span>
+                  <img v-if="getImageOrIcon('animals', a.type, a.growthStage)?.includes('/')" :src="getImageOrIcon('animals', a.type, a.growthStage)" class="icon-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('animals', a.type, a.growthStage) }}</span>
                 </span>
                 <span v-for="(a,i) in list(tile.animals?.optimized)" :key="`a-bp-${tile.row}-${tile.col}-${i}`" class="proj">
-                  <img v-if="bioImg('animals', a.type, a.growthStage)" :src="bioImg('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
-                  <span v-else>{{ bioIcon('animals', a.type) }}</span>
+                  <img v-if="getImageOrIcon('animals', a.type, a.growthStage)?.includes('/')" :src="getImageOrIcon('animals', a.type, a.growthStage)" class="icon-img proj-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('animals', a.type, a.growthStage) }}</span>
                 </span>
               </template>
             </div>
@@ -164,24 +144,24 @@ function fmt(v) {
             <div class="row">
               <template v-if="phase === 0">
                 <span v-for="(p,i) in list(tile.plants?.real)" :key="`p-r-${tile.row}-${tile.col}-${i}`" class="real">
-                  <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img" alt=""/>
-                  <span v-else>{{ bioIcon('plants', p.type) }}</span>
+                  <img v-if="getImageOrIcon('plants', p.type, p.growthStage)?.includes('/')" :src="getImageOrIcon('plants', p.type, p.growthStage)" class="icon-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('plants', p.type, p.growthStage) }}</span>
                 </span>
               </template>
               <template v-else-if="phase === 1">
                 <span v-for="(p,i) in list(tile.plants?.optimized)" :key="`p-p-${tile.row}-${tile.col}-${i}`" class="proj">
-                  <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
-                  <span v-else>{{ bioIcon('plants', p.type) }}</span>
+                  <img v-if="getImageOrIcon('plants', p.type, p.growthStage)?.includes('/')" :src="getImageOrIcon('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('plants', p.type, p.growthStage) }}</span>
                 </span>
               </template>
               <template v-else>
                 <span v-for="(p,i) in list(tile.plants?.real)" :key="`p-br-${tile.row}-${tile.col}-${i}`" class="real">
-                  <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img" alt=""/>
-                  <span v-else>{{ bioIcon('plants', p.type) }}</span>
+                  <img v-if="getImageOrIcon('plants', p.type, p.growthStage)?.includes('/')" :src="getImageOrIcon('plants', p.type, p.growthStage)" class="icon-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('plants', p.type, p.growthStage) }}</span>
                 </span>
                 <span v-for="(p,i) in list(tile.plants?.optimized)" :key="`p-bp-${tile.row}-${tile.col}-${i}`" class="proj">
-                  <img v-if="bioImg('plants', p.type, p.growthStage)" :src="bioImg('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
-                  <span v-else>{{ bioIcon('plants', p.type) }}</span>
+                  <img v-if="getImageOrIcon('plants', p.type, p.growthStage)?.includes('/')" :src="getImageOrIcon('plants', p.type, p.growthStage)" class="icon-img proj-img" alt=""/>
+                  <span v-else>{{ getImageOrIcon('plants', p.type, p.growthStage) }}</span>
                 </span>
               </template>
             </div>
