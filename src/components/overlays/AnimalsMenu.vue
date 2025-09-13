@@ -5,6 +5,7 @@ import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
 import {animalStore} from '@/stores/animal.js'
 import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
+import {applyOptimizationEffects} from "@/utils/tileHelpers.js";
 
 const map = mapStore()
 const game = gameStore()
@@ -23,8 +24,10 @@ const selectedTileKey = computed(() => {
 const animalTypesList = animals.animalTypes
 
 function addAnimalToTile(animalType, growthStage) {
-  const tile = currentTile.value
-  tile.animals.optimized.push(makeInstance('animal', animalType, growthStage))
+  const tile = currentTile.value;
+  const domain = 'animal'
+  tile.animals.optimized.push(makeInstance(domain, animalType, growthStage))
+  applyOptimizationEffects(domain, animalType, tile);
 }
 
 </script>
