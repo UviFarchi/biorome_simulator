@@ -12,7 +12,7 @@ import soilEffects from '@/engine/effects/soilEffects.js'
 import topographyEffects from '@/engine/effects/topographyEffects.js'
 import weatherEffects from '@/engine/effects/weatherEffects.js'
 
-import {roundN} from "@/utils/formatting.js";
+import {roundN} from '@/utils/formatting.js';
 
 const MAX_WORKERS = Math.min(4, navigator.hardwareConcurrency || 4)
 
@@ -81,6 +81,7 @@ export async function applyEffects() {
             try {
                 w.terminate()
             } catch {
+                // ignore termination errors
             }
         })
     }

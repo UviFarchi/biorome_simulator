@@ -1,8 +1,12 @@
+
+html, body, #app {
+  background: black;
+}
+
 #app {
   margin: 0 auto;
   font-weight: normal;
   color:white;
-  background: orange;
 }
 
 :root {
@@ -169,6 +173,10 @@
   color: yellow;;
 }
 
+.text-bold {
+  font-weight: bold;
+}
+
 .btn {
   border: none;
   border-radius: var(--radius);
@@ -210,6 +218,20 @@
 .btn--new:hover {
   background: #ffb300;
   color: #333;
+}
+
+.btn--start {
+  background: #82c91e;
+  color: #fff;
+}
+
+.btn--start:disabled {
+  background: grey;
+  cursor: not-allowed;
+}
+
+.btn--start:hover {
+  background: #5c940d;
 }
 
 .btn--close {
