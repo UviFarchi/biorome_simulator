@@ -95,7 +95,7 @@ function isNonZeroDelta(property) {
   <div class="metrics-table-wrapper">
     <h1>{{ title }}</h1>
 
-    <table class="metrics-table">
+    <table class="app-table">
       <thead>
       <tr>
         <th>Property</th>
@@ -136,7 +136,7 @@ function isNonZeroDelta(property) {
       <tr
           v-for="(property, key) in fieldData"
           :key="key + ':' + getHistoryData(property).digest + ':' + (property.measured?.date || '')"
-          :class="{ 'delta-changed': isNonZeroDelta(property) }"
+          :class="{ 'app-table--highlight': isNonZeroDelta(property) }"
       >
         <td>{{ key }}</td>
         <td>{{ property.measured?.date }}</td>

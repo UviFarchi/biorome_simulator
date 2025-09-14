@@ -378,19 +378,73 @@ html, body, #app {
   outline: none;
   cursor: not-allowed;
 }
-/* Metrics table styles */
-.metrics-table {
+/* Generic table styles */
+.app-table {
   border-collapse: collapse;
   margin: 0;
 }
-.metrics-table th,
-.metrics-table td {
+.app-table th,
+.app-table td {
   border: 1px solid var(--color-success);
 }
-.metrics-table th.selected,
-.metrics-table td.selected {
+.app-table th.selected,
+.app-table td.selected {
   background: var(--metrics-selected-bg);
 }
-.metrics-table tr.delta-changed > td {
+.app-table--highlight > td {
   background: var(--metrics-delta-bg);
+}
+
+/* Generic button styles */
+.app-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  position: relative;
+  cursor: pointer;
+  transition: transform .05s ease, filter .12s ease;
+}
+.app-button.s-disabled {
+  background: color-mix(in srgb, var(--color-danger), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-danger), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 70%, transparent),
+    0 0 8px 2px var(--shadow-disabled);
+  cursor: not-allowed;
+}
+.app-button.s-idle {
+  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-warning), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
+    0 0 10px 2px var(--shadow-warning);
+}
+.app-button.s-active {
+  background: color-mix(in srgb, var(--color-success), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-success), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
+    0 0 14px 4px var(--shadow-active);
+}
+
+/* Generic label styles */
+.app-label {
+  margin-top: 4px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.8em;
+  color: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
+  box-shadow: inset 10px 50px var(--shadow-label);
+  border: 2px inset var(--color-background);
+  padding: 0 3px;
+}
+.app-button.s-disabled + .app-label {
+  color: var(--color-danger);
+  text-shadow: 0 0 3px var(--shadow-disabled);
+}
+.app-button.s-idle + .app-label {
+  color: var(--color-warning);
+  text-shadow: 0 0 3px var(--shadow-warning);
+}
+.app-button.s-active + .app-label {
+  color: var(--color-highlight);
+  text-shadow: 0 0 3px var(--shadow-active);
 }

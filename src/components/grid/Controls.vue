@@ -199,7 +199,7 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel">
         <div class="subpanel-title">Layout</div>
         <div class="layout-controls">
-          <button class="layout-btn" @click.stop="eventBus.emit('layout','single')" title="Single width">
+          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','single')" title="Single width">
             <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="singleLayoutTitle"
                  focusable="false" style="pointer-events:none">
               <title id="singleLayoutTitle">Single layout</title>
@@ -220,7 +220,7 @@ onBeforeUnmount(stopTestingSync)
               </g>
             </svg>
           </button>
-          <button class="layout-btn" @click.stop="eventBus.emit('layout','double')" title="Double width">
+          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','double')" title="Double width">
             <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="doubleLayoutTitle"
                  focusable="false" style="pointer-events:none">
               <title id="doubleLayoutTitle">Double layout</title>
@@ -240,7 +240,7 @@ onBeforeUnmount(stopTestingSync)
               </g>
             </svg>
           </button>
-          <button class="layout-btn" @click.stop="eventBus.emit('layout','full')" title="Full width">
+          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','full')" title="Full width">
             <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="fullLayoutTitle"
                  focusable="false" style="pointer-events:none">
               <title id="fullLayoutTitle">Full layout</title>
@@ -253,89 +253,89 @@ onBeforeUnmount(stopTestingSync)
         </div>
       </div>
       <div class="subpanel">
-        <button id="assemblyStation" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
+        <button id="assemblyStation" class="app-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
       </div>
     </div>
     <div class="centerPanel">
       <div class="subpanel">
         <div class="controlItem">
-          <button id="showWeather" class="controlButton"
+          <button id="showWeather" class="app-button"
                   :class="stateClass('weather')"
                   :disabled="!allowedSet.has('weather')"
                   @click.stop="eventBus.emit('overlay', { target: 'weather' })">
           </button>
-          <div class="label">Weather</div>
+          <div class="app-label">Weather</div>
         </div>
         <div class="controlItem">
-          <button id="showNews" class="controlButton"
+          <button id="showNews" class="app-button"
                   :class="stateClass('news')"
                   :disabled="!allowedSet.has('news')"
                   @click.stop="eventBus.emit('overlay', { target: 'news' })">
           </button>
 
 
-          <div class="label">News</div>
+          <div class="app-label">News</div>
         </div>
         <hr/>
         <div class="controlItem">
-          <button id="showLog" class="controlButton"
+          <button id="showLog" class="app-button"
                   :class="stateClass('log')"
                   :disabled="!allowedSet.has('log')"
                   @click.stop="eventBus.emit('overlay', { target: 'log' })">
           </button>
-          <div class="label">Log</div>
+          <div class="app-label">Log</div>
         </div>
         <div class="controlItem">
-          <button id="showAnalytics" class="controlButton"
+          <button id="showAnalytics" class="app-button"
                   :class="stateClass('analytics')"
                   :disabled="!allowedSet.has('analytics')"
                   @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
           </button>
 
-          <div class="label">Analytics</div>
+          <div class="app-label">Analytics</div>
         </div>
         <hr/>
         <div class="controlItem">
-          <button id="showMarket" class="controlButton"
+          <button id="showMarket" class="app-button"
                   :class="stateClass('market')"
                   :disabled="!allowedSet.has('market')"
                   @click.stop="eventBus.emit('overlay', { target: 'market' })">
           </button>
-          <div class="label">Market</div>
+          <div class="app-label">Market</div>
         </div>
         <div class="controlItem">
-          <button id="showGate" class="controlButton"
+          <button id="showGate" class="app-button"
                   :class="stateClass('gate')"
                   :disabled="!allowedSet.has('gate')"
                   @click.stop="eventBus.emit('overlay', { target: 'gate' })">
           </button>
-          <div class="label">Gate</div>
+          <div class="app-label">Gate</div>
         </div>
         <hr/>
         <div class="controlItem">
-          <button id="showAnimals" class="controlButton"
+          <button id="showAnimals" class="app-button"
                   :class="stateClass('animals')"
                   :disabled="!allowedSet.has('animals')"
                   @click.stop="eventBus.emit('overlay', { target: 'animals' })">
           </button>
-          <div class="label">Animals</div>
+          <div class="app-label">Animals</div>
         </div>
         <div class="controlItem">
-          <button id="showPlants" class="controlButton"
+          <button id="showPlants" class="app-button"
                   :class="stateClass('plants')"
                   :disabled="!allowedSet.has('plants')"
                   @click.stop="eventBus.emit('overlay', { target: 'plants' })">
           </button>
-          <div class="label">Plants</div>
+          <div class="app-label">Plants</div>
         </div>
         <div class="controlItem">
-          <button id="showAssemblies" class="controlButton"
+          <button id="showAssemblies" class="app-button"
                   :class="stateClass('assemblies')"
                   :disabled="!allowedSet.has('assemblies')"
                   @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
           </button>
 
-          <div class="label">Assemblies</div>
+          <div class="app-label">Assemblies</div>
         </div>
       </div>
 
@@ -354,7 +354,7 @@ onBeforeUnmount(stopTestingSync)
       </div>
       <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'"
            :title='"Next Phase:\n" + nextPhaseLabel'>
-        <button id="nextPhaseBtn" @click.stop="eventBus.emit('phase',{})">Next</button>
+        <button class="app-button next-phase-btn" @click.stop="eventBus.emit('phase',{})">Next</button>
       </div>
     </div>
   </div>
@@ -468,67 +468,6 @@ onBeforeUnmount(stopTestingSync)
   text-align: center;
 }
 
-.controlButton {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid var(--color-border);
-  background: var(--color-surface);
-  position: relative;
-  cursor: pointer;
-  transition: transform .05s ease, filter .12s ease;
-}
-
-/* states */
-.controlButton.s-disabled {
-  background: color-mix(in srgb, var(--color-danger), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-danger), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 70%, transparent),
-  0 0 8px 2px var(--shadow-disabled);
-  cursor: not-allowed;
-}
-
-.controlButton.s-idle {
-  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-warning), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
-  0 0 10px 2px var(--shadow-warning);
-}
-
-.controlButton.s-active {
-  background: color-mix(in srgb, var(--color-success), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-success), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
-  0 0 14px 4px var(--shadow-active);
-}
-
-/* labels follow state color */
-.label {
-  margin-top: 4px;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 0.8em;
-  color: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
-  box-shadow: inset 10px 50px var(--shadow-label);
-  border: 2px inset var(--color-background);
-  padding: 0 3px;
-}
-
-.controlButton.s-disabled + .label {
-  color: var(--color-danger);
-  text-shadow: 0 0 3px var(--shadow-disabled);
-
-}
-
-.controlButton.s-idle + .label {
-  color: var(--color-warning);
-  text-shadow: 0 0 3px var(--shadow-warning);
-}
-
-.controlButton.s-active + .label {
-  color: var(--color-highlight);
-  text-shadow: 0 0 3px var(--shadow-active);
-}
-
 
 .infoScreen {
   background-color: var(--color-background);
@@ -573,7 +512,7 @@ onBeforeUnmount(stopTestingSync)
   background-image: url("@/assets/gears.gif");
 }
 
-#nextPhaseBtn {
+.next-phase-btn {
   border-radius: 5vh;
   height: 5vh;
   width: 5vh;
@@ -600,6 +539,9 @@ onBeforeUnmount(stopTestingSync)
   cursor: pointer;
   padding: 3px;
   font-family: monospace;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius);
 }
 
 .layout-btn svg {
