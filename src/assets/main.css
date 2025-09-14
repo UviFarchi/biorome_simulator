@@ -1,15 +1,27 @@
 
 html, body, #app {
-  background: black;
+  background: var(--app-bg);
 }
 
 #app {
   margin: 0 auto;
   font-weight: normal;
-  color:white;
+  color: var(--app-text);
 }
 
-:root {
+:root[data-theme="light"] {
+  --app-bg: white;
+  --app-text: black;
+  --color-primary: #1976d2;
+  --color-accent: #90caf9;
+  --color-warning: #ffb300;
+  --color-dark: #333;
+  --radius: 7px;
+}
+
+:root[data-theme="dark"] {
+  --app-bg: black;
+  --app-text: white;
   --color-primary: #00bcd4;
   --color-accent: #cde4cf;
   --color-warning: #ffd600;

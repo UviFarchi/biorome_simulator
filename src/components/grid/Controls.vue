@@ -4,6 +4,7 @@ import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
 import { formatDateLocale, formatDateTime } from '@/utils/formatting.js'
+import { themeStore } from '@/stores/theme.js'
 
 const game = gameStore()
 const phase = computed(() => game.phase)
@@ -21,6 +22,8 @@ const open = reactive({
   market: false, gate: false, animals: false, plants: false, assemblies: false
 })
 const bioromeTest = ref(false)
+const theme = themeStore()
+const themeLabel = computed(() => theme.theme === 'light' ? 'Dark Mode' : 'Light Mode')
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
   if (phase.value === 0) {
@@ -76,7 +79,7 @@ onBeforeUnmount(() => {
 import { mapStore } from '@/stores/map.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 import { measureTileProperty } from '@/utils/tileHelpers.js'
-import {makeAssembly} from "@/engine/phases/operations/assemblyFactory.js";
+import {makeAssembly} from '@/engine/phases/operations/assemblyFactory.js';
 
 const map = mapStore()
 
@@ -193,6 +196,7 @@ onBeforeUnmount(stopTestingSync)
                     @click.stop="bioromeTest = !bioromeTest">
               Testing Mode
             </button>
+            <button role="menuitem" @click.stop="theme.toggle()">{{ themeLabel }}</button>
           </div>
         </div>
       </div>
