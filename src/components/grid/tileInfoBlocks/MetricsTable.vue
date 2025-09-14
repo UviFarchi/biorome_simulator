@@ -95,7 +95,7 @@ function isNonZeroDelta(property) {
   <div class="metrics-table-wrapper">
     <h1>{{ title }}</h1>
 
-    <table>
+    <table class="metrics-table">
       <thead>
       <tr>
         <th>Property</th>
@@ -181,20 +181,3 @@ function isNonZeroDelta(property) {
 </template>
 
 
-<style>
-.metrics-table-wrapper th, .metrics-table-wrapper td {
-  border: 1px solid green;
-  border-collapse: collapse;
-  margin: 0;
-}
-
-.metrics-table-wrapper th.selected,
-.metrics-table-wrapper td.selected {
-  background: rgba(255, 215, 0, 0.25); /* subtle highlight */
-}
-
-.metrics-table-wrapper tr.delta-changed > td {
-  background: rgba(255, 215, 0, 0.18);
-}
-
-</style>
