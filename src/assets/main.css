@@ -26,6 +26,13 @@ html, body, #app {
   --shadow-warning: color-mix(in srgb, var(--color-warning) 40%, transparent);
   --shadow-active: color-mix(in srgb, var(--color-highlight) 50%, transparent);
   --shadow-label: color-mix(in srgb, var(--color-background) 50%, transparent);
+  --color-table-stripe: color-mix(in srgb, var(--color-text) 1.5%, transparent);
+  --color-shadow-neutral: color-mix(in srgb, var(--color-border) 50%, var(--color-text) 50%);
+  --color-shadow-accent: color-mix(in srgb, var(--color-accent) 60%, var(--color-text) 40%);
+  --shadow-action-area: 0 1px 8px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
+  --shadow-action-area-hover: 0 3px 14px color-mix(in srgb, var(--color-shadow-accent) 8%, transparent);
+  --shadow-action-button: 0 1px 3px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
+  --shadow-action-button-hover: 0 3px 7px color-mix(in srgb, var(--color-shadow-accent) 7%, transparent);
 }
 
 .menu-panel {
@@ -161,7 +168,7 @@ html, body, #app {
   z-index: 1;
 }
 
-.kv tbody tr:nth-child(odd) td { background-color: rgba(255,255,255,.015); }
+.kv tbody tr:nth-child(odd) td { background-color: var(--color-table-stripe); }
 .kv tbody tr:hover td { background-color: color-mix(in oklab, var(--color-accent), transparent 95%); }
 
 .kv.inner { border: 0; background: transparent; }
@@ -309,7 +316,7 @@ html, body, #app {
 .action-area {
   background: color-mix(in srgb, var(--color-text) 5%, var(--color-background));
   border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(120, 140, 180, 0.06);
+  box-shadow: var(--shadow-action-area);
   margin-bottom: 1.25em;
   padding: 1.15em 1.4em 1.1em 1.4em;
   border: 1px solid color-mix(in srgb, var(--color-border), var(--color-text) 80%);
@@ -322,7 +329,7 @@ html, body, #app {
 }
 
 .action-area:hover, .action-area:focus-within {
-  box-shadow: 0 3px 14px rgba(60, 105, 170, 0.08);
+  box-shadow: var(--shadow-action-area-hover);
   border-color: color-mix(in srgb, var(--color-border), var(--color-text) 60%);
 }
 
@@ -346,7 +353,7 @@ html, body, #app {
   font-size: 1em;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(100,120,130,0.06);
+  box-shadow: var(--shadow-action-button);
   margin-right: 0.6em;
   margin-bottom: 0.18em;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
@@ -361,7 +368,7 @@ html, body, #app {
     color-mix(in srgb, var(--color-accent) 25%, var(--color-text) 75%) 0%,
     color-mix(in srgb, var(--color-accent) 40%, var(--color-text) 60%) 100%);
   color: color-mix(in srgb, var(--color-accent) 60%, var(--color-background));
-  box-shadow: 0 3px 7px rgba(30,130,200,0.07);
+  box-shadow: var(--shadow-action-button-hover);
   outline: none;
 }
 
