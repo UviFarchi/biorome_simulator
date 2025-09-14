@@ -3,7 +3,6 @@ import { plantTypes } from '@/dict/plantModels.js'
 import {gameStore} from '@/stores/game.js';
 import {v4 as uuidv4} from 'uuid'
 
-const types = {animal: animalTypes, plant: plantTypes}
 const lists = {
     animal: Object.fromEntries(animalTypes.map(s => [s.type, s])),
     plant: Object.fromEntries(plantTypes.map(s => [s.type, s]))

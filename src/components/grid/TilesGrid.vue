@@ -168,7 +168,7 @@ function fmt(v) {
 
             <!-- Row 4: Assemblies -->
             <div class="row">
-              <span v-if="tile.assemblies?.length" class="assemblies-icons">
+              <span v-if="tile.assemblies.real.length" class="assemblies-icons">
                 {{ tile.assemblies.real.map(() => '🤖').join('') }}
               </span>
             </div>
@@ -265,4 +265,8 @@ function fmt(v) {
 .row-coord .cellId { align-self: center; margin: 0; opacity: .9; }
 
 .closeModalBtn { position: absolute; top: 5px; right: 20px; }
+
+.row-res {
+  font-size: small;
+}
 </style>

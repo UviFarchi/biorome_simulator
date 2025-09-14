@@ -9,7 +9,7 @@ import assemblyEffects from '@/engine/effects/assemblyEffects.js';
 
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries
-const effects = {plant:plantEffects, animal:animalEffects,assembly: assemblyEffects}
+
 const types = {
     plants: Object.fromEntries(plantTypes.map(m => [m.type, m])),
     animals: Object.fromEntries(animalTypes.map(m => [m.type, m]))
@@ -108,21 +108,7 @@ else{
 
 }
 
-function applyOptimizationEffects(domain, type, tile, subject) {
-    const effectsToApply = effects[domain][type] || []
-
-    for (const effect of effectsToApply) {
-        const target = effect.target
-        const property = effect.property
-        const delta = (typeof effect.delta === 'function')
-            ? effect.delta({ tile, subject, type, domain})
-            : effect.delta
-
-        const currentValue = tile[target][property].measured.value
-        //TODO => make optimized into an object that can have both the value and an array of the things having a projected effect on it.
-        tile[target][property].optimized = currentValue + delta
-    }
-}
 
 
-export {getAdjacentTiles, getImageOrIcon, measureTileProperty, applyOptimizationEffects}
+
+export {getAdjacentTiles, getImageOrIcon, measureTileProperty}

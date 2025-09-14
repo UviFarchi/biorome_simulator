@@ -114,7 +114,7 @@ function safeTileSnapshot(tile) {
         resources: structuredCloneSafe(tile.resources ?? {}),
         plants: structuredCloneSafe(realArray(tile.plants).filter(isInstance)),
         animals: structuredCloneSafe(realArray(tile.animals).filter(isInstance)),
-        assemblies: structuredCloneSafe(tile.assemblies ?? [])
+        assemblies: structuredCloneSafe(realArray(tile.assemblies))
     }
 }
 
@@ -125,13 +125,13 @@ function mergeProcessedIntoOriginal(original, processed) {
     if (processed.topography) out.topography = processed.topography
     if (processed.soil) out.soil = processed.soil
     if (processed.resources) out.resources = processed.resources
-    if (processed.assemblies) out.assemblies = processed.assemblies
+
 
     // animals
     if (original.animals && !Array.isArray(original.animals)) {
         out.animals = {
             real: Array.isArray(processed.animals) ? processed.animals : realArray(original.animals),
-            optimized: original.animals.optimized // pass-through
+            optimized: original.animals.optimized
         }
     }
 
@@ -139,10 +139,17 @@ function mergeProcessedIntoOriginal(original, processed) {
     if (original.plants && !Array.isArray(original.plants)) {
         out.plants = {
             real: Array.isArray(processed.plants) ? processed.plants : realArray(original.plants),
-            optimized: original.plants.optimized // pass-through
+            optimized: original.plants.optimized
         }
     }
 
+    // assemblies
+    if (original.assemblies && !Array.isArray(original.assemblies)) {
+        out.assemblies = {
+            real: Array.isArray(processed.assemblies) ? processed.assemblies : realArray(original.assemblies),
+            optimized: original.assemblies.optimized
+        }
+    }
     return out
 }
 
@@ -176,9 +183,9 @@ function runApplyEffectsSingleThread(tiles2D) {
             const prepared = {
                 animals: animalsArr.map(a => ({key: a.type, subject: a})),
                 plants: plantsArr.map(p => ({key: p.type, subject: p})),
-                assemblies: (Array.isArray(tile.assemblies)
-                    ? tile.assemblies.flatMap(a => Array.isArray(a.orders) ? a.orders : [])
-                    : []).map(order => ({key: order, subject: null})),
+                assemblies: realArray(tile.assemblies)
+                    .flatMap(a => Array.isArray(a.orders) ? a.orders : [])
+                    .map(order => ({key: order, subject: null})),
                 weather: Object.keys(FX.weather || {}).map(k => ({key: k, subject: null})),
                 topography: Object.keys(tile.topography || {}).filter(k => FX.topography?.[k]).map(k => ({
                     key: k,
@@ -198,9 +205,10 @@ function runApplyEffectsSingleThread(tiles2D) {
                 resources: {...tile.resources},
                 plants: plantsArr.map(p => ({...p})),
                 animals: animalsArr.map(a => ({...a})),
-                assemblies: Array.isArray(tile.assemblies)
-                    ? tile.assemblies.map(a => ({...a, orders: Array.isArray(a.orders) ? [...a.orders] : []}))
-                    : []
+                assemblies: realArray(tile.assemblies).map(a => ({
+                    ...a,
+                    orders: Array.isArray(a.orders) ? [...a.orders] : []
+                }))
             }
 
             const bumpGroup = (groupName, prop, delta) => {

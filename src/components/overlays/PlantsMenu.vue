@@ -5,7 +5,7 @@ import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
 import { plantTypes } from '@/dict/plantModels.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from '@/utils/tileHelpers.js';
+import {applyOptimizationEffects} from "@/engine/phases/optimizations/applyOptimizationEffects.js";
 
 const map = mapStore()
 const game = gameStore()

@@ -49,7 +49,7 @@ On TileInfo There should be:
     />
 
 
-    <AssemblyTable  :key="tileKey + ':assemblies'"/>
+    <AssemblyTable :tile="tile" />
   </div>
 
   <div v-else class="tile-info empty">

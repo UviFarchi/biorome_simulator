@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
 import { actionRequirements } from '@/dict/actionRequirements.js'
+import {applyOptimizationEffects} from "@/engine/phases/optimizations/applyOptimizationEffects.js";
 
 const map = mapStore()
 const game = gameStore()
@@ -15,7 +16,12 @@ const currentTile = computed(() => {
 function addActionToTile(category, action) {
   const tile = currentTile.value
   if (!tile) return
-  tile.assemblies.optimized.push({ category, action })
+  // push planned action
+    const inst = { category, action }
+        tile.assemblies.optimized.push(inst)
+        // look up static model for this action and apply effects
+            const model = actionRequirements?.[category]?.[action]
+       applyOptimizationEffects('assembly', action, tile, inst)
 }
 </script>
 

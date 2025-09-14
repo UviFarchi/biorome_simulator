@@ -76,6 +76,7 @@ onBeforeUnmount(() => {
 import { mapStore } from '@/stores/map.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 import { measureTileProperty } from '@/utils/tileHelpers.js'
+import {makeAssembly} from "@/engine/phases/operations/assemblyFactory.js";
 
 const map = mapStore()
 
@@ -88,21 +89,19 @@ function getGrid() {
 
 function addTestEntitiesToTile(row, col) {
   const tile = getGrid()?.[row]?.[col]
-  if (!tile) return
-  tile.plants.real ||= []
-  tile.animals.real ||= []
-  tile.assemblies.real ||= []
   tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
-  if (!tile.animals.real.some(a => a.type === 'cow' && a.growthStage === 'heifer')) {
-    tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
-  }
+  tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
+  let testAssembly = makeAssembly('Test Assembly',  [{type: 'transport'}, {type: 'battery'}, {type: 'cart'}, { type: 'arm',subtype: 'heavy'}])
+  console.log(testAssembly)
+  tile.assemblies.real.push(testAssembly)
 }
 
 function removeTestEntitiesFromTile(row, col) {
   const tile = getGrid()?.[row]?.[col]
-  if (!tile) return
   if (Array.isArray(tile.plants.real))  tile.plants.real  = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
   if (Array.isArray(tile.animals.real)) tile.animals.real = tile.animals.real.filter(a => !(a.type === 'cow' && a.growthStage === 'heifer'))
+  if (Array.isArray(tile.assemblies.real)) tile.assemblies.real = tile.assemblies.real.filter(a => !(a.name === 'Test Assembly'))
+
 }
 
 /* -------- measure everything on a tile -------- */
