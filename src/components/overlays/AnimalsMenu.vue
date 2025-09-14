@@ -98,13 +98,13 @@ function addAnimalToTile(animalType, growthStage) {
 }
 
 .card {
-  border: 1px solid var(--color-border-card);
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: color-mix(in srgb, var(--color-bg) 25%, transparent);
+  background: color-mix(in srgb, var(--color-background) 25%, transparent);
 }
 
 .card-header {
@@ -133,7 +133,7 @@ function addAnimalToTile(animalType, growthStage) {
   width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid var(--color-border-card);
+  border: 1px solid var(--color-border);
   background: transparent;
   cursor: pointer;
   color: var(--color-text);

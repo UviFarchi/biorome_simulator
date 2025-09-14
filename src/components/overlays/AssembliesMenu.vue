@@ -101,13 +101,13 @@ function addActionToTile(category, action) {
 }
 
 .card {
-  border: 1px solid var(--color-border-card);
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: color-mix(in srgb, var(--color-bg) 25%, transparent);
+  background: color-mix(in srgb, var(--color-background) 25%, transparent);
 }
 
 .card-header {
