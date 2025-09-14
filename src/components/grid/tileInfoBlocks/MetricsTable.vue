@@ -77,6 +77,7 @@ function getDelta(property) {
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null
   return Number(b - a)
 }
+// TODO => Add measurement tick to turn mneasured.collect true during the analytics phase.
 //TODO => Recalculate Optimized values so that they are always computed on top of the current. For example, if an animal is projected to have an effect on a property, that effect is always on top of the current value, not set once.
 function formatDelta(value) {
   return value === null ? 'Not enough data' : value

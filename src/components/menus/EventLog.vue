@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import {gameStore} from '/src/stores/game.js'
-import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
 
 const events = gameStore()
 

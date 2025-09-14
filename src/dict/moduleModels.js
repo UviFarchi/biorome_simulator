@@ -297,7 +297,7 @@ const constants = {
     ]
 
 // ---- MAS (storage + manipulation for assemblies) ----
-    const masModules = [
+    const aaaModules = [
         { key:'shelf_robotic', name:'Robotic Shelf', type:'shelf', subtype:'robotic',
             mass:40, volume:90, cost:900, electricity:-0.4, carryingCapacity:80, operationalStrength:0,
             capacity:0, slots:4, parentSlotsUsed:1, requires:['battery'], count:0 },
@@ -527,7 +527,7 @@ const moduleTypes = [
         ...infra,
         ...enclosures,
         ...cccModules,
-        ...masModules,
+        ...aaaModules,
         ...biogas,
         ...mycelium,
         ...collar

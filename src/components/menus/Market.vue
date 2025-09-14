@@ -1,8 +1,9 @@
 <script setup>
+//TODO => Move this view into it's own screen like the assemblies station, not as a menu
 import { computed } from 'vue'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
-import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
 import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js'
 
 const game = gameStore()

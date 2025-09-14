@@ -258,18 +258,18 @@ onBeforeUnmount(stopTestingSync)
     </div>
     <div class="centerPanel">
       <div class="subpanel">
-        <div class="controlItem">
+        <div class="controlItem"   v-show="allowedSet.has('weather')">
           <button id="showWeather" class="app-button"
                   :class="stateClass('weather')"
-                  :disabled="!allowedSet.has('weather')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'weather' })">
           </button>
           <div class="app-label">Weather</div>
         </div>
-        <div class="controlItem">
+        <div class="controlItem"  v-show="allowedSet.has('news')">
           <button id="showNews" class="app-button"
                   :class="stateClass('news')"
-                  :disabled="!allowedSet.has('news')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'news' })">
           </button>
 
@@ -277,61 +277,61 @@ onBeforeUnmount(stopTestingSync)
           <div class="app-label">News</div>
         </div>
         <hr/>
-        <div class="controlItem">
+        <div class="controlItem" v-show="allowedSet.has('log')">
           <button id="showLog" class="app-button"
                   :class="stateClass('log')"
-                  :disabled="!allowedSet.has('log')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'log' })">
           </button>
           <div class="app-label">Log</div>
         </div>
-        <div class="controlItem">
+        <div class="controlItem" v-show="allowedSet.has('analytics')">
           <button id="showAnalytics" class="app-button"
                   :class="stateClass('analytics')"
-                  :disabled="!allowedSet.has('analytics')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
           </button>
 
           <div class="app-label">Analytics</div>
         </div>
         <hr/>
-        <div class="controlItem">
+        <div class="controlItem" v-show="allowedSet.has('market')">
           <button id="showMarket" class="app-button"
                   :class="stateClass('market')"
-                  :disabled="!allowedSet.has('market')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'market' })">
           </button>
           <div class="app-label">Market</div>
         </div>
-        <div class="controlItem">
+        <div class="controlItem" v-show="allowedSet.has('gate')">
           <button id="showGate" class="app-button"
                   :class="stateClass('gate')"
-                  :disabled="!allowedSet.has('gate')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'gate' })">
           </button>
           <div class="app-label">Gate</div>
         </div>
         <hr/>
-        <div class="controlItem">
+        <div class="controlItem"  v-show="allowedSet.has('animals')">
           <button id="showAnimals" class="app-button"
                   :class="stateClass('animals')"
-                  :disabled="!allowedSet.has('animals')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'animals' })">
           </button>
           <div class="app-label">Animals</div>
         </div>
-        <div class="controlItem">
+        <div class="controlItem"  v-show="allowedSet.has('plants')">
           <button id="showPlants" class="app-button"
                   :class="stateClass('plants')"
-                  :disabled="!allowedSet.has('plants')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'plants' })">
           </button>
           <div class="app-label">Plants</div>
         </div>
-        <div class="controlItem">
+        <div class="controlItem"   v-show="allowedSet.has('assemblies')">
           <button id="showAssemblies" class="app-button"
                   :class="stateClass('assemblies')"
-                  :disabled="!allowedSet.has('assemblies')"
+
                   @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
           </button>
 

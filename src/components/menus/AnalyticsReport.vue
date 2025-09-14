@@ -11,9 +11,9 @@ The sections are :
 <script setup>
 import {computed, ref, defineComponent} from 'vue'
 import {gameStore} from '@/stores/game.js'
-import expandableTable from '@/components/overlays/blocks/ExpandableTable.vue';
-import simpleTable from '@/components/overlays/blocks/SimpleTable.vue';
-import weatherDays from '@/components/overlays/blocks/WeatherDays.vue';
+import expandableTable from '@/components/menus/blocks/ExpandableTable.vue';
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue';
+import weatherDays from '@/components/menus/blocks/WeatherDays.vue';
 
 const game = gameStore()
 

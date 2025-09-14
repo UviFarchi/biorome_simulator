@@ -2,7 +2,7 @@
 import { computed, toRef } from 'vue'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
-import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
 
 const game = gameStore()
 const props = defineProps({ collapsed: { type: Boolean, default: false } })

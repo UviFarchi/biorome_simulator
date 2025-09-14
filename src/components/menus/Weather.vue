@@ -4,8 +4,8 @@ import { storeToRefs } from 'pinia'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import { mapStore } from '@/stores/map.js'
-import simpleTable from '@/components/overlays/blocks/SimpleTable.vue'
-import weatherDays from '@/components/overlays/blocks/WeatherDays.vue'
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
+import weatherDays from '@/components/menus/blocks/WeatherDays.vue'
 
 const game = gameStore()
 const map = mapStore()
