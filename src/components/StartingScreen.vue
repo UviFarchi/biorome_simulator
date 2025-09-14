@@ -79,12 +79,12 @@ async function startGame() {
     <h2>Agrobots' LandOS Simulator</h2>
   <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
     <div>
-      <label for="userName">Your Name:</label>
+      <label for="userName" class="text-bold">Your Name:</label>
       <input id="userName" type="text" v-model="name" autocomplete="off" autofocus/>
     </div>
 
     <div>
-      <label for="userAvatar">Choose Your Avatar:</label>
+      <label for="userAvatar" class="text-bold">Choose Your Avatar:</label>
       <select id="userAvatar" v-model="avatar">
         <option v-for="option in avatarOptions" :key="option.emoji" :value="option.emoji" :title="option.label">
           {{ option.emoji }}
@@ -93,9 +93,9 @@ async function startGame() {
     </div>
 
     <div>
-      <label>Difficulty:</label>
+      <label class="text-bold">Difficulty:</label>
       <div class="difficulty-options">
-        <label v-for="option in difficultyOptions" :key="option.value">
+        <label v-for="option in difficultyOptions" :key="option.value" class="text-bold">
           <input
               type="radio"
               name="difficulty"
@@ -107,7 +107,7 @@ async function startGame() {
         </label>
       </div>
     </div>
-    <button type="submit" class="btn start-btn" :disabled="!name">Start</button>
+    <button type="submit" class="btn btn--start start-btn" :disabled="!name">Start</button>
   </form>
   <div v-if="resuming" class="terrain-overlay">Loading save…</div>
   <div v-else-if="terrainGeneration" class="terrain-overlay">Generating terrain…</div>
@@ -123,10 +123,6 @@ async function startGame() {
   gap: 1.2rem;
 }
 
-.start-form label {
-  font-weight: bold;
-}
-
 .difficulty-options {
   display: flex;
   gap: 1.2rem;
@@ -136,17 +132,10 @@ async function startGame() {
   margin-top: 1rem;
   font-size: 1.1em;
   padding: 0.5em 1.2em;
-  background: #82c91e;
-  color: #fff;
 }
 
 .start-btn:disabled {
-  background: grey;
   cursor: not-allowed;
-}
-
-.start-btn:hover {
-  background: #5c940d;
 }
 
 h1 ,h2 {text-align: center;}
