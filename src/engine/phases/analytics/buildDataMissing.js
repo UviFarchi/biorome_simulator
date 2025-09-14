@@ -1,7 +1,7 @@
 // src/engine/steps/buildDataMissing.js
 
 // Which props are required to be measured
-import eventBus from "@/eventBus.js";
+import eventBus from '@/eventBus.js';
 
 export const REQUIRED = {
     topography: ['waterTable', 'drainageIndex', 'elevation', 'slope', 'aspect'],

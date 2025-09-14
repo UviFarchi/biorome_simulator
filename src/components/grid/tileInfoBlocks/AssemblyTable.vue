@@ -88,7 +88,7 @@ const optimized = computed(() => Array.isArray(props.tile?.assemblies?.optimized
 }
 .pill {
   padding: 2px 8px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--color-pill-border);
   border-radius: 999px;
   font-size: 12px;
   line-height: 1.6;

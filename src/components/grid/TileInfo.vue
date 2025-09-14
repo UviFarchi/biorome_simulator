@@ -8,16 +8,16 @@ On TileInfo There should be:
  */
 
 
-  import { computed } from "vue";
-  import { mapStore } from "@/stores/map.js";
-  import MetricsTable from "./tileInfoBlocks/MetricsTable.vue";
-  import BiotaTable from "./tileInfoBlocks/BiotaTable.vue";
-  import AssemblyTable from "./tileInfoBlocks/AssemblyTable.vue";
+  import { computed } from 'vue';
+  import { mapStore } from '@/stores/map.js';
+  import MetricsTable from './tileInfoBlocks/MetricsTable.vue';
+  import BiotaTable from './tileInfoBlocks/BiotaTable.vue';
+  import AssemblyTable from './tileInfoBlocks/AssemblyTable.vue';
 
   const map = mapStore();
 
   const tile = computed(() => map.selectedTile.value);
-  const tileKey = computed(() => (tile.value ? `${tile.value.row}-${tile.value.col}` : "none"));
+  const tileKey = computed(() => (tile.value ? `${tile.value.row}-${tile.value.col}` : 'none'));
 </script>
 
 <template>

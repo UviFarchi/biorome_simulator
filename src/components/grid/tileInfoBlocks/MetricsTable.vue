@@ -3,7 +3,7 @@ import {computed, ref, onMounted, onBeforeUnmount, nextTick} from 'vue'
 
 
 import {mapStore} from '@/stores/map.js'
-import {roundN} from "@/utils/formatting.js";
+import {roundN} from '@/utils/formatting.js';
 
 const map = mapStore()
 
