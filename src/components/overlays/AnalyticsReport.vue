@@ -251,9 +251,9 @@ const subcomponents = {
   padding: 2px 6px;
   border: 1px solid color-mix(in oklab, var(--panel-edge), var(--accent) 25%);
   border-radius: 6px;
-  background: linear-gradient(180deg, rgba(125,249,255,.08), rgba(125,249,255,.02));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--accent) 2%, transparent));
   color: var(--text);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
 }
 
 /* Utilities */
@@ -290,8 +290,8 @@ const subcomponents = {
   border-radius: 999px;
   text-decoration: none;
   color: var(--text);
-  background: radial-gradient(100% 100% at 50% 0%, rgba(125,249,255,.10) 0, rgba(125,249,255,0) 60%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+  background: radial-gradient(100% 100% at 50% 0%, color-mix(in srgb, var(--accent) 10%, transparent) 0, transparent 60%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
   line-height: 1.2;
 }
 
@@ -314,7 +314,7 @@ const subcomponents = {
   position: absolute; inset: 0;
   pointer-events: none;
   background:
-      repeating-linear-gradient(0deg, transparent 0 2px, rgba(255,255,255,.008) 2px 3px);
+      repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--text) 0.8%, transparent) 2px 3px);
   border-radius: 6px;
 }
 

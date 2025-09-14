@@ -483,23 +483,23 @@ onBeforeUnmount(stopTestingSync)
 .controlButton.s-disabled {
   background: var(--color-danger-bg-dark);
   border-color: var(--color-danger-border-dark);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .7),
-  0 0 8px 2px rgba(200, 40, 40, .35);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 70%, transparent),
+  0 0 8px 2px var(--shadow-disabled);
   cursor: not-allowed;
 }
 
 .controlButton.s-idle {
   background: var(--color-warning-bg-dark);
   border-color: var(--color-warning-border-dark);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6),
-  0 0 10px 2px rgba(255, 170, 0, .4);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 60%, transparent),
+  0 0 10px 2px var(--shadow-warning);
 }
 
 .controlButton.s-active {
   background: var(--color-success-bg-dark);
   border-color: var(--color-success-border-dark);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6),
-  0 0 14px 4px rgba(80, 255, 120, .5);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 60%, transparent),
+  0 0 14px 4px var(--shadow-active);
 }
 
 /* labels follow state color */
@@ -508,25 +508,25 @@ onBeforeUnmount(stopTestingSync)
   font-family: ui-monospace, Menlo, monospace;
   font-size: 0.8em;
   color: var(--color-label-text);
-  box-shadow: inset 10px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 10px 50px var(--shadow-label);
   border: 2px inset var(--color-bg);
   padding: 0 3px;
 }
 
 .controlButton.s-disabled + .label {
   color: var(--color-label-danger);
-  text-shadow: 0 0 3px rgba(255, 90, 90, .35);
+  text-shadow: 0 0 3px var(--shadow-disabled);
 
 }
 
 .controlButton.s-idle + .label {
   color: var(--color-label-warning);
-  text-shadow: 0 0 3px rgba(255, 200, 90, .35);
+  text-shadow: 0 0 3px var(--shadow-warning);
 }
 
 .controlButton.s-active + .label {
   color: var(--color-highlight);
-  text-shadow: 0 0 3px rgba(100, 255, 140, .35);
+  text-shadow: 0 0 3px var(--shadow-active);
 }
 
 

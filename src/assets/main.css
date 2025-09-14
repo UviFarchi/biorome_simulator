@@ -65,6 +65,12 @@ html, body, #app {
   --color-pill-border: #2a2a2a;
   --color-border-card: #2c3e50;
   --radius: 7px;
+  --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
+  --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
+  --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
+  --shadow-warning: color-mix(in srgb, var(--color-warning) 40%, transparent);
+  --shadow-active: color-mix(in srgb, var(--color-highlight) 50%, transparent);
+  --shadow-label: color-mix(in srgb, var(--color-bg) 50%, transparent);
 }
 
 .menu-panel {
@@ -405,4 +411,20 @@ html, body, #app {
   color: var(--color-bg);
   outline: none;
   cursor: not-allowed;
+}
+/* Metrics table styles */
+.metrics-table {
+  border-collapse: collapse;
+  margin: 0;
+}
+.metrics-table th,
+.metrics-table td {
+  border: 1px solid var(--color-success);
+}
+.metrics-table th.selected,
+.metrics-table td.selected {
+  background: var(--metrics-selected-bg);
+}
+.metrics-table tr.delta-changed > td {
+  background: var(--metrics-delta-bg);
 }
