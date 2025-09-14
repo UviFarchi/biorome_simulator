@@ -161,16 +161,16 @@ const subcomponents = {
 <style scoped>
 /* ---------- Theme tokens (fallbacks if global vars aren’t present) ---------- */
 .analyticsReport {
-  --panel-bg:       var(--ui-bg, var(--color-bg));
-  --panel-elev:     var(--ui-elev, color-mix(in srgb, var(--color-bg), var(--color-text) 5%));
-  --panel-edge:     var(--ui-edge, var(--color-panel-border));
+  --panel-bg:       var(--ui-bg, var(--color-background));
+  --panel-elev:     var(--ui-elev, color-mix(in srgb, var(--color-background), var(--color-text) 5%));
+  --panel-edge:     var(--ui-edge, var(--color-border));
   --panel-stripe:   var(--ui-stripe, color-mix(in srgb, var(--color-text) 3%, transparent));
   --text:           var(--ui-text, var(--color-text));
-  --text-dim:       var(--ui-text-dim, var(--color-text-dim));
-  --accent:         var(--ui-accent, var(--color-primary));
-  --accent-dim:     color-mix(in oklab, var(--accent), var(--color-bg) 40%);
-  --shadow-inset:   inset 0 1px 0 color-mix(in srgb, var(--color-text) 4%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-bg) 40%, transparent);
-  --shadow-raised:  0 1px 1px color-mix(in srgb, var(--color-bg) 35%, transparent), 0 8px 24px color-mix(in srgb, var(--color-bg) 35%, transparent);
+  --text-dim:       var(--ui-text-dim, color-mix(in srgb, var(--color-text) 70%, var(--color-background)));
+  --accent:         var(--ui-accent, var(--color-accent));
+  --accent-dim:     color-mix(in oklab, var(--accent), var(--color-background) 40%);
+  --shadow-inset:   inset 0 1px 0 color-mix(in srgb, var(--color-text) 4%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-background) 40%, transparent);
+  --shadow-raised:  0 1px 1px color-mix(in srgb, var(--color-background) 35%, transparent), 0 8px 24px color-mix(in srgb, var(--color-background) 35%, transparent);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: var(--text);
 }
@@ -201,8 +201,8 @@ const subcomponents = {
   letter-spacing: .08em; text-transform: uppercase;
   color: var(--text);
   background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-text) 6%, transparent), color-mix(in srgb, var(--color-bg) 20%, transparent)),
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg), var(--color-text) 8%), color-mix(in srgb, var(--color-bg), var(--color-text) 4%));
+      linear-gradient(180deg, color-mix(in srgb, var(--color-text) 6%, transparent), color-mix(in srgb, var(--color-background) 20%, transparent)),
+      linear-gradient(180deg, color-mix(in srgb, var(--color-background), var(--color-text) 8%), color-mix(in srgb, var(--color-background), var(--color-text) 4%));
   border-bottom: 1px solid var(--panel-edge);
   cursor: pointer;
   user-select: none;
@@ -273,8 +273,8 @@ const subcomponents = {
   border: 1px solid var(--panel-edge);
   border-radius: 6px;
   background:
-      linear-gradient(180deg, color-mix(in srgb, var(--color-text) 3%, transparent), color-mix(in srgb, var(--color-bg) 18%, transparent)),
-      linear-gradient(180deg, color-mix(in srgb, var(--color-bg), var(--color-text) 10%), color-mix(in srgb, var(--color-bg), var(--color-text) 5%));
+      linear-gradient(180deg, color-mix(in srgb, var(--color-text) 3%, transparent), color-mix(in srgb, var(--color-background) 18%, transparent)),
+      linear-gradient(180deg, color-mix(in srgb, var(--color-background), var(--color-text) 10%), color-mix(in srgb, var(--color-background), var(--color-text) 5%));
   box-shadow: var(--shadow-inset);
 }
 :deep(.table-header > strong) {

@@ -195,7 +195,7 @@ td.entity-cell { vertical-align: top; }
   margin-top: 4px;
 }
 
-.badge { display: inline-flex; align-items: center; gap: .35em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); font-size: .85em; background: color-mix(in srgb, var(--color-bg) 18%, transparent); }
-.badge--real { color: var(--ink); background: color-mix(in srgb, var(--color-bg) 8%, transparent); }
-.badge--proj { color: var(--color-text); background: color-mix(in srgb, var(--color-projected) 22%, transparent); border-color: color-mix(in srgb, var(--color-projected) 65%, transparent); }
+.badge { display: inline-flex; align-items: center; gap: .35em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); font-size: .85em; background: color-mix(in srgb, var(--color-background) 18%, transparent); }
+.badge--real { color: var(--ink); background: color-mix(in srgb, var(--color-background) 8%, transparent); }
+.badge--proj { color: var(--color-text); background: color-mix(in srgb, var(--color-accent) 22%, transparent); border-color: color-mix(in srgb, var(--color-accent) 65%, transparent); }
 </style>

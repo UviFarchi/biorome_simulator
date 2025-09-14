@@ -371,8 +371,8 @@ onBeforeUnmount(stopTestingSync)
   gap: 12px;
   padding: 6px 10px;
   height: 10vh;
-  border-bottom: 2px solid var(--color-control-border);
-  background-color: var(--color-grey);
+  border-bottom: 2px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
 }
 
 /* columns */
@@ -401,7 +401,7 @@ onBeforeUnmount(stopTestingSync)
   gap: 6px;
   height: 8vh;
   padding: 6px 10px;
-  border: 2px solid var(--color-subpanel-border);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   /*background-image: url("@/assets/steel_plate.png");
   background-size: cover;
@@ -415,7 +415,7 @@ onBeforeUnmount(stopTestingSync)
   text-align: center;
   font-weight: bold;
   pointer-events: none;
-  color: var(--color-bg);
+  color: var(--color-background);
   padding: 0;
   margin: 0;
 }
@@ -428,7 +428,7 @@ onBeforeUnmount(stopTestingSync)
   align-self: center;
   height: 80%;
   margin: 0 10px;
-  background: var(--color-bg);
+  background: var(--color-background);
   border-radius: 2px;
 }
 
@@ -445,8 +445,8 @@ onBeforeUnmount(stopTestingSync)
   height: 12vh;
   width: 100px;
   display: none;
-  background: var(--color-options-bg);
-  border: 1px solid var(--color-control-border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 6px;
 }
@@ -472,8 +472,8 @@ onBeforeUnmount(stopTestingSync)
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid var(--color-button-border-dark);
-  background: var(--color-button-bg-dark);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   position: relative;
   cursor: pointer;
   transition: transform .05s ease, filter .12s ease;
@@ -481,24 +481,24 @@ onBeforeUnmount(stopTestingSync)
 
 /* states */
 .controlButton.s-disabled {
-  background: var(--color-danger-bg-dark);
-  border-color: var(--color-danger-border-dark);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 70%, transparent),
+  background: color-mix(in srgb, var(--color-danger), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-danger), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 70%, transparent),
   0 0 8px 2px var(--shadow-disabled);
   cursor: not-allowed;
 }
 
 .controlButton.s-idle {
-  background: var(--color-warning-bg-dark);
-  border-color: var(--color-warning-border-dark);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 60%, transparent),
+  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-warning), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
   0 0 10px 2px var(--shadow-warning);
 }
 
 .controlButton.s-active {
-  background: var(--color-success-bg-dark);
-  border-color: var(--color-success-border-dark);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-bg) 60%, transparent),
+  background: color-mix(in srgb, var(--color-success), var(--color-background) 40%);
+  border-color: color-mix(in srgb, var(--color-success), var(--color-border) 50%);
+  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
   0 0 14px 4px var(--shadow-active);
 }
 
@@ -507,20 +507,20 @@ onBeforeUnmount(stopTestingSync)
   margin-top: 4px;
   font-family: ui-monospace, Menlo, monospace;
   font-size: 0.8em;
-  color: var(--color-label-text);
+  color: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
   box-shadow: inset 10px 50px var(--shadow-label);
-  border: 2px inset var(--color-bg);
+  border: 2px inset var(--color-background);
   padding: 0 3px;
 }
 
 .controlButton.s-disabled + .label {
-  color: var(--color-label-danger);
+  color: var(--color-danger);
   text-shadow: 0 0 3px var(--shadow-disabled);
 
 }
 
 .controlButton.s-idle + .label {
-  color: var(--color-label-warning);
+  color: var(--color-warning);
   text-shadow: 0 0 3px var(--shadow-warning);
 }
 
@@ -531,15 +531,15 @@ onBeforeUnmount(stopTestingSync)
 
 
 .infoScreen {
-  background-color: var(--color-bg);
+  background-color: var(--color-background);
   position: relative;
   padding: 5px;
-  border: 5px inset var(--color-bg);
+  border: 5px inset var(--color-background);
   height: 75%;
   width: 5vw;
   text-align: left;
   font-size: medium;
-  color: var(--color-screen-text);
+  color: var(--color-success);
   aspect-ratio: 4/3;
   line-height: 1.25rem;
   word-break: break-word;
@@ -549,10 +549,10 @@ onBeforeUnmount(stopTestingSync)
   border-radius: 100%;
   height: 7vh;
   width: 7vh;
-  color: var(--color-bg);
+  color: var(--color-background);
   font-weight: lighter;
   text-shadow: 0 0 5px var(--color-text);
-  background-color: var(--color-silver);
+  background-color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
 }
 
 .nextPhaseBg {
@@ -578,7 +578,7 @@ onBeforeUnmount(stopTestingSync)
   height: 5vh;
   width: 5vh;
   margin: 0;
-  background: color-mix(in srgb, var(--color-bg) 75%, transparent);
+  background: color-mix(in srgb, var(--color-background) 75%, transparent);
   color: var(--color-text);
 }
 
@@ -587,7 +587,7 @@ onBeforeUnmount(stopTestingSync)
   z-index: 2;
   display: flex;
   gap: 6px;
-  color: var(--color-screen-text);
+  color: var(--color-success);
   margin-bottom: 10px;
   justify-content: space-evenly;
   width: 10vw;
@@ -595,15 +595,15 @@ onBeforeUnmount(stopTestingSync)
 
 .layout-btn {
   display: flex;
-  background: var(--color-silver);
-  border: 2px outset var(--color-bg);
+  background: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
+  border: 2px outset var(--color-background);
   cursor: pointer;
   padding: 3px;
   font-family: monospace;
 }
 
 .layout-btn svg {
-  color: var(--color-bg);
+  color: var(--color-background);
 }
 
 
