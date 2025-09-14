@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
 import { gameStore } from '@/stores/game.js'
 import { actionRequirements } from '@/dict/actionRequirements.js'
-import {applyOptimizationEffects} from "@/engine/phases/optimizations/applyOptimizationEffects.js";
+import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
 
 const map = mapStore()
 const game = gameStore()
@@ -101,13 +101,13 @@ function addActionToTile(category, action) {
 }
 
 .card {
-  border: 1px solid var(--border, #2c3e50);
+  border: 1px solid var(--color-border-card);
   border-radius: 10px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, var(--color-bg) 25%, transparent);
 }
 
 .card-header {

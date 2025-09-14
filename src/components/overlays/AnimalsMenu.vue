@@ -5,7 +5,7 @@ import {gameStore} from '@/stores/game.js'
 import {marketStore} from '@/stores/market.js'
 import { animalTypes } from '@/dict/animalModels.js'
 import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from "@/engine/phases/optimizations/applyOptimizationEffects.js";
+import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
 
 const map = mapStore()
 const game = gameStore()
@@ -98,13 +98,13 @@ function addAnimalToTile(animalType, growthStage) {
 }
 
 .card {
-  border: 1px solid var(--border, #2c3e50);
+  border: 1px solid var(--color-border-card);
   border-radius: 10px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, var(--color-bg) 25%, transparent);
 }
 
 .card-header {
@@ -133,10 +133,10 @@ function addAnimalToTile(animalType, growthStage) {
   width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid var(--border, #2c3e50);
+  border: 1px solid var(--color-border-card);
   background: transparent;
   cursor: pointer;
-  color: white;
+  color: var(--color-text);
 }
 
 .phase-button:disabled {

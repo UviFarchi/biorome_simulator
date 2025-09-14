@@ -1,4 +1,4 @@
-import {animalTypes} from "@/dict/animalModels.js";
+import {animalTypes} from '@/dict/animalModels.js';
 
 const animalSpecs = Object.fromEntries(animalTypes.map(m => [m.type, m]))
 

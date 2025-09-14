@@ -1,16 +1,16 @@
 // engine/phases/analytics/buildWeather.js
-import { mapStore } from "@/stores/map.js";
-import eventBus from "@/eventBus.js";
+import { mapStore } from '@/stores/map.js';
+import eventBus from '@/eventBus.js';
 
 export function buildWeather(_currentTiles, currentEventsWeather, currentDateISO) {
-    eventBus.emit("log", { engine: "analytics", msg: "Building Weather Report" });
+    eventBus.emit('log', { engine: 'analytics', msg: 'Building Weather Report' });
 
     const map = mapStore();
     const cw  = map.currentWeather.value || {};
 
     const todayRow = {
         dateISO: currentDateISO,
-        label: cw.currentLabel?.label || "Today",
+        label: cw.currentLabel?.label || 'Today',
         metrics: {
             temperatureC: cw.temperature ?? null,
             rainfallMm:   cw.rainfall ?? null,

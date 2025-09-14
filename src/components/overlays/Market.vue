@@ -206,11 +206,11 @@ const animalsRows = computed(() => {
 
 h3 {
   margin: .2rem 0 .4rem;
-  color: teal;
+  color: var(--color-primary);
 }
 
 h4 {
   margin: .2rem 0;
-  color: #ffd54f;
+  color: var(--color-warning);
 }
 </style>

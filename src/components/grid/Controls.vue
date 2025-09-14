@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
 import { mapStore } from '@/stores/map.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 import { measureTileProperty } from '@/utils/tileHelpers.js'
-import {makeAssembly} from "@/engine/phases/operations/assemblyFactory.js";
+import {makeAssembly} from '@/engine/phases/operations/assemblyFactory.js';
 
 const map = mapStore()
 
@@ -371,8 +371,8 @@ onBeforeUnmount(stopTestingSync)
   gap: 12px;
   padding: 6px 10px;
   height: 10vh;
-  border-bottom: 2px solid #2a2f2a;
-  background-color: grey;
+  border-bottom: 2px solid var(--color-control-border);
+  background-color: var(--color-grey);
 }
 
 /* columns */
@@ -401,7 +401,7 @@ onBeforeUnmount(stopTestingSync)
   gap: 6px;
   height: 8vh;
   padding: 6px 10px;
-  border: 2px solid #1f231f;
+  border: 2px solid var(--color-subpanel-border);
   border-radius: 8px;
   /*background-image: url("@/assets/steel_plate.png");
   background-size: cover;
@@ -415,7 +415,7 @@ onBeforeUnmount(stopTestingSync)
   text-align: center;
   font-weight: bold;
   pointer-events: none;
-  color: black;
+  color: var(--color-bg);
   padding: 0;
   margin: 0;
 }
@@ -428,7 +428,7 @@ onBeforeUnmount(stopTestingSync)
   align-self: center;
   height: 80%;
   margin: 0 10px;
-  background: black;
+  background: var(--color-bg);
   border-radius: 2px;
 }
 
@@ -445,8 +445,8 @@ onBeforeUnmount(stopTestingSync)
   height: 12vh;
   width: 100px;
   display: none;
-  background: #1a1f1a;
-  border: 1px solid #2a2f2a;
+  background: var(--color-options-bg);
+  border: 1px solid var(--color-control-border);
   border-radius: 8px;
   padding: 6px;
 }
@@ -456,7 +456,7 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .optionsMenu button.active {
-  background: #97ffb0;
+  background: var(--color-highlight);
 }
 
 .menu-wrap:focus-within .optionsMenu {
@@ -472,8 +472,8 @@ onBeforeUnmount(stopTestingSync)
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid #202420;
-  background: #0a0d0a;
+  border: 2px solid var(--color-button-border-dark);
+  background: var(--color-button-bg-dark);
   position: relative;
   cursor: pointer;
   transition: transform .05s ease, filter .12s ease;
@@ -481,23 +481,23 @@ onBeforeUnmount(stopTestingSync)
 
 /* states */
 .controlButton.s-disabled {
-  background: #7b1e1e;
-  border-color: #612525;
+  background: var(--color-danger-bg-dark);
+  border-color: var(--color-danger-border-dark);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, .7),
   0 0 8px 2px rgba(200, 40, 40, .35);
   cursor: not-allowed;
 }
 
 .controlButton.s-idle {
-  background: #7a5702;
-  border-color: #6e5a2c;
+  background: var(--color-warning-bg-dark);
+  border-color: var(--color-warning-border-dark);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6),
   0 0 10px 2px rgba(255, 170, 0, .4);
 }
 
 .controlButton.s-active {
-  background: #0f7a39;
-  border-color: #1d6f3c;
+  background: var(--color-success-bg-dark);
+  border-color: var(--color-success-border-dark);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6),
   0 0 14px 4px rgba(80, 255, 120, .5);
 }
@@ -507,39 +507,39 @@ onBeforeUnmount(stopTestingSync)
   margin-top: 4px;
   font-family: ui-monospace, Menlo, monospace;
   font-size: 0.8em;
-  color: #cfd3cf;
+  color: var(--color-label-text);
   box-shadow: inset 10px 50px rgba(0, 0, 0, 0.5);
-  border: 2px inset black;
+  border: 2px inset var(--color-bg);
   padding: 0 3px;
 }
 
 .controlButton.s-disabled + .label {
-  color: #ff8c8c;
+  color: var(--color-label-danger);
   text-shadow: 0 0 3px rgba(255, 90, 90, .35);
 
 }
 
 .controlButton.s-idle + .label {
-  color: #ffd27a;
+  color: var(--color-label-warning);
   text-shadow: 0 0 3px rgba(255, 200, 90, .35);
 }
 
 .controlButton.s-active + .label {
-  color: #97ffb0;
+  color: var(--color-highlight);
   text-shadow: 0 0 3px rgba(100, 255, 140, .35);
 }
 
 
 .infoScreen {
-  background-color: black;
+  background-color: var(--color-bg);
   position: relative;
   padding: 5px;
-  border: 5px inset black;
+  border: 5px inset var(--color-bg);
   height: 75%;
   width: 5vw;
   text-align: left;
   font-size: medium;
-  color: limegreen;
+  color: var(--color-screen-text);
   aspect-ratio: 4/3;
   line-height: 1.25rem;
   word-break: break-word;
@@ -549,10 +549,10 @@ onBeforeUnmount(stopTestingSync)
   border-radius: 100%;
   height: 7vh;
   width: 7vh;
-  color: black;
+  color: var(--color-bg);
   font-weight: lighter;
-  text-shadow: 0 0 5px white;
-  background-color: silver;
+  text-shadow: 0 0 5px var(--color-text);
+  background-color: var(--color-silver);
 }
 
 .nextPhaseBg {
@@ -578,8 +578,8 @@ onBeforeUnmount(stopTestingSync)
   height: 5vh;
   width: 5vh;
   margin: 0;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
+  background: color-mix(in srgb, var(--color-bg) 75%, transparent);
+  color: var(--color-text);
 }
 
 .layout-controls {
@@ -587,7 +587,7 @@ onBeforeUnmount(stopTestingSync)
   z-index: 2;
   display: flex;
   gap: 6px;
-  color: limegreen;
+  color: var(--color-screen-text);
   margin-bottom: 10px;
   justify-content: space-evenly;
   width: 10vw;
@@ -595,15 +595,15 @@ onBeforeUnmount(stopTestingSync)
 
 .layout-btn {
   display: flex;
-  background: silver;
-  border: 2px outset black;
+  background: var(--color-silver);
+  border: 2px outset var(--color-bg);
   cursor: pointer;
   padding: 3px;
   font-family: monospace;
 }
 
 .layout-btn svg {
-  color: black;
+  color: var(--color-bg);
 }
 
 

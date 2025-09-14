@@ -5,7 +5,7 @@ import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
 import { plantTypes } from '@/dict/plantModels.js'
 import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from "@/engine/phases/optimizations/applyOptimizationEffects.js";
+import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
 
 const map = mapStore()
 const game = gameStore()
@@ -103,13 +103,13 @@ function plantStagePrice(plant, growthStage) {
 }
 
 .card {
-  border: 1px solid var(--border, #2c3e50);
+  border: 1px solid var(--color-border-card);
   border-radius: 10px;
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, var(--color-bg) 25%, transparent);
 }
 
 .card-header {
@@ -126,8 +126,8 @@ function plantStagePrice(plant, growthStage) {
 .phase-button {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 8px 10px; border-radius: 8px;
-  border: 1px solid var(--border, #2c3e50);
-  background: transparent; cursor: pointer; color: white;
+  border: 1px solid var(--color-border-card);
+  background: transparent; cursor: pointer; color: var(--color-text);
 }
 .phase-button:disabled { opacity: 0.5; cursor: not-allowed; }
 

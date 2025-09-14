@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, watch, ref, computed} from 'vue'
 import { mapStore } from '@/stores/map.js'
-import {gameStore} from "@/stores/game.js";
+import {gameStore} from '@/stores/game.js';
 
 const canvas = ref(null)
 const map = mapStore()

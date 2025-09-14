@@ -1,6 +1,6 @@
-import plantEffects from "@/engine/effects/plantEffects.js";
-import animalEffects from "@/engine/effects/animalEffects.js";
-import assemblyEffects from "@/engine/effects/assemblyEffects.js";
+import plantEffects from '@/engine/effects/plantEffects.js';
+import animalEffects from '@/engine/effects/animalEffects.js';
+import assemblyEffects from '@/engine/effects/assemblyEffects.js';
 
 const effects = {plant:plantEffects, animal:animalEffects,assembly: assemblyEffects}
 
