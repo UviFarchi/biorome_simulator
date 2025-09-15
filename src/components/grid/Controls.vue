@@ -15,10 +15,10 @@ const gold = computed(() => game.gold)
 const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery')
 
 // Active highlight per overlay (toggled via existing `overlay` events)
-const open = reactive({
-  weather: false, news: false, log: false, analytics: false,
-  market: false, gate: false, animals: false, plants: false, assemblies: false
-})
+  const open = reactive({
+    weather: false, news: false, log: false, analytics: false,
+    gate: false, animals: false, plants: false, assemblies: false
+  })
 const bioromeTest = ref(false)
 
 function toggleTheme() {
@@ -28,14 +28,14 @@ function toggleTheme() {
 
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
-  if (phase.value === 0) {
-    return new Set(['weather', 'news', 'log', 'analytics', 'market']) // analytics enabled, user may open
-  } else if (phase.value === 1) {
-    return new Set(['weather', 'news', 'log', 'analytics', 'market', 'animals', 'plants', 'assemblies'])
-  } else { // phase 2
-    return new Set(['weather', 'news', 'log', 'market', 'assemblies', 'gate'])
-  }
-})
+    if (phase.value === 0) {
+      return new Set(['weather', 'news', 'log', 'analytics']) // analytics enabled, user may open
+    } else if (phase.value === 1) {
+      return new Set(['weather', 'news', 'log', 'analytics', 'animals', 'plants', 'assemblies'])
+    } else { // phase 2
+      return new Set(['weather', 'news', 'log', 'assemblies', 'gate'])
+    }
+  })
 
 // Keep highlights consistent when phase changes
 watch(allowedSet, (allow) => {
@@ -265,6 +265,9 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel">
         <button id="assemblyStation" class="app-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
       </div>
+      <div class="subpanel">
+        <button id="marketNav" class="app-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+      </div>
     </div>
     <div class="centerPanel">
       <div class="subpanel">
@@ -303,15 +306,6 @@ onBeforeUnmount(stopTestingSync)
           </button>
 
           <div class="app-label">Analytics</div>
-        </div>
-        <hr/>
-        <div class="controlItem" v-show="allowedSet.has('market')">
-          <button id="showMarket" class="app-button"
-                  :class="stateClass('market')"
-
-                  @click.stop="eventBus.emit('overlay', { target: 'market' })">
-          </button>
-          <div class="app-label">Market</div>
         </div>
         <div class="controlItem" v-show="allowedSet.has('gate')">
           <button id="showGate" class="app-button"
