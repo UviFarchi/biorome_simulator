@@ -299,7 +299,6 @@ textarea {
 
 .kv.inner.onecol td {
   white-space: normal;
-r
 }
 
 
@@ -521,8 +520,6 @@ r
   background-color: var(--color-table-stripe);
 }
 
-
-}
 
 .app-table th {
   background: color-mix(in srgb, var(--color-background) 70%, var(--color-surface) 30%);

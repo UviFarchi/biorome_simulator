@@ -111,7 +111,7 @@ async function startGame() {
         </div>
       </div>
       <button type="submit" class="btn btn--start start-btn" :disabled="!name">Enter console</button>
-      <img src="../assets/small_drone.gif" alt="small drone"/>
+      <img src="../assets/small_drone_blue.gif" alt="small drone"/>
     </form>
     <div v-if="resuming" class="terrain-overlay">Loading saved configuration…</div>
     <div v-else-if="terrainGeneration" class="terrain-overlay">Preparing operational map…</div>
@@ -156,6 +156,7 @@ async function startGame() {
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
+  background: var(--color-surface);
 }
 
 .form-field {
