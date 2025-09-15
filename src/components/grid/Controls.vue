@@ -3,7 +3,7 @@ import {reactive, computed, onMounted, onBeforeUnmount, watch, ref} from 'vue'
 import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
-import { formatDateLocale, formatDateTime } from '@/utils/formatting.js'
+import { formatDateLocale } from '@/utils/formatting.js'
 const game = gameStore()
 const phase = computed(() => game.phase)
 const currentPhaseLabel = computed(() => game.engines[(phase.value) % game.engines.length])
@@ -22,6 +22,26 @@ const formattedGold = computed(() => {
   }).format(value)
 })
 const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery')
+const userAvatarDisplay = computed(() => userAvatar.value || '👤')
+
+const settingsOpen = ref(false)
+const settingsWrap = ref(null)
+
+function closeSettingsMenu() {
+  settingsOpen.value = false
+}
+
+function toggleSettingsMenu() {
+  settingsOpen.value = !settingsOpen.value
+}
+
+function handleClickOutsideSettings(event) {
+  if (!settingsOpen.value) return
+  const wrap = settingsWrap.value
+  if (wrap && !wrap.contains(event.target)) {
+    settingsOpen.value = false
+  }
+}
 
 // Active highlight per overlay (toggled via existing `overlay` events)
   const open = reactive({
@@ -32,6 +52,12 @@ const bioromeTest = ref(false)
 
 function toggleTheme() {
   document.documentElement.dataset.theme = game.currentTheme = game.currentTheme === 'dark' ? 'light' : 'dark'
+  closeSettingsMenu()
+}
+
+function toggleTestMode() {
+  bioromeTest.value = !bioromeTest.value
+  closeSettingsMenu()
 }
 
 
@@ -63,9 +89,12 @@ function onOverlay({target, show}) {
 const stateClass = (key) =>
     allowedSet.value.has(key) ? (open[key] ? 's-active' : 's-idle') : 's-disabled'
 onMounted(() => eventBus.on('overlay', onOverlay))
+onMounted(() => document.addEventListener('click', handleClickOutsideSettings))
 onBeforeUnmount(() => eventBus.off('overlay', onOverlay))
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutsideSettings))
 
 function restart() {
+  closeSettingsMenu()
   clearSavedStores()
   eventBus.emit('nav', 'start')
   window.location.reload()
@@ -196,14 +225,14 @@ onBeforeUnmount(stopTestingSync)
   <div id="controlPanel">
     <div class="panel-section left-panel">
       <div class="subpanel subpanel--menu">
-        <div class="menu-wrap">
-          <button class="menu-button" type="button" aria-haspopup="true">Menu</button>
-          <div class="optionsMenu" role="menu">
+        <div class="menu-wrap" ref="settingsWrap" @keydown.esc.stop="closeSettingsMenu">
+          <button class="menu-button" type="button" aria-haspopup="true" :aria-expanded="settingsOpen" @click.stop="toggleSettingsMenu">Settings</button>
+          <div class="optionsMenu" role="menu" v-show="settingsOpen">
             <button role="menuitem" type="button" @click.stop="restart">Restart</button>
-            <button role="menuitem" type="button">Tutorial Mode</button>
+            <button role="menuitem" type="button" @click.stop="closeSettingsMenu">Tutorial Mode</button>
             <button role="menuitem" type="button"
                     :class="{ active: bioromeTest }"
-                    @click.stop="bioromeTest = !bioromeTest">
+                    @click.stop="toggleTestMode">
               Testing Mode
             </button>
             <button role="menuitem" type="button"
@@ -214,8 +243,13 @@ onBeforeUnmount(stopTestingSync)
           </div>
         </div>
       </div>
+      <div class="subpanel info-panel info-panel--stage">
+        <div class="infoScreen" title="Bioromization stage">
+          <span class="infoScreen__label">Stage</span>
+          <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
+        </div>
+      </div>
       <div class="subpanel subpanel--layout">
-        <div class="subpanel-title">Layout</div>
         <div class="layout-controls">
           <button
             class="layout-btn"
@@ -274,8 +308,29 @@ onBeforeUnmount(stopTestingSync)
         </div>
       </div>
       <div class="subpanel subpanel--shortcuts">
-        <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
-        <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+        <div class="controlItem controlItem--shortcut">
+          <button id="assemblyStation" type="button" class="app-button" aria-label="Assembly Station" @click.stop="eventBus.emit('nav', 'assembly')">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <rect x="4.5" y="4.5" width="15" height="15" rx="2.5" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <line x1="12" y1="8.5" x2="12" y2="10.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="12" y1="13.2" x2="12" y2="15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="8.5" y1="12" x2="10.8" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="13.2" y1="12" x2="15.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div class="app-label">Assembly Station</div>
+        </div>
+        <div class="controlItem controlItem--shortcut">
+          <button id="marketNav" type="button" class="app-button" aria-label="Market" @click.stop="eventBus.emit('nav', 'market')">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M6.5 9.2L7.4 18a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1l0.9-8.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+              <path d="M8.5 9.2V7.5a3.5 3.5 0 017 0v1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="9.5" y1="12" x2="14.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div class="app-label">Market</div>
+        </div>
 
       </div>
     </div>
@@ -424,25 +479,22 @@ onBeforeUnmount(stopTestingSync)
 
     <div class="panel-section right-panel">
       <div class="subpanel subpanel--info">
-        <div class="infoScreen" title="Operator">
+        <div class="infoScreen infoScreen--user" title="Operator and balance">
           <span class="infoScreen__label">Operator</span>
-          <span class="infoScreen__value">{{ userAvatar }} {{ userName || '—' }}</span>
+          <div class="infoScreen__value infoScreen__value--user">
+            <span class="infoScreen__avatar" aria-hidden="true">{{ userAvatarDisplay }}</span>
+            <div class="infoScreen__details">
+              <span class="infoScreen__name">{{ userName || '—' }}</span>
+              <span class="infoScreen__meta">Balance: {{ formattedGold }}</span>
+            </div>
+          </div>
         </div>
-        <div class="infoScreen" title="Available funds">
-          <span class="infoScreen__label">Balance</span>
-          <span class="infoScreen__value">{{ formattedGold }}</span>
-        </div>
-        <div class="infoScreen" title="Bioromization stage">
-          <span class="infoScreen__label">Stage</span>
-          <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
-        </div>
-        <div class="infoScreen" title="Simulation date">
-          <span class="infoScreen__label">Date</span>
-          <span class="infoScreen__value">{{ formatDateLocale(game.currentDate) }}</span>
-        </div>
-        <div class="infoScreen" title="Current operating phase">
-          <span class="infoScreen__label">Phase</span>
-          <span class="infoScreen__value">{{ currentPhaseLabel?.toUpperCase() }}</span>
+        <div class="infoScreen infoScreen--time" title="Simulation date and phase">
+          <span class="infoScreen__label">Date &amp; Phase</span>
+          <span class="infoScreen__value infoScreen__value--stacked">
+            <span>{{ formatDateLocale(game.currentDate) }}</span>
+            <span class="infoScreen__meta">Phase: {{ currentPhaseLabel?.toUpperCase() }}</span>
+          </span>
         </div>
       </div>
       <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'"
@@ -470,8 +522,7 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
   flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
   height: 100%;
   min-height: 0;
   box-sizing: border-box;
@@ -479,7 +530,7 @@ onBeforeUnmount(stopTestingSync)
 
 .panel-section {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 12px;
   height: 100%;
 }
@@ -531,30 +582,29 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .subpanel--layout {
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 240px;
+  min-width: 0;
 }
 
 .subpanel--shortcuts {
-  gap: 10px;
+  justify-content: center;
+  gap: 16px;
 }
 
 .subpanel--toggles {
-  justify-content: flex-start;
+  justify-content: center;
   gap: 16px;
-  overflow-x: auto;
+  flex-wrap: wrap;
 }
 
 .subpanel--info {
   flex-direction: row;
   align-items: center;
-  gap: 16px;
-  min-width: 260px;
-  overflow-x: auto;
-
+  gap: 20px;
+  min-width: 0;
 }
 
 .menu-wrap {
@@ -583,7 +633,7 @@ onBeforeUnmount(stopTestingSync)
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 12px;
@@ -593,10 +643,6 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-surface);
   box-shadow: 0 12px 32px color-mix(in srgb, var(--color-shadow-neutral) 18%, transparent);
   z-index: 3;
-}
-
-.menu-wrap:focus-within .optionsMenu {
-  display: flex;
 }
 
 .optionsMenu button {
@@ -622,10 +668,8 @@ onBeforeUnmount(stopTestingSync)
 .layout-controls {
   display: flex;
   flex-wrap: nowrap;
-  gap: 6px;
-  width: 100%;
-  justify-content: flex-start;
-  overflow-x: auto;
+  gap: 8px;
+  justify-content: center;
 }
 
 .layout-btn {
@@ -661,37 +705,26 @@ onBeforeUnmount(stopTestingSync)
   transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
 }
 
-.toolbar-button {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  padding: 0.45rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-}
-
-.toolbar-button:hover,
-.toolbar-button:focus-visible {
-  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
-  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.toolbar-button:active {
-  transform: translateY(0);
-}
-
 .controlItem {
   display: inline-flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
-  white-space: nowrap;
+  justify-content: center;
+  gap: 6px;
+  min-width: 72px;
+  white-space: normal;
+  text-align: center;
   flex: 0 0 auto;
+}
+
+.controlItem--shortcut {
+  min-width: 96px;
+}
+
+.controlItem .app-label {
+  max-width: 110px;
+  text-align: center;
+  line-height: 1.25;
 }
 
 .control-divider {
@@ -700,15 +733,15 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-border);
   opacity: 0.6;
   flex: 0 0 1px;
-  margin: 0 6px;
+  margin: 0 10px;
 }
 
 .infoScreen {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   padding: 0;
-  min-width: 110px;
+  min-width: 150px;
 }
 
 .infoScreen__label {
@@ -719,10 +752,69 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .infoScreen__value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
   word-break: break-word;
+}
+
+.infoScreen__value--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.infoScreen__value--user {
+  align-items: center;
+}
+
+.infoScreen__details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.infoScreen__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.infoScreen__meta {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-text) 55%, var(--color-background));
+}
+
+.infoScreen__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.info-panel {
+  justify-content: center;
+}
+
+
+.info-panel--stage .infoScreen {
+  min-width: 120px;
+  align-items: center;
+  text-align: center;
+}
+
+.info-panel--stage .infoScreen__value {
+  justify-content: center;
 }
 
 .nextPhaseBg {
@@ -815,6 +907,10 @@ onBeforeUnmount(stopTestingSync)
 
   .subpanel--info {
     gap: 12px;
+  }
+
+  .infoScreen {
+    min-width: 130px;
   }
 }
 </style>
