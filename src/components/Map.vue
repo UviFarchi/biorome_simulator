@@ -294,6 +294,7 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-rows: max-content 1fr;
   height: 100vh;
+  background: var(--color-background);
 }
 
 /* three columns: left lane | grid | right lane */
@@ -302,8 +303,11 @@ onBeforeUnmount(() => {
   grid-template-columns: 1fr max-content 1fr; /* center sizes to grid’s content */
   align-items: start;
   height: 100%;
-
+  gap: 18px;
+  padding: 18px 22px;
+  background: color-mix(in srgb, var(--color-background) 92%, transparent);
   overflow: hidden; /* keep the page from double-scrolling */
+  box-sizing: border-box;
 }
 
 /* grid sits centered and can scroll if taller than viewport */
@@ -316,9 +320,10 @@ onBeforeUnmount(() => {
 .lane {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   min-width: 0;
   height: 100%;
+  padding: 4px 0;
   overflow: hidden; /* let overlays handle their own scroll */
   overscroll-behavior: contain; /* keep scroll in lane */
   z-index: 2;
@@ -330,10 +335,33 @@ onBeforeUnmount(() => {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .overlay-controls {
   flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+}
+
+.overlay-controls button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.overlay-controls button:hover,
+.overlay-controls button:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+  outline: none;
+  transform: translateY(-1px);
 }
 
 .overlay {
@@ -341,7 +369,10 @@ onBeforeUnmount(() => {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 18px 36px color-mix(in srgb, var(--color-shadow-neutral) 12%, transparent);
   pointer-events: auto;
 }
 

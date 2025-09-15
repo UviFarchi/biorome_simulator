@@ -74,69 +74,142 @@ async function startGame() {
 
 
 <template>
-  <div>
-    <h1>Biorome - The Game</h1>
-    <h2>Agrobots' LandOS Simulator</h2>
-  <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
-    <div>
-      <label for="userName" class="text-bold">Your Name:</label>
-      <input id="userName" type="text" v-model="name" autocomplete="off" autofocus/>
-    </div>
+  <div class="starting-screen">
+    <header class="starting-screen__header">
+      <h1>Biorome Simulator</h1>
+      <p class="starting-screen__subtitle">Operational Control Console</p>
+    </header>
 
-    <div>
-      <label for="userAvatar" class="text-bold">Choose Your Avatar:</label>
-      <select id="userAvatar" v-model="avatar">
-        <option v-for="option in avatarOptions" :key="option.emoji" :value="option.emoji" :title="option.label">
-          {{ option.emoji }}
-        </option>
-      </select>
-    </div>
-
-    <div>
-      <label class="text-bold">Difficulty:</label>
-      <div class="difficulty-options">
-        <label v-for="option in difficultyOptions" :key="option.value" class="text-bold">
-          <input
-              type="radio"
-              name="difficulty"
-              :value="option.value"
-              v-model="difficulty"
-
-          />
-          {{ option.label }}
-        </label>
+    <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
+      <div class="form-field">
+        <label for="userName" class="text-bold">Operator name</label>
+        <input id="userName" type="text" v-model="name" autocomplete="off" autofocus placeholder="Enter your name"/>
       </div>
-    </div>
-    <button type="submit" class="btn btn--start start-btn" :disabled="!name">Start</button>
-  </form>
-  <div v-if="resuming" class="terrain-overlay">Loading save…</div>
-  <div v-else-if="terrainGeneration" class="terrain-overlay">Generating terrain…</div>
+
+      <div class="form-field">
+        <label for="userAvatar" class="text-bold">Profile marker</label>
+        <select id="userAvatar" v-model="avatar">
+          <option v-for="option in avatarOptions" :key="option.emoji" :value="option.emoji" :title="option.label">
+            {{ option.label }} {{ option.emoji }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label class="text-bold" id="difficulty-label">Simulation fidelity</label>
+        <div class="difficulty-options" role="radiogroup" aria-labelledby="difficulty-label">
+          <label v-for="option in difficultyOptions" :key="option.value" class="difficulty-option">
+            <input
+                type="radio"
+                name="difficulty"
+                :value="option.value"
+                v-model="difficulty"
+
+            />
+            {{ option.label }}
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn--start start-btn" :disabled="!name">Enter console</button>
+    </form>
+    <div v-if="resuming" class="terrain-overlay">Loading saved configuration…</div>
+    <div v-else-if="terrainGeneration" class="terrain-overlay">Preparing operational map…</div>
   </div>
 </template>
 
 <style scoped>
-.start-form {
-  max-width: 300px;
-  margin: 2rem auto;
+.starting-screen {
+  margin: 8vh auto;
+  padding: 2.5rem 2.75rem;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--color-shadow-neutral) 8%, transparent);
+}
+
+.starting-screen__header {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.starting-screen__header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.starting-screen__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
+}
+
+.start-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.start-form input,
+.start-form select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.95rem;
 }
 
 .difficulty-options {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.difficulty-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 500;
+}
+
+.difficulty-option input[type="radio"] {
+  accent-color: var(--color-accent);
 }
 
 .start-btn {
-  margin-top: 1rem;
-  font-size: 1.1em;
-  padding: 0.5em 1.2em;
+  align-self: flex-end;
+  font-size: 1rem;
+  padding: 0.65rem 1.6rem;
 }
 
-.start-btn:disabled {
-  cursor: not-allowed;
+.terrain-overlay {
+  text-align: center;
+  padding: 1rem 1.2rem;
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-background));
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--color-border), var(--color-accent) 35%);
+  color: color-mix(in srgb, var(--color-text) 85%, var(--color-background));
 }
 
-h1 ,h2 {text-align: center;}
+@media (max-width: 600px) {
+  .starting-screen {
+    margin: 4vh 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+}
 </style>

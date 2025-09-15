@@ -12,6 +12,15 @@ const nextPhaseLabel = computed(() => game.engines[(phase.value + 1) % game.engi
 const userName = computed(() => game.userName)
 const userAvatar = computed(() => game.userAvatar)
 const gold = computed(() => game.gold)
+const formattedGold = computed(() => {
+  const value = Number(gold.value ?? 0)
+  if (!Number.isFinite(value)) return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value)
+})
 const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery')
 
 // Active highlight per overlay (toggled via existing `overlay` events)
@@ -184,21 +193,20 @@ onBeforeUnmount(stopTestingSync)
 
 
 <template>
-
   <div id="controlPanel">
-    <div class="left-panel">
-      <div class="subpanel">
+    <div class="panel-section left-panel">
+      <div class="subpanel subpanel--menu">
         <div class="menu-wrap">
-          <button class="hamburger" aria-label="More">☰</button>
+          <button class="menu-button" type="button" aria-haspopup="true">Menu</button>
           <div class="optionsMenu" role="menu">
-            <button role="menuitem" @click.stop="restart">Restart</button>
-            <button role="menuitem">Tutorial Mode</button>
-            <button role="menuitem"
+            <button role="menuitem" type="button" @click.stop="restart">Restart</button>
+            <button role="menuitem" type="button">Tutorial Mode</button>
+            <button role="menuitem" type="button"
                     :class="{ active: bioromeTest }"
                     @click.stop="bioromeTest = !bioromeTest">
               Testing Mode
             </button>
-            <button role="menuitem"
+            <button role="menuitem" type="button"
                     :class="{ active: game.currentTheme === 'light' }"
                     @click.stop="toggleTheme">
               Light Theme
@@ -206,351 +214,442 @@ onBeforeUnmount(stopTestingSync)
           </div>
         </div>
       </div>
-      <div class="subpanel">
+      <div class="subpanel subpanel--layout">
         <div class="subpanel-title">Layout</div>
         <div class="layout-controls">
-          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','single')" title="Single width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="singleLayoutTitle"
-                 focusable="false" style="pointer-events:none">
-              <title id="singleLayoutTitle">Single layout</title>
-              <!-- frame -->
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <!-- lanes -->
-              <rect x="0.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <rect x="33.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <!-- grid (center 19 units wide) -->
-              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
-                <!-- horizontals -->
-                <line x1="14.5" y1="10.5" x2="33.5" y2="10.5"/>
-                <line x1="14.5" y1="20.5" x2="33.5" y2="20.5"/>
-                <!-- verticals -->
-                <line x1="19.5" y1="0.5" x2="19.5" y2="29.5"/>
-                <line x1="24.5" y1="0.5" x2="24.5" y2="29.5"/>
-                <line x1="29.5" y1="0.5" x2="29.5" y2="29.5"/>
-              </g>
-            </svg>
+          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','single')" title="Standard layout">
+            Standard layout
           </button>
-          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','double')" title="Double width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="doubleLayoutTitle"
-                 focusable="false" style="pointer-events:none">
-              <title id="doubleLayoutTitle">Double layout</title>
-              <!-- frame -->
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <!-- wide left lane -->
-              <rect x="0.5" y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <!-- narrow grid on right (14 units) -->
-              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
-                <!-- horizontals -->
-                <line x1="28.5" y1="10.5" x2="47.5" y2="10.5"/>
-                <line x1="28.5" y1="20.5" x2="47.5" y2="20.5"/>
-                <!-- verticals -->
-                <line x1="33.5" y1="0.5" x2="33.5" y2="29.5"/>
-                <line x1="38.5" y1="0.5" x2="38.5" y2="29.5"/>
-                <line x1="43.5" y1="0.5" x2="43.5" y2="29.5"/>
-              </g>
-            </svg>
+          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','double')" title="Wide planning panels">
+            Wide planning
           </button>
-          <button class="app-button layout-btn" @click.stop="eventBus.emit('layout','full')" title="Full width">
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-labelledby="fullLayoutTitle"
-                 focusable="false" style="pointer-events:none">
-              <title id="fullLayoutTitle">Full layout</title>
-              <!-- frame -->
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <!-- full-width lane -->
-              <rect x="0.5" y="0.5" width="47" height="29" fill="currentColor" fill-opacity="0.85"/>
-            </svg>
+          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','full')" title="Focus on panels">
+            Panel focus
           </button>
         </div>
       </div>
-      <div class="subpanel">
-        <button id="assemblyStation" class="app-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
-      </div>
-      <div class="subpanel">
-        <button id="marketNav" class="app-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+      <div class="subpanel subpanel--shortcuts">
+        <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
+        <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
       </div>
     </div>
-    <div class="centerPanel">
-      <div class="subpanel">
-        <div class="controlItem"   v-show="allowedSet.has('weather')">
-          <button id="showWeather" class="app-button"
-                  :class="stateClass('weather')"
 
+    <div class="panel-section centerPanel">
+      <div class="subpanel subpanel--toggles">
+        <div class="controlItem" v-show="allowedSet.has('weather')">
+          <button id="showWeather" type="button" class="app-button"
+                  :class="stateClass('weather')"
+                  aria-label="Weather panel"
                   @click.stop="eventBus.emit('overlay', { target: 'weather' })">
+            W
           </button>
           <div class="app-label">Weather</div>
         </div>
-        <div class="controlItem"  v-show="allowedSet.has('news')">
-          <button id="showNews" class="app-button"
+        <div class="controlItem" v-show="allowedSet.has('news')">
+          <button id="showNews" type="button" class="app-button"
                   :class="stateClass('news')"
-
+                  aria-label="News feed"
                   @click.stop="eventBus.emit('overlay', { target: 'news' })">
+            N
           </button>
-
-
           <div class="app-label">News</div>
         </div>
-        <hr/>
+        <div class="control-divider" role="presentation"></div>
         <div class="controlItem" v-show="allowedSet.has('log')">
-          <button id="showLog" class="app-button"
+          <button id="showLog" type="button" class="app-button"
                   :class="stateClass('log')"
-
+                  aria-label="Event log"
                   @click.stop="eventBus.emit('overlay', { target: 'log' })">
+            L
           </button>
           <div class="app-label">Log</div>
         </div>
         <div class="controlItem" v-show="allowedSet.has('analytics')">
-          <button id="showAnalytics" class="app-button"
+          <button id="showAnalytics" type="button" class="app-button"
                   :class="stateClass('analytics')"
-
+                  aria-label="Analytics dashboard"
                   @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
+            A
           </button>
-
           <div class="app-label">Analytics</div>
         </div>
         <div class="controlItem" v-show="allowedSet.has('gate')">
-          <button id="showGate" class="app-button"
+          <button id="showGate" type="button" class="app-button"
                   :class="stateClass('gate')"
-
+                  aria-label="Operations gate"
                   @click.stop="eventBus.emit('overlay', { target: 'gate' })">
+            G
           </button>
           <div class="app-label">Gate</div>
         </div>
-        <hr/>
-        <div class="controlItem"  v-show="allowedSet.has('animals')">
-          <button id="showAnimals" class="app-button"
+        <div class="control-divider" role="presentation"></div>
+        <div class="controlItem" v-show="allowedSet.has('animals')">
+          <button id="showAnimals" type="button" class="app-button"
                   :class="stateClass('animals')"
-
+                  aria-label="Animal planning"
                   @click.stop="eventBus.emit('overlay', { target: 'animals' })">
+            An
           </button>
           <div class="app-label">Animals</div>
         </div>
-        <div class="controlItem"  v-show="allowedSet.has('plants')">
-          <button id="showPlants" class="app-button"
+        <div class="controlItem" v-show="allowedSet.has('plants')">
+          <button id="showPlants" type="button" class="app-button"
                   :class="stateClass('plants')"
-
+                  aria-label="Plant planning"
                   @click.stop="eventBus.emit('overlay', { target: 'plants' })">
+            Pl
           </button>
           <div class="app-label">Plants</div>
         </div>
-        <div class="controlItem"   v-show="allowedSet.has('assemblies')">
-          <button id="showAssemblies" class="app-button"
+        <div class="controlItem" v-show="allowedSet.has('assemblies')">
+          <button id="showAssemblies" type="button" class="app-button"
                   :class="stateClass('assemblies')"
-
+                  aria-label="Assemblies"
                   @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
+            As
           </button>
-
           <div class="app-label">Assemblies</div>
         </div>
       </div>
-
     </div>
-    <div class="right-panel">
-      <div class="subpanel">
-        <div class="infoScreen" title="Gold">Operator:<br/>{{ userAvatar }} {{ userName }} <br/>💰{{ gold }}</div>
-        <div class="infoScreen">Stage: <br/> {{ stageLabel?.toUpperCase() }}</div>
-          <div class="infoScreen">Date:<br/>{{
-              formatDateLocale(game.currentDate)
-            }}<br/>Turn:{{ game.currentTurn }}
-          </div>
-        <div class="infoScreen">Phase:<br/>{{ currentPhaseLabel?.toUpperCase() }}</div>
 
-
+    <div class="panel-section right-panel">
+      <div class="subpanel subpanel--info">
+        <div class="infoScreen" title="Operator">
+          <span class="infoScreen__label">Operator</span>
+          <span class="infoScreen__value">{{ userAvatar }} {{ userName || '—' }}</span>
+        </div>
+        <div class="infoScreen" title="Available funds">
+          <span class="infoScreen__label">Balance</span>
+          <span class="infoScreen__value">{{ formattedGold }}</span>
+        </div>
+        <div class="infoScreen" title="Bioromization stage">
+          <span class="infoScreen__label">Stage</span>
+          <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
+        </div>
+        <div class="infoScreen" title="Simulation date">
+          <span class="infoScreen__label">Date</span>
+          <span class="infoScreen__value">{{ formatDateLocale(game.currentDate) }}</span>
+        </div>
+        <div class="infoScreen" title="Current operating phase">
+          <span class="infoScreen__label">Phase</span>
+          <span class="infoScreen__value">{{ currentPhaseLabel?.toUpperCase() }}</span>
+        </div>
       </div>
       <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'"
-           :title='"Next Phase:\n" + nextPhaseLabel'>
-        <button class="app-button next-phase-btn" @click.stop="eventBus.emit('phase',{})">Next</button>
+           :title="'Next phase: ' + nextPhaseLabel">
+        <div class="next-phase__details">
+          <span class="next-phase__label">Upcoming phase</span>
+          <span class="next-phase__value">{{ nextPhaseLabel }}</span>
+        </div>
+        <button class="next-phase-btn" type="button" @click.stop="eventBus.emit('phase',{})">Advance</button>
       </div>
     </div>
   </div>
-
-
 </template>
 
 
 <style scoped>
-/* BAR: three columns; center grows */
 #controlPanel {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 10px;
-  height: 10vh;
-  border-bottom: 2px solid var(--color-border);
-  background-color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
+  align-items: stretch;
+  gap: 18px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
+  flex-wrap: wrap;
 }
 
-/* columns */
+.panel-section {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
 .left-panel,
 .right-panel {
-  flex: 0 0 auto; /* width = content */
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  flex: 0 0 auto;
 }
 
 .centerPanel {
-  flex: 1 1 auto; /* takes remaining space */
+  flex: 1 1 auto;
   display: flex;
-  justify-content: center; /* keeps bulbs centered */
-  align-items: center;
-  gap: 12px;
-  min-width: 0; /* prevents overflow push */
+  justify-content: center;
+  min-width: 0;
 }
 
-/* subpanels: use your image */
 .subpanel {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 8vh;
-  padding: 6px 10px;
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
-  /*background-image: url("@/assets/steel_plate.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;*/
-  flex-wrap: wrap;
-}
-
-.subpanel .subpanel-title {
-  flex: 0 0 100%;
-  text-align: center;
-  font-weight: bold;
-  pointer-events: none;
-  color: var(--color-background);
-  padding: 0;
-  margin: 0;
-}
-
-.subpanel hr {
-
-  all: unset;
-  display: block;
-  flex: 0 0 2px;
-  align-self: center;
-  height: 80%;
-  margin: 0 10px;
+  gap: 12px;
+  padding: 14px 18px;
   background: var(--color-background);
-  border-radius: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-shadow-neutral) 10%, transparent);
 }
 
+.subpanel-title {
+  flex: 0 0 100%;
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
+}
+
+.subpanel--menu {
+  align-items: stretch;
+}
+
+.subpanel--layout {
+  min-width: 260px;
+}
+
+.subpanel--shortcuts {
+  gap: 10px;
+}
+
+.subpanel--toggles {
+  justify-content: center;
+}
+
+.subpanel--info {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  min-width: 220px;
+}
 
 .menu-wrap {
   position: relative;
 }
 
+.menu-button {
+  border: 1px solid var(--color-border);
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.menu-button:hover,
+.menu-button:focus-visible {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .optionsMenu {
   position: absolute;
-  margin: 0;
-  bottom: -16vh;
-  left: -10px;
-  height: 12vh;
-  width: 100px;
+  top: calc(100% + 10px);
+  left: 0;
   display: none;
-  background: var(--color-surface);
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  min-width: 180px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 6px;
-}
-
-.optionsMenu button {
-  width: 100%;
-}
-
-.optionsMenu button.active {
-  background: var(--color-highlight);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--color-shadow-neutral) 18%, transparent);
+  z-index: 3;
 }
 
 .menu-wrap:focus-within .optionsMenu {
-  display: block;
-}
-
-/* === Control items: round bulbs with labels === */
-.controlItem {
-  text-align: center;
-}
-
-
-.infoScreen {
-  background-color: var(--color-background);
-  position: relative;
-  padding: 5px;
-  border: 5px inset var(--color-background);
-  height: 75%;
-  width: 5vw;
-  text-align: left;
-  font-size: medium;
-  color: var(--color-success);
-  aspect-ratio: 4/3;
-  line-height: 1.25rem;
-  word-break: break-word;
-}
-
-#assemblyStation {
-  border-radius: 100%;
-  height: 7vh;
-  width: 7vh;
-  color: var(--color-background);
-  font-weight: lighter;
-  text-shadow: 0 0 5px var(--color-text);
-  background-color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
-}
-
-.nextPhaseBg {
-  background-image: url("@/assets/gears.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 6vw;
   display: flex;
-  align-items: center;
-  justify-items: center;
-  flex-direction: column;
-  filter: saturate(0.2);
-
 }
 
-.nextPhaseBg.active {
-  background-image: url("@/assets/gears.gif");
-}
-
-.next-phase-btn {
-  border-radius: 5vh;
-  height: 5vh;
-  width: 5vh;
-  margin: 0;
-  background: color-mix(in srgb, var(--color-background) 75%, transparent);
+.optionsMenu button {
+  all: unset;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
   color: var(--color-text);
+  cursor: pointer;
+}
+
+.optionsMenu button:hover,
+.optionsMenu button:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-background));
+  outline: none;
+}
+
+.optionsMenu button.active {
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-background));
+  color: color-mix(in srgb, var(--color-text) 85%, var(--color-surface));
 }
 
 .layout-controls {
-  flex: 0 0 100%;
-  z-index: 2;
   display: flex;
-  gap: 6px;
-  color: var(--color-success);
-  margin-bottom: 10px;
-  justify-content: space-evenly;
-  width: 10vw;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
 }
 
 .layout-btn {
-  display: flex;
-  background: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
-  border: 2px outset var(--color-background);
-  cursor: pointer;
-  padding: 3px;
-  font-family: monospace;
-  width: auto;
-  height: auto;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.45rem 0.9rem;
   border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
 
-.layout-btn svg {
-  color: var(--color-background);
+.layout-btn:hover,
+.layout-btn:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+  transform: translateY(-1px);
+  outline: none;
 }
 
+.toolbar-button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s ease;
+}
 
+.toolbar-button:hover,
+.toolbar-button:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 26%, var(--color-border));
+  color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.controlItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 72px;
+}
+
+.control-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--color-border);
+  opacity: 0.6;
+}
+
+.infoScreen {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.35rem 0;
+}
+
+.infoScreen__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-text) 55%, var(--color-background));
+}
+
+.infoScreen__value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.nextPhaseBg {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 240px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-shadow-neutral) 12%, transparent);
+}
+
+.nextPhaseBg.active {
+  border-color: color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+}
+
+.next-phase__details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.next-phase__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--color-text) 55%, var(--color-background));
+}
+
+.next-phase__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.next-phase-btn {
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.55rem 1.4rem;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.next-phase-btn:hover,
+.next-phase-btn:focus-visible {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+@media (max-width: 1280px) {
+  #controlPanel {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .panel-section {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .centerPanel {
+    justify-content: flex-start;
+  }
+
+  .subpanel {
+    flex: 1 1 260px;
+  }
+
+  .subpanel--info {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .infoScreen {
+    flex: 1 1 160px;
+  }
+}
 </style>

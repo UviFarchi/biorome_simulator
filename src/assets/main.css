@@ -1,74 +1,99 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 html, body, #app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
   background: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 #app {
   margin: 0 auto;
-  font-weight: normal;
   color: var(--color-text);
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
 
 :root[data-theme="dark"] {
-  --color-background: #000;
-  --color-surface: #2c2c2c;
-  --color-border: #2a3b45;
-  --color-text: #fff;
-  --color-accent: #00bcd4;
-  --color-success: #82c91e;
-  --color-danger: #c62828;
-  --color-warning: #ffd600;
-  --color-highlight: #97ffb0;
-  --radius: 7px;
-  --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
-  --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
-  --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
-  --shadow-warning: color-mix(in srgb, var(--color-warning) 40%, transparent);
-  --shadow-active: color-mix(in srgb, var(--color-highlight) 50%, transparent);
-  --shadow-label: color-mix(in srgb, var(--color-background) 50%, transparent);
-  --color-table-stripe: color-mix(in srgb, var(--color-text) 1.5%, transparent);
-  --color-shadow-neutral: color-mix(in srgb, var(--color-border) 50%, var(--color-text) 50%);
-  --color-shadow-accent: color-mix(in srgb, var(--color-accent) 60%, var(--color-text) 40%);
-  --shadow-action-area: 0 1px 8px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
-  --shadow-action-area-hover: 0 3px 14px color-mix(in srgb, var(--color-shadow-accent) 8%, transparent);
-  --shadow-action-button: 0 1px 3px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
-  --shadow-action-button-hover: 0 3px 7px color-mix(in srgb, var(--color-shadow-accent) 7%, transparent);
+  --color-background: #121826;
+  --color-surface: #1f2937;
+  --color-border: #2f3a4e;
+  --color-text: #f8fafc;
+  --color-accent: #60a5fa;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-highlight: #93c5fd;
+  --radius: 8px;
+  --metrics-selected-bg: rgba(96, 165, 250, 0.22);
+  --metrics-delta-bg: rgba(148, 163, 184, 0.16);
+  --shadow-disabled: rgba(248, 113, 113, 0.32);
+  --shadow-warning: rgba(250, 204, 21, 0.32);
+  --shadow-active: rgba(74, 222, 128, 0.4);
+  --shadow-label: rgba(15, 23, 42, 0.4);
+  --color-table-stripe: rgba(148, 163, 184, 0.08);
+  --color-shadow-neutral: rgba(15, 23, 42, 0.55);
+  --color-shadow-accent: rgba(96, 165, 250, 0.45);
+  --shadow-action-area: 0 14px 34px rgba(15, 23, 42, 0.48);
+  --shadow-action-area-hover: 0 18px 38px rgba(96, 165, 250, 0.32);
+  --shadow-action-button: 0 8px 20px rgba(15, 23, 42, 0.45);
+  --shadow-action-button-hover: 0 10px 24px rgba(96, 165, 250, 0.35);
+  --shadow-surface: 0 20px 44px rgba(15, 23, 42, 0.55);
 }
 
 :root[data-theme="light"] {
-  --color-background: #fff;
-  --color-surface: #f5f5f5;
-  --color-border: #cfd8dc;
-  --color-text: #000;
-  --color-accent: #00bcd4;
-  --color-success: #4caf50;
-  --color-danger: #c62828;
-  --color-warning: #ffd600;
-  --color-highlight: #97ffb0;
-  --radius: 7px;
-  --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
-  --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
-  --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
-  --shadow-warning: color-mix(in srgb, var(--color-warning) 40%, transparent);
-  --shadow-active: color-mix(in srgb, var(--color-highlight) 50%, transparent);
-  --shadow-label: color-mix(in srgb, var(--color-background) 50%, transparent);
-  --color-table-stripe: color-mix(in srgb, var(--color-text) 1.5%, transparent);
-  --color-shadow-neutral: color-mix(in srgb, var(--color-border) 50%, var(--color-text) 50%);
-  --color-shadow-accent: color-mix(in srgb, var(--color-accent) 60%, var(--color-text) 40%);
-  --shadow-action-area: 0 1px 8px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
-  --shadow-action-area-hover: 0 3px 14px color-mix(in srgb, var(--color-shadow-accent) 8%, transparent);
-  --shadow-action-button: 0 1px 3px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
-  --shadow-action-button-hover: 0 3px 7px color-mix(in srgb, var(--color-shadow-accent) 7%, transparent);
+  --color-background: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-border: #d0d7de;
+  --color-text: #1f2933;
+  --color-accent: #2563eb;
+  --color-success: #047857;
+  --color-danger: #b91c1c;
+  --color-warning: #b45309;
+  --color-highlight: #2563eb;
+  --radius: 8px;
+  --metrics-selected-bg: rgba(37, 99, 235, 0.12);
+  --metrics-delta-bg: rgba(148, 163, 184, 0.12);
+  --shadow-disabled: rgba(185, 28, 28, 0.18);
+  --shadow-warning: rgba(180, 83, 9, 0.22);
+  --shadow-active: rgba(4, 120, 87, 0.25);
+  --shadow-label: rgba(15, 23, 42, 0.08);
+  --color-table-stripe: #eef2f7;
+  --color-shadow-neutral: rgba(15, 23, 42, 0.12);
+  --color-shadow-accent: rgba(37, 99, 235, 0.25);
+  --shadow-action-area: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --shadow-action-area-hover: 0 16px 36px rgba(37, 99, 235, 0.2);
+  --shadow-action-button: 0 8px 18px rgba(15, 23, 42, 0.12);
+  --shadow-action-button-hover: 0 12px 22px rgba(37, 99, 235, 0.2);
+  --shadow-surface: 0 18px 40px rgba(15, 23, 42, 0.12);
 }
 
 .menu-panel {
-  border: 2px solid var(--color-accent);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--color-accent), var(--color-text) 80%);
-  padding: 1rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  padding: 1.2rem 1rem;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow-surface);
 }
 
 .scroll-area {
@@ -82,12 +107,13 @@ html, body, #app {
 
 /* Overlay panel styles */
 .panel {
-  background: color-mix(in srgb, var(--color-background), var(--color-text) 8%);
-  color: color-mix(in srgb, var(--color-text), var(--color-background) 12%);
-  border: 1px solid var(--color-accent);
-  border-radius: 10px;
-  padding: 0.8rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem;
   margin: 0;
+  box-shadow: var(--shadow-surface);
 }
 
 .panel-header {
@@ -151,21 +177,22 @@ html, body, #app {
 }
 
 /* Key-value table styles */
-  .kv {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    font-size: 12.5px;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-text) 2%, transparent), color-mix(in srgb, var(--color-background) 20%, transparent));
-    border: 1px solid var(--color-border);
-    margin: 8px 0;
-    color: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
-  }
+.kv {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.85rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  margin: 8px 0;
+  color: var(--color-text);
+  box-shadow: var(--shadow-surface);
+}
 
 .kv th,
 .kv td {
-    border: 1px solid color-mix(in oklab, var(--color-border), var(--color-background) 25%);
-  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 85%, var(--color-background));
+  padding: 0.6rem 0.75rem;
   white-space: nowrap;
   text-align: left;
   vertical-align: top;
@@ -177,26 +204,43 @@ html, body, #app {
   word-break: break-word;
 }
 
-.changed { background: color-mix(in srgb, var(--color-warning) 25%, transparent); }
-.up td:last-child { color: var(--color-success); font-weight: 600; }
-.down td:last-child { color: var(--color-danger); font-weight: 600; }
+.changed {
+  background: var(--metrics-selected-bg);
+}
+
+.up td:last-child {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.down td:last-child {
+  color: var(--color-danger);
+  font-weight: 600;
+}
 
 .kv.compact th,
-.kv.compact td { padding: 5px 7px; }
+.kv.compact td {
+  padding: 0.5rem 0.65rem;
+}
 
 .kv th {
-  font-size: 11px;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: .06em;
-    color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-background), var(--color-text) 10%), color-mix(in srgb, var(--color-background), var(--color-text) 5%));
+  color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
+  background: color-mix(in srgb, var(--color-background) 70%, var(--color-surface) 30%);
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
-.kv tbody tr:nth-child(odd) td { background-color: var(--color-table-stripe); }
-.kv tbody tr:hover td { background-color: color-mix(in oklab, var(--color-accent), transparent 95%); }
+.kv tbody tr:nth-child(odd) td {
+  background-color: var(--color-table-stripe);
+}
+
+.kv tbody tr:hover td {
+  background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+}
 
 .kv.inner { border: 0; background: transparent; }
 .kv.inner td { border: 0; padding: 2px 0; }
@@ -222,114 +266,108 @@ html, body, #app {
   font-weight: bold;
 }
 
+
 .btn {
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: var(--radius);
-  font-weight: bold;
+  border: 1px solid transparent;
+  font-weight: 600;
   cursor: pointer;
+  padding: 0.6rem 1.2rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
-.btn--buy {
-  background: var(--color-highlight);
-  color: var(--color-background);
-}
-.btn--buy:hover {
-  background: var(--color-accent);
-  color: var(--color-text);
-}
-.btn--buy:disabled {
-  background: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
-  color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
+.btn:disabled {
   cursor: not-allowed;
-  border: 1px solid color-mix(in srgb, var(--color-text) 70%, var(--color-background));
+  opacity: 0.65;
 }
 
-.btn--return {
-  background: color-mix(in srgb, var(--color-accent) 40%, var(--color-text));
-  color: var(--color-surface);
-  padding: 0.39em 1.1em;
-  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-background), transparent 94%);
-}
-.btn--return:hover {
+.btn--buy,
+.btn--start,
+.btn--save {
   background: var(--color-accent);
+  color: #fff;
+}
+
+.btn--buy:hover,
+.btn--buy:focus-visible,
+.btn--start:hover,
+.btn--start:focus-visible,
+.btn--save:hover,
+.btn--save:focus-visible {
+  filter: brightness(1.05);
+  outline: none;
+}
+
+.btn--buy:disabled,
+.btn--start:disabled,
+.btn--save:disabled {
+  background: color-mix(in srgb, var(--color-accent) 30%, var(--color-background));
+  color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
+  border-color: var(--color-border);
+}
+
+.btn--return,
+.btn--add,
+.btn--sell {
+  background: var(--color-surface);
+  border-color: var(--color-border);
   color: var(--color-text);
 }
+
+.btn--return:hover,
+.btn--return:focus-visible,
+.btn--add:hover,
+.btn--add:focus-visible,
+.btn--sell:hover,
+.btn--sell:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+  outline: none;
+}
+
+.btn--return { padding: 0.5rem 1.1rem; }
 
 .btn--new {
   background: var(--color-warning);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--color-warning) 60%, var(--color-border));
   margin-right: 0.8em;
-  padding: 0.35em 1.2em;
-}
-.btn--new:hover {
-  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
-  color: var(--color-background);
+  padding: 0.5rem 1.2rem;
 }
 
-
-.btn--start {
-  background: var(--color-success);
-  color: var(--color-text);
+.btn--new:hover,
+.btn--new:focus-visible {
+  filter: brightness(1.05);
+  outline: none;
 }
 
-.btn--start:disabled {
-  background: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
-  cursor: not-allowed;
-}
-
-.btn--start:hover {
-  background: color-mix(in srgb, var(--color-success), var(--color-background) 25%);
-}
+.btn--start { padding: 0.6rem 1.6rem; }
 
 .btn--close {
-  background: none;
-  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
-}
-.btn--close:hover {
-  color: var(--color-surface);
+  background: transparent;
+  color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
+  border-color: transparent;
 }
 
-.btn--save {
-  background: var(--color-warning);
-  color: var(--color-background);
-  padding: 0.58em 1.8em;
-}
-.btn--save:hover {
-  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
-}
-.btn--save:disabled {
-  background: color-mix(in srgb, var(--color-text) 90%, var(--color-background));
-  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
-  cursor: not-allowed;
+.btn--close:hover,
+.btn--close:focus-visible {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-background));
+  outline: none;
 }
 
-.btn--add {
-  background: color-mix(in srgb, var(--color-success), var(--color-text) 40%);
-  color: color-mix(in srgb, var(--color-success), var(--color-background) 60%);
-  padding: 0.23em 0.85em;
-}
-.btn--add:hover {
-  background: color-mix(in srgb, var(--color-success), var(--color-text) 20%);
-  color: color-mix(in srgb, var(--color-success), var(--color-background) 40%);
-}
-.btn--add:disabled {
-  background: color-mix(in srgb, var(--color-text) 90%, var(--color-background));
-  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
-  cursor: not-allowed;
-}
+.btn--save { padding: 0.6rem 1.6rem; }
 
-.btn--sell {
-  background: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
-  color: color-mix(in srgb, var(--color-text) 40%, var(--color-background));
-  padding: 0.23em 0.85em;
-}
-.btn--sell:hover {
-  background: color-mix(in srgb, var(--color-text) 70%, var(--color-background) 30%);
-  color: color-mix(in srgb, var(--color-text) 30%, var(--color-background));
-}
+.btn--add,
+.btn--sell { padding: 0.35rem 0.9rem; }
+
+.btn--add:disabled,
 .btn--sell:disabled {
-  background: color-mix(in srgb, var(--color-text) 90%, var(--color-background));
-  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
-  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: var(--color-border);
 }
 
 
@@ -341,13 +379,13 @@ html, body, #app {
   margin: 0.25em 0 0;
 }
 .action-area {
-  background: color-mix(in srgb, var(--color-text) 5%, var(--color-background));
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-action-area);
-  margin-bottom: 1.25em;
-  padding: 1.15em 1.4em 1.1em 1.4em;
-  border: 1px solid color-mix(in srgb, var(--color-border), var(--color-text) 80%);
-  transition: box-shadow 0.2s;
+  margin-bottom: 1.5em;
+  padding: 1.25em 1.5em;
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
   position: relative;
 }
 
@@ -355,46 +393,45 @@ html, body, #app {
   margin-bottom: 2em;
 }
 
-.action-area:hover, .action-area:focus-within {
+.action-area:hover,
+.action-area:focus-within {
   box-shadow: var(--shadow-action-area-hover);
-  border-color: color-mix(in srgb, var(--color-border), var(--color-text) 60%);
+  border-color: color-mix(in srgb, var(--color-accent) 25%, var(--color-border));
 }
 
-.action-area h4, .action-area h5 {
+.action-area h4,
+.action-area h5 {
   margin-top: 0;
   margin-bottom: 0.6em;
-  font-size: 1.17em;
+  font-size: 1.1em;
   font-weight: 600;
   color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
   letter-spacing: 0.01em;
 }
 
 .action-area button {
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--color-accent) 10%, var(--color-text) 90%) 0%,
-    color-mix(in srgb, var(--color-accent) 25%, var(--color-text) 75%) 100%);
-  color: color-mix(in srgb, var(--color-text) 40%, var(--color-background));
+  background: var(--color-accent);
+  color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 0.36em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  border-radius: var(--radius);
+  padding: 0.45em 1.2em;
+  font-size: 0.95em;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-action-button);
   margin-right: 0.6em;
-  margin-bottom: 0.18em;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  margin-bottom: 0.3em;
+  transition: filter 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .action-area button:last-child {
   margin-right: 0;
 }
 
-.action-area button:hover, .action-area button:focus {
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--color-accent) 25%, var(--color-text) 75%) 0%,
-    color-mix(in srgb, var(--color-accent) 40%, var(--color-text) 60%) 100%);
-  color: color-mix(in srgb, var(--color-accent) 60%, var(--color-background));
+.action-area button:hover,
+.action-area button:focus-visible {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-action-button-hover);
   outline: none;
 }
@@ -422,56 +459,69 @@ html, body, #app {
   background: var(--metrics-delta-bg);
 }
 
-/* Generic button styles */
+/* Generic button styles for toolbar controls */
 .app-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
   background: var(--color-surface);
-  position: relative;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: transform .05s ease, filter .12s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
+
+.app-button:hover:not(.s-disabled),
+.app-button:focus-visible:not(.s-disabled) {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
+  transform: translateY(-1px);
+  outline: none;
+}
+
 .app-button.s-disabled {
-  background: color-mix(in srgb, var(--color-danger), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-danger), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 70%, transparent),
-    0 0 8px 2px var(--shadow-disabled);
+  background: color-mix(in srgb, var(--color-border) 55%, var(--color-background));
+  border-color: color-mix(in srgb, var(--color-border) 80%, var(--color-background));
+  color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
   cursor: not-allowed;
+  transform: none;
 }
+
 .app-button.s-idle {
-  background: color-mix(in srgb, var(--color-warning), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-warning), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
-    0 0 10px 2px var(--shadow-warning);
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 18%, var(--color-border));
+  color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
 }
+
 .app-button.s-active {
-  background: color-mix(in srgb, var(--color-success), var(--color-background) 40%);
-  border-color: color-mix(in srgb, var(--color-success), var(--color-border) 50%);
-  box-shadow: inset 0 2px 6px color-mix(in srgb, var(--color-background) 60%, transparent),
-    0 0 14px 4px var(--shadow-active);
+  background: color-mix(in srgb, var(--color-success) 18%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-success) 26%, var(--color-border));
+  color: color-mix(in srgb, var(--color-text) 95%, var(--color-surface));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-success) 20%, transparent);
 }
 
 /* Generic label styles */
 .app-label {
   margin-top: 4px;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 0.8em;
-  color: color-mix(in srgb, var(--color-text) 80%, var(--color-background));
-  box-shadow: inset 10px 50px var(--shadow-label);
-  border: 2px inset var(--color-background);
-  padding: 0 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
 }
+
 .app-button.s-disabled + .app-label {
-  color: var(--color-danger);
-  text-shadow: 0 0 3px var(--shadow-disabled);
+  color: color-mix(in srgb, var(--color-text) 45%, var(--color-background));
 }
+
 .app-button.s-idle + .app-label {
-  color: var(--color-warning);
-  text-shadow: 0 0 3px var(--shadow-warning);
+  color: color-mix(in srgb, var(--color-text) 55%, var(--color-background));
 }
+
 .app-button.s-active + .app-label {
-  color: var(--color-highlight);
-  text-shadow: 0 0 3px var(--shadow-active);
+  color: color-mix(in srgb, var(--color-success) 35%, var(--color-text));
 }
