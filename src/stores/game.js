@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref, watch} from 'vue'
+import {computed, ref} from 'vue'
 import { formatDate } from '@/utils/formatting.js'
 
 export const gameStore = defineStore('gameStore', () => {
@@ -51,6 +51,7 @@ export const gameStore = defineStore('gameStore', () => {
     const userAvatar = ref('')
 
     const difficulty = ref(1)
+    const currentTheme = ref('dark')
 
     return {
         gold,
@@ -62,6 +63,7 @@ export const gameStore = defineStore('gameStore', () => {
         userName,
         userAvatar,
         difficulty,
+        currentTheme,
         bioromizationStage,
         bioromizationStages,
         phase,

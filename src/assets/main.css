@@ -9,13 +9,40 @@ html, body, #app {
   color: var(--color-text);
 }
 
-:root {
+
+:root[data-theme="dark"] {
   --color-background: #000;
   --color-surface: #2c2c2c;
   --color-border: #2a3b45;
   --color-text: #fff;
   --color-accent: #00bcd4;
   --color-success: #82c91e;
+  --color-danger: #c62828;
+  --color-warning: #ffd600;
+  --color-highlight: #97ffb0;
+  --radius: 7px;
+  --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
+  --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
+  --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
+  --shadow-warning: color-mix(in srgb, var(--color-warning) 40%, transparent);
+  --shadow-active: color-mix(in srgb, var(--color-highlight) 50%, transparent);
+  --shadow-label: color-mix(in srgb, var(--color-background) 50%, transparent);
+  --color-table-stripe: color-mix(in srgb, var(--color-text) 1.5%, transparent);
+  --color-shadow-neutral: color-mix(in srgb, var(--color-border) 50%, var(--color-text) 50%);
+  --color-shadow-accent: color-mix(in srgb, var(--color-accent) 60%, var(--color-text) 40%);
+  --shadow-action-area: 0 1px 8px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
+  --shadow-action-area-hover: 0 3px 14px color-mix(in srgb, var(--color-shadow-accent) 8%, transparent);
+  --shadow-action-button: 0 1px 3px color-mix(in srgb, var(--color-shadow-neutral) 6%, transparent);
+  --shadow-action-button-hover: 0 3px 7px color-mix(in srgb, var(--color-shadow-accent) 7%, transparent);
+}
+
+:root[data-theme="light"] {
+  --color-background: #fff;
+  --color-surface: #f5f5f5;
+  --color-border: #cfd8dc;
+  --color-text: #000;
+  --color-accent: #00bcd4;
+  --color-success: #4caf50;
   --color-danger: #c62828;
   --color-warning: #ffd600;
   --color-highlight: #97ffb0;
