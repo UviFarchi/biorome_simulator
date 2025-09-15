@@ -32,7 +32,7 @@ const lanes = ref({
   left: [],               // visual order
   right: [],
   sideByKey: Object.create(null), // key -> 'left' | 'right'
-  nextSide: 'left'
+  nextSide: 'left',
 })
 
 /* ---------------- Registry for dynamic components ---------------- */
@@ -199,19 +199,16 @@ function handlePhaseChange() {
 
   } else if (next === 2) { // Phase 2 — Operations
     setLayoutWidth('double')
-    // auto-open ops
-    on('assemblies');
-    on('gate')
-    // available but closed
-    off('weather');
-    off('news');
-    off('log')
-    // not allowed
-    disable('animals');
-    disable('plants');
-    disable('resources');
-    disable('analytics')
+    on('weather');
+    on('news');
+    on('log');
+    on('gate');
+    off('analytics');
+    off('animals');
+    off('plants');
+    off('assemblies');
 
+    disable('resources');
     eventBus.emit('log', {engine: 'operations', msg: 'Executing instructions...'})
   }
 
@@ -220,7 +217,6 @@ function handlePhaseChange() {
     eventBus.emit('spinner', false)
   }, 1000)
 }
-
 
 
 

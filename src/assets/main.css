@@ -4,7 +4,9 @@
   box-sizing: border-box;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
 }
 
@@ -29,33 +31,6 @@ select,
 textarea {
   font: inherit;
   color: inherit;
-}
-
-:root[data-theme="dark"] {
-  --color-background: #121826;
-  --color-surface: #1f2937;
-  --color-border: #2f3a4e;
-  --color-text: #f8fafc;
-  --color-accent: #60a5fa;
-  --color-success: #34d399;
-  --color-danger: #f87171;
-  --color-warning: #fbbf24;
-  --color-highlight: #93c5fd;
-  --radius: 8px;
-  --metrics-selected-bg: rgba(96, 165, 250, 0.22);
-  --metrics-delta-bg: rgba(148, 163, 184, 0.16);
-  --shadow-disabled: rgba(248, 113, 113, 0.32);
-  --shadow-warning: rgba(250, 204, 21, 0.32);
-  --shadow-active: rgba(74, 222, 128, 0.4);
-  --shadow-label: rgba(15, 23, 42, 0.4);
-  --color-table-stripe: rgba(148, 163, 184, 0.08);
-  --color-shadow-neutral: rgba(15, 23, 42, 0.55);
-  --color-shadow-accent: rgba(96, 165, 250, 0.45);
-  --shadow-action-area: 0 14px 34px rgba(15, 23, 42, 0.48);
-  --shadow-action-area-hover: 0 18px 38px rgba(96, 165, 250, 0.32);
-  --shadow-action-button: 0 8px 20px rgba(15, 23, 42, 0.45);
-  --shadow-action-button-hover: 0 10px 24px rgba(96, 165, 250, 0.35);
-  --shadow-surface: 0 20px 44px rgba(15, 23, 42, 0.55);
 }
 
 :root[data-theme="light"] {
@@ -83,6 +58,33 @@ textarea {
   --shadow-action-button: 0 8px 18px rgba(15, 23, 42, 0.12);
   --shadow-action-button-hover: 0 12px 22px rgba(37, 99, 235, 0.2);
   --shadow-surface: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+:root[data-theme="dark"] {
+  --color-background: #121826;
+  --color-surface: #1f2937;
+  --color-border: #2f3a4e;
+  --color-text: #f8fafc;
+  --color-accent: #60a5fa;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-highlight: #93c5fd;
+  --radius: 8px;
+  --metrics-selected-bg: rgba(96, 165, 250, 0.22);
+  --metrics-delta-bg: rgba(148, 163, 184, 0.16);
+  --shadow-disabled: rgba(248, 113, 113, 0.32);
+  --shadow-warning: rgba(250, 204, 21, 0.32);
+  --shadow-active: rgba(74, 222, 128, 0.4);
+  --shadow-label: rgba(15, 23, 42, 0.4);
+  --color-table-stripe: rgba(148, 163, 184, 0.08);
+  --color-shadow-neutral: rgba(15, 23, 42, 0.55);
+  --color-shadow-accent: rgba(96, 165, 250, 0.45);
+  --shadow-action-area: 0 14px 34px rgba(15, 23, 42, 0.48);
+  --shadow-action-area-hover: 0 18px 38px rgba(96, 165, 250, 0.32);
+  --shadow-action-button: 0 8px 20px rgba(15, 23, 42, 0.45);
+  --shadow-action-button-hover: 0 10px 24px rgba(96, 165, 250, 0.35);
+  --shadow-surface: 0 20px 44px rgba(15, 23, 42, 0.55);
 }
 
 .menu-panel {
@@ -117,13 +119,13 @@ textarea {
 }
 
 .panel-header {
-  font-weight: bold;
-  padding: 4px;
+  font-weight: 600;
+  padding: 4px 0;
   cursor: pointer;
 }
 
 .panel-body {
-  padding: 4px;
+  padding: 4px 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -135,7 +137,7 @@ textarea {
   height: 100%;
   max-height: none;
   overflow: auto;
-  padding: 8px;
+  padding: 0.75rem;
   box-sizing: border-box;
 }
 
@@ -146,7 +148,10 @@ textarea {
   gap: 12px;
   margin-bottom: 8px;
 }
-.panel-header-row h4 { margin: 0; }
+
+.panel-header-row h4 {
+  margin: 0;
+}
 
 .groups-grid {
   display: grid;
@@ -163,17 +168,21 @@ textarea {
   min-height: 0;
 }
 
-.group-title { margin: 0 0 6px 0; }
+.group-title {
+  margin: 0 0 6px;
+}
 
-.noToggle .table-header .linklike { display: none !important; }
+.noToggle .table-header .linklike {
+  display: none !important;
+}
 
 .panel .controlButton {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
+  font-weight: 600;
   border-top: 1px solid var(--color-accent);
-  padding: 4px;
+  padding: 6px 4px;
 }
 
 /* Key-value table styles */
@@ -226,7 +235,7 @@ textarea {
 .kv th {
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
   background: color-mix(in srgb, var(--color-background) 70%, var(--color-surface) 30%);
   position: sticky;
@@ -242,9 +251,19 @@ textarea {
   background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
 }
 
-.kv.inner { border: 0; background: transparent; }
-.kv.inner td { border: 0; padding: 2px 0; }
-.kv.inner.onecol td { white-space: normal; }
+.kv.inner {
+  border: 0;
+  background: transparent;
+}
+
+.kv.inner td {
+  border: 0;
+  padding: 2px 0;
+}
+
+.kv.inner.onecol td {
+  white-space: normal;
+}
 
 .operations {
   color: var(--color-accent);
@@ -263,9 +282,8 @@ textarea {
 }
 
 .text-bold {
-  font-weight: bold;
+  font-weight: 600;
 }
-
 
 .btn {
   display: inline-flex;
@@ -328,7 +346,9 @@ textarea {
   outline: none;
 }
 
-.btn--return { padding: 0.5rem 1.1rem; }
+.btn--return {
+  padding: 0.5rem 1.1rem;
+}
 
 .btn--new {
   background: var(--color-warning);
@@ -344,7 +364,9 @@ textarea {
   outline: none;
 }
 
-.btn--start { padding: 0.6rem 1.6rem; }
+.btn--start {
+  padding: 0.6rem 1.6rem;
+}
 
 .btn--close {
   background: transparent;
@@ -359,17 +381,20 @@ textarea {
   outline: none;
 }
 
-.btn--save { padding: 0.6rem 1.6rem; }
+.btn--save {
+  padding: 0.6rem 1.6rem;
+}
 
 .btn--add,
-.btn--sell { padding: 0.35rem 0.9rem; }
+.btn--sell {
+  padding: 0.35rem 0.9rem;
+}
 
 .btn--add:disabled,
 .btn--sell:disabled {
   opacity: 0.6;
   border-color: var(--color-border);
 }
-
 
 .btn-error {
   display: block;
@@ -378,6 +403,7 @@ textarea {
   white-space: nowrap;
   margin: 0.25em 0 0;
 }
+
 .action-area {
   background: var(--color-surface);
   border-radius: var(--radius);
@@ -442,19 +468,40 @@ textarea {
   outline: none;
   cursor: not-allowed;
 }
+
 /* Generic table styles */
 .app-table {
   border-collapse: collapse;
   margin: 0;
+  width: 100%;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
+
 .app-table th,
 .app-table td {
-  border: 1px solid var(--color-success);
+  border: 1px solid var(--color-border);
+  padding: 0.45rem 0.65rem;
+  text-align: left;
 }
+
+.app-table th {
+  background: color-mix(in srgb, var(--color-background) 70%, var(--color-surface) 30%);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
+}
+
+.app-table tbody tr:nth-child(odd) td {
+  background-color: var(--color-table-stripe);
+}
+
 .app-table th.selected,
 .app-table td.selected {
   background: var(--metrics-selected-bg);
 }
+
 .app-table--highlight > td {
   background: var(--metrics-delta-bg);
 }

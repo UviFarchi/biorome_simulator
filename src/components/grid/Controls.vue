@@ -520,19 +520,21 @@ onBeforeUnmount(stopTestingSync)
   color: var(--color-text);
   padding: 0.55rem 1.1rem;
   border-radius: var(--radius);
-  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
 
 .toolbar-button:hover,
 .toolbar-button:focus-visible {
-  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
-  border-color: color-mix(in srgb, var(--color-accent) 26%, var(--color-border));
-  color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
   transform: translateY(-1px);
   outline: none;
+}
+
+.toolbar-button:active {
+  transform: translateY(0);
 }
 
 .controlItem {
