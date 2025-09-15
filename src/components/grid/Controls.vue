@@ -4,7 +4,6 @@ import eventBus from '@/eventBus.js'
 import {gameStore} from '@/stores/game.js'
 import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
 import { formatDateLocale, formatDateTime } from '@/utils/formatting.js'
-
 const game = gameStore()
 const phase = computed(() => game.phase)
 const currentPhaseLabel = computed(() => game.engines[(phase.value) % game.engines.length])
@@ -21,6 +20,14 @@ const open = reactive({
   market: false, gate: false, animals: false, plants: false, assemblies: false
 })
 const bioromeTest = ref(false)
+
+function toggleTheme() {
+  game.currentTheme = game.currentTheme === 'dark' ? 'light' : 'dark'
+}
+
+watch(() => game.currentTheme, (val) => {
+  document.documentElement.dataset.theme = val
+}, { immediate: true })
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
   if (phase.value === 0) {
@@ -192,6 +199,11 @@ onBeforeUnmount(stopTestingSync)
                     :class="{ active: bioromeTest }"
                     @click.stop="bioromeTest = !bioromeTest">
               Testing Mode
+            </button>
+            <button role="menuitem"
+                    :class="{ active: game.currentTheme === 'light' }"
+                    @click.stop="toggleTheme">
+              Light Theme
             </button>
           </div>
         </div>
