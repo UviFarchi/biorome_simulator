@@ -115,7 +115,6 @@ async function startGame() {
     </form>
     <div v-if="resuming" class="terrain-overlay">Loading saved configuration…</div>
     <div v-else-if="terrainGeneration" class="terrain-overlay">Preparing operational map…</div>
-
   </div>
 </template>
 

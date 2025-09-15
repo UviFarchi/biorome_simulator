@@ -193,7 +193,6 @@ onBeforeUnmount(stopTestingSync)
 
 
 <template>
-
   <div id="controlPanel">
     <div class="panel-section left-panel">
       <div class="subpanel subpanel--menu">
@@ -218,18 +217,62 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel subpanel--layout">
         <div class="subpanel-title">Layout</div>
         <div class="layout-controls">
-          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','single')" title="Standard layout">
-            Standard layout
+          <button
+            class="layout-btn"
+            type="button"
+            title="Standard layout"
+            aria-label="Standard layout"
+            @click.stop="eventBus.emit('layout','single')"
+          >
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none" />
+              <rect x="0.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85" />
+              <rect x="33.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85" />
+              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+                <line x1="14.5" y1="10.5" x2="33.5" y2="10.5" />
+                <line x1="14.5" y1="20.5" x2="33.5" y2="20.5" />
+                <line x1="19.5" y1="0.5" x2="19.5" y2="29.5" />
+                <line x1="24.5" y1="0.5" x2="24.5" y2="29.5" />
+                <line x1="29.5" y1="0.5" x2="29.5" y2="29.5" />
+              </g>
+            </svg>
+            <span class="visually-hidden">Standard layout</span>
           </button>
-          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','double')" title="Wide planning panels">
-            Wide planning
+          <button
+            class="layout-btn"
+            type="button"
+            title="Wide planning panels"
+            aria-label="Wide planning panels"
+            @click.stop="eventBus.emit('layout','double')"
+          >
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none" />
+              <rect x="0.5" y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85" />
+              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+                <line x1="28.5" y1="10.5" x2="47.5" y2="10.5" />
+                <line x1="28.5" y1="20.5" x2="47.5" y2="20.5" />
+                <line x1="33.5" y1="0.5" x2="33.5" y2="29.5" />
+                <line x1="38.5" y1="0.5" x2="38.5" y2="29.5" />
+                <line x1="43.5" y1="0.5" x2="43.5" y2="29.5" />
+              </g>
+            </svg>
+            <span class="visually-hidden">Wide planning</span>
           </button>
-          <button class="layout-btn" type="button" @click.stop="eventBus.emit('layout','full')" title="Focus on panels">
-            Panel focus
+          <button
+            class="layout-btn"
+            type="button"
+            title="Focus on panels"
+            aria-label="Focus on panels"
+            @click.stop="eventBus.emit('layout','full')"
+          >
+            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
+              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none" />
+              <rect x="0.5" y="0.5" width="47" height="29" fill="currentColor" fill-opacity="0.85" />
+            </svg>
+            <span class="visually-hidden">Panel focus</span>
           </button>
         </div>
       </div>
-
       <div class="subpanel subpanel--shortcuts">
         <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
         <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
@@ -361,8 +404,9 @@ onBeforeUnmount(stopTestingSync)
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
-  flex-wrap: wrap;
-}
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
 
 .panel-section {
   display: flex;
@@ -421,6 +465,7 @@ onBeforeUnmount(stopTestingSync)
 .subpanel--toggles {
   justify-content: center;
 }
+
 
 .subpanel--info {
   flex-direction: column;
@@ -496,16 +541,21 @@ onBeforeUnmount(stopTestingSync)
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
+  justify-content: center;
 }
 
 .layout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  padding: 0.45rem 0.9rem;
+  width: 72px;
+  height: 52px;
+  padding: 0;
   border-radius: var(--radius);
-  font-size: 0.85rem;
-  font-weight: 500;
+
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
@@ -516,6 +566,16 @@ onBeforeUnmount(stopTestingSync)
   border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
   transform: translateY(-1px);
   outline: none;
+}
+
+.layout-btn svg {
+  width: 50px;
+  height: 32px;
+}
+
+.layout-btn svg rect,
+.layout-btn svg line {
+  transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
 }
 
 .toolbar-button {
@@ -535,8 +595,8 @@ onBeforeUnmount(stopTestingSync)
   border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
   transform: translateY(-1px);
   outline: none;
-
 }
+
 
 .toolbar-button:active {
   transform: translateY(0);
@@ -545,12 +605,10 @@ onBeforeUnmount(stopTestingSync)
 .controlItem {
   display: flex;
   flex-direction: column;
-
   align-items: center;
   gap: 6px;
   min-width: 72px;
 }
-
 
 .control-divider {
   width: 1px;
@@ -632,10 +690,24 @@ onBeforeUnmount(stopTestingSync)
   outline: none;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
 @media (max-width: 1280px) {
   #controlPanel {
     padding: 16px;
     gap: 12px;
+    flex-wrap: wrap;
   }
 
   .panel-section {
@@ -656,6 +728,7 @@ onBeforeUnmount(stopTestingSync)
     flex-direction: row;
     flex-wrap: wrap;
   }
+
 
   .infoScreen {
     flex: 1 1 160px;
