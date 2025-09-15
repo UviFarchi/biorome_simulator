@@ -519,10 +519,9 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'"
            :title="'Next phase: ' + nextPhaseLabel">
         <div class="next-phase__details">
-          <span class="next-phase__label">Upcoming phase</span>
-          <span class="next-phase__value">{{ nextPhaseLabel }}</span>
+
         </div>
-        <button class="next-phase-btn" type="button" @click.stop="eventBus.emit('phase',{})">Advance</button>
+        <button class="next-phase-btn" type="button" @click.stop="eventBus.emit('phase',{})">To {{ nextPhaseLabel }}</button>
       </div>
     </div>
   </div>
