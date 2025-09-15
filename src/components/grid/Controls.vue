@@ -276,6 +276,7 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel subpanel--shortcuts">
         <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
         <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+
       </div>
     </div>
 
@@ -405,12 +406,13 @@ onBeforeUnmount(stopTestingSync)
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
   flex-wrap: nowrap;
   overflow-x: auto;
-}
+
 
 .panel-section {
   display: flex;
   align-items: stretch;
   gap: 16px;
+
 }
 
 .left-panel,
@@ -463,6 +465,7 @@ onBeforeUnmount(stopTestingSync)
 .subpanel--toggles {
   justify-content: center;
 }
+
 
 .subpanel--info {
   flex-direction: column;
@@ -552,6 +555,7 @@ onBeforeUnmount(stopTestingSync)
   height: 52px;
   padding: 0;
   border-radius: var(--radius);
+
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
@@ -592,6 +596,7 @@ onBeforeUnmount(stopTestingSync)
   transform: translateY(-1px);
   outline: none;
 }
+
 
 .toolbar-button:active {
   transform: translateY(0);
@@ -697,6 +702,7 @@ onBeforeUnmount(stopTestingSync)
   border: 0;
 }
 
+
 @media (max-width: 1280px) {
   #controlPanel {
     padding: 16px;
@@ -722,6 +728,7 @@ onBeforeUnmount(stopTestingSync)
     flex-direction: row;
     flex-wrap: wrap;
   }
+
 
   .infoScreen {
     flex: 1 1 160px;

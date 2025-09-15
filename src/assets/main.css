@@ -25,6 +25,7 @@ body {
   color: var(--color-text);
 }
 
+
 button,
 input,
 select,
@@ -44,6 +45,12 @@ textarea {
   --color-warning: #b45309;
   --color-highlight: #2563eb;
   --radius: 8px;
+
+    --engine-analytics: #a000e1;
+  --engine-optimizations: #001ef4;
+  --engine-operations: #0ce605;
+  --engine-simulation: #ffbe01;
+
   --metrics-selected-bg: rgba(37, 99, 235, 0.12);
   --metrics-delta-bg: rgba(148, 163, 184, 0.12);
   --shadow-disabled: rgba(185, 28, 28, 0.18);
@@ -71,6 +78,12 @@ textarea {
   --color-warning: #fbbf24;
   --color-highlight: #93c5fd;
   --radius: 8px;
+
+   --engine-analytics: #50027a;
+  --engine-optimizations: #01117a;
+  --engine-operations: #057a01;
+  --engine-simulation: #654b01;
+
   --metrics-selected-bg: rgba(96, 165, 250, 0.22);
   --metrics-delta-bg: rgba(148, 163, 184, 0.16);
   --shadow-disabled: rgba(248, 113, 113, 0.32);
@@ -247,6 +260,7 @@ textarea {
   background-color: var(--color-table-stripe);
 }
 
+
 .kv tbody tr:hover td {
   background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
 }
@@ -263,22 +277,53 @@ textarea {
 
 .kv.inner.onecol td {
   white-space: normal;
+r
 }
 
-.operations {
-  color: var(--color-accent);
+.kv.inner {
+  border: 0;
+  background: transparent;
 }
 
-.analytics {
+.kv.inner td {
+  border: 0;
+  padding: 2px 0;
+}
+
+.kv.inner.onecol td {
+  white-space: normal;
+}
+
+.operationsText {
+  color: var(--engine-operations);
+}
+
+.analyticsText {
+  color: var(--engine-analytics);
+}
+
+.optimizationsText {
+  color: var(--engine-optimizations);
+}
+
+.simulationText {
   color: var(--color-warning);
 }
 
-.optimizations {
-  color: var(--color-success);
+.operationsBackground {
+  background: var(--engine-operations);
 }
 
-.simulation {
-  color: var(--color-warning);
+.analyticsBackground {
+  background: var(--engine-analytics);
+}
+
+.optimizationsBackground {
+  background: var(--engine-optimizations);
+}
+
+.simulationBackground {
+  background: var(--color-warning);
 }
 
 .text-bold {
@@ -483,6 +528,7 @@ textarea {
   border: 1px solid var(--color-border);
   padding: 0.45rem 0.65rem;
   text-align: left;
+
 }
 
 .app-table th {
@@ -496,6 +542,7 @@ textarea {
 .app-table tbody tr:nth-child(odd) td {
   background-color: var(--color-table-stripe);
 }
+
 
 .app-table th.selected,
 .app-table td.selected {
