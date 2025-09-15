@@ -9,7 +9,9 @@ function makeAssembly(name, modules) {
         built: false,
         moves: 1,
         actions: 1,
-        orders: []
+        orders: [],
+        capabilities: [],
+        satisfies: []
     }
 }
 

@@ -276,6 +276,7 @@ onBeforeUnmount(stopTestingSync)
       <div class="subpanel subpanel--shortcuts">
         <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
         <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+
       </div>
     </div>
 
@@ -286,6 +287,7 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('weather')"
                   aria-label="Weather panel"
                   @click.stop="eventBus.emit('overlay', { target: 'weather' })">
+
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
               <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none" />
               <line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -297,6 +299,7 @@ onBeforeUnmount(stopTestingSync)
               <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
+
           </button>
           <div class="app-label">Weather</div>
         </div>
@@ -305,6 +308,7 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('news')"
                   aria-label="News feed"
                   @click.stop="eventBus.emit('overlay', { target: 'news' })">
+
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
               <rect x="4" y="4" width="16" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none" />
               <line x1="8" y1="9" x2="16.5" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -312,6 +316,7 @@ onBeforeUnmount(stopTestingSync)
               <line x1="8" y1="15" x2="13.5" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <line x1="8" y1="18" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
+
           </button>
           <div class="app-label">News</div>
         </div>
@@ -321,12 +326,14 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('log')"
                   aria-label="Event log"
                   @click.stop="eventBus.emit('overlay', { target: 'log' })">
+
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
               <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <circle cx="12" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
               <circle cx="12" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
               <circle cx="12" cy="16" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
             </svg>
+
           </button>
           <div class="app-label">Log</div>
         </div>
@@ -335,12 +342,14 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('analytics')"
                   aria-label="Analytics dashboard"
                   @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
+
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
               <line x1="5" y1="19" x2="19" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <rect x="7" y="12" width="2.8" height="5" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
               <rect x="11" y="9" width="2.8" height="8" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
               <rect x="15" y="6" width="2.8" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
             </svg>
+
           </button>
           <div class="app-label">Analytics</div>
         </div>
@@ -354,6 +363,7 @@ onBeforeUnmount(stopTestingSync)
               <line x1="5" y1="18" x2="19" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <line x1="12" y1="13" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
+
           </button>
           <div class="app-label">Gate</div>
         </div>
@@ -370,6 +380,7 @@ onBeforeUnmount(stopTestingSync)
               <circle cx="10" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
               <circle cx="14" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
             </svg>
+
           </button>
           <div class="app-label">Animals</div>
         </div>
@@ -383,6 +394,7 @@ onBeforeUnmount(stopTestingSync)
               <path d="M7 18c3-3 6-4.5 9.5-5.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
+
           </button>
           <div class="app-label">Plants</div>
         </div>
@@ -403,6 +415,7 @@ onBeforeUnmount(stopTestingSync)
               <line x1="8.5" y1="15.5" x2="6.8" y2="17.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
               <line x1="17.2" y1="6.8" x2="15.5" y2="8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
+
           </button>
           <div class="app-label">Assemblies</div>
         </div>
@@ -449,8 +462,10 @@ onBeforeUnmount(stopTestingSync)
 #controlPanel {
   display: flex;
   align-items: stretch;
+
   gap: 12px;
   padding: 8px 16px;
+
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
@@ -481,6 +496,7 @@ onBeforeUnmount(stopTestingSync)
   align-items: center;
   min-width: 0;
   height: 100%;
+
 }
 
 .subpanel {
@@ -504,6 +520,7 @@ onBeforeUnmount(stopTestingSync)
   margin: 0;
   font-size: 0.78rem;
   letter-spacing: 0.08em;
+
   text-transform: uppercase;
   font-weight: 600;
   color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
@@ -537,6 +554,7 @@ onBeforeUnmount(stopTestingSync)
   gap: 16px;
   min-width: 260px;
   overflow-x: auto;
+
 }
 
 .menu-wrap {
@@ -742,6 +760,7 @@ onBeforeUnmount(stopTestingSync)
   font-weight: 600;
   color: var(--color-text);
   text-transform: uppercase;
+
 }
 
 .next-phase-btn {
