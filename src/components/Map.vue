@@ -14,7 +14,6 @@ import PlantsMenu from '@/components/menus/PlantsMenu.vue'
 import FarmGate from '@/components/menus/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
 import {loadAllStores} from '@/utils/persistance.js'
-import Market from '@/components/menus/Market.vue'
 import News from '@/components/menus/News.vue'
 import {produceReport} from '@/engine/phases/analytics/produceReport.js';
 import updateGame from '@/engine/simulationUpdate/updateGame.js';
@@ -25,7 +24,7 @@ const map = mapStore()
 /* ---------------- Open/close truth per overlay ---------------- */
 const show = ref({
   log: false, analytics: false, animals: false, plants: false, assemblies: false,
-  gate: false, weather: false, resources: false, market: false, news: false
+  gate: false, weather: false, resources: false, news: false
 })
 
 /* ---------------- Lane manager (placement + order) ---------------- */
@@ -41,7 +40,6 @@ const compByKey = {
   weather: WeatherPanel,
   log: EventLog,
   analytics: AnalyticsReport,
-  market: Market,
   animals: AnimalsMenu,
   plants: PlantsMenu,
   assemblies: AssembliesMenu,
@@ -169,7 +167,6 @@ function handlePhaseChange() {
     off('analytics');
     off('weather');
     off('news');
-    off('market');
     // not allowed
     disable('animals');
     disable('plants');
@@ -192,7 +189,6 @@ function handlePhaseChange() {
     // available but closed
     off('weather');
     off('news');
-    off('market');
     off('analytics');
     off('log')
     // not allowed
@@ -209,7 +205,6 @@ function handlePhaseChange() {
     // available but closed
     off('weather');
     off('news');
-    off('market');
     off('log')
     // not allowed
     disable('animals');

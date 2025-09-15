@@ -1,6 +1,6 @@
 <script setup>
-//TODO => Move this view into it's own screen like the assemblies station, not as a menu
 import { computed } from 'vue'
+import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
 import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
@@ -72,6 +72,7 @@ const animalsRows = computed(() => {
 
 </script>
 <template>
+  <button @click="eventBus.emit('nav', 'map')">Back to map</button>
   <div class="market-overlay">
     <header class="bar">
       <div><strong>Market</strong></div>

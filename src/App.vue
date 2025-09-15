@@ -6,6 +6,7 @@ import StartingScreen from '/src/components/StartingScreen.vue'
 import {onBeforeUnmount, onMounted, ref} from 'vue'
 import Map from '/src/components/Map.vue';
 import AssemblyAssemblyAssembly from '@/components/AssemblyStation.vue';
+import Market from '/src/components/Market.vue';
 
 
 
@@ -41,10 +42,11 @@ onBeforeUnmount(() => {
 <template>
   <main>
     <StartingScreen v-if="currentArea === 'start'"/>
-    <Map v-if="currentArea === 'map'"/>
-    <AssemblyAssemblyAssembly v-if="currentArea=== 'assembly'"/>
-  </main>
-</template>
+      <Map v-if="currentArea === 'map'"/>
+      <AssemblyAssemblyAssembly v-if="currentArea=== 'assembly'"/>
+      <Market v-if="currentArea === 'market'"/>
+    </main>
+  </template>
 
 <style>
 html, body, #app {
