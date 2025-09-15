@@ -226,7 +226,26 @@ onBeforeUnmount(stopTestingSync)
     <div class="panel-section left-panel">
       <div class="subpanel subpanel--menu">
         <div class="menu-wrap" ref="settingsWrap" @keydown.esc.stop="closeSettingsMenu">
-          <button class="menu-button" type="button" aria-haspopup="true" :aria-expanded="settingsOpen" @click.stop="toggleSettingsMenu">Settings</button>
+          <button
+            class="menu-button"
+            type="button"
+            aria-haspopup="true"
+            :aria-expanded="settingsOpen"
+            aria-label="Settings menu"
+            title="Settings"
+            @click.stop="toggleSettingsMenu"
+          >
+            <span aria-hidden="true" class="menu-button__icon">
+              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                <path
+                  d="M10.32 4.32a1 1 0 0 1 .95-.69h1.45a1 1 0 0 1 .95.69l.3.9a1 1 0 0 0 .76.66l.95.17a1 1 0 0 1 .76.98v1.45a1 1 0 0 0 .29.7l.68.68a1 1 0 0 1 0 1.42l-.68.68a1 1 0 0 0-.29.7v1.45a1 1 0 0 1-.76.98l-.95.17a1 1 0 0 0-.76.66l-.3.9a1 1 0 0 1-.95.69h-1.45a1 1 0 0 1-.95-.69l-.3-.9a1 1 0 0 0-.76-.66l-.95-.17a1 1 0 0 1-.76-.98v-1.45a1 1 0 0 0-.29-.7l-.68-.68a1 1 0 0 1 0-1.42l.68-.68a1 1 0 0 0 .29-.7v-1.45a1 1 0 0 1 .76-.98l.95-.17a1 1 0 0 0 .76-.66l.3-.9Z"
+                  fill="currentColor"
+                />
+                <circle cx="12" cy="12" r="3" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="visually-hidden">Settings</span>
+          </button>
           <div class="optionsMenu" role="menu" v-show="settingsOpen">
             <button role="menuitem" type="button" @click.stop="restart">Restart</button>
             <button role="menuitem" type="button" @click.stop="closeSettingsMenu">Tutorial Mode</button>
@@ -579,6 +598,11 @@ onBeforeUnmount(stopTestingSync)
 
 .subpanel--menu {
   align-items: center;
+  overflow: visible;
+}
+
+.subpanel--menu .menu-wrap {
+  overflow: visible;
 }
 
 .subpanel--layout {
@@ -609,15 +633,22 @@ onBeforeUnmount(stopTestingSync)
 
 .menu-wrap {
   position: relative;
+  z-index: 2;
 }
 
 .menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   background: var(--color-accent);
   color: #fff;
-  padding: 0.5rem 1rem;
+  width: 42px;
+  height: 42px;
+  padding: 0;
   border-radius: var(--radius);
   font-weight: 600;
+  line-height: 1;
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
 }
@@ -627,6 +658,19 @@ onBeforeUnmount(stopTestingSync)
   filter: brightness(1.05);
   transform: translateY(-1px);
   outline: none;
+}
+
+.menu-button__icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+.menu-button__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
 }
 
 .optionsMenu {
