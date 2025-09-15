@@ -86,6 +86,7 @@ async function startGame() {
         <input id="userName" type="text" v-model="name" autocomplete="off" autofocus placeholder="Enter your name"/>
       </div>
 
+
       <div class="form-field">
         <label for="userAvatar" class="text-bold">Profile marker</label>
         <select id="userAvatar" v-model="avatar">
@@ -114,6 +115,7 @@ async function startGame() {
     </form>
     <div v-if="resuming" class="terrain-overlay">Loading saved configuration…</div>
     <div v-else-if="terrainGeneration" class="terrain-overlay">Preparing operational map…</div>
+
   </div>
 </template>
 

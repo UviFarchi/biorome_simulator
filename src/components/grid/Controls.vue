@@ -193,6 +193,7 @@ onBeforeUnmount(stopTestingSync)
 
 
 <template>
+
   <div id="controlPanel">
     <div class="panel-section left-panel">
       <div class="subpanel subpanel--menu">
@@ -228,9 +229,11 @@ onBeforeUnmount(stopTestingSync)
           </button>
         </div>
       </div>
+
       <div class="subpanel subpanel--shortcuts">
         <button id="assemblyStation" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
         <button id="marketNav" type="button" class="toolbar-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+
       </div>
     </div>
 
@@ -365,6 +368,7 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   align-items: stretch;
   gap: 16px;
+
 }
 
 .left-panel,
@@ -531,6 +535,7 @@ onBeforeUnmount(stopTestingSync)
   border-color: color-mix(in srgb, var(--color-accent) 24%, var(--color-border));
   transform: translateY(-1px);
   outline: none;
+
 }
 
 .toolbar-button:active {
@@ -540,10 +545,12 @@ onBeforeUnmount(stopTestingSync)
 .controlItem {
   display: flex;
   flex-direction: column;
+
   align-items: center;
   gap: 6px;
   min-width: 72px;
 }
+
 
 .control-divider {
   width: 1px;

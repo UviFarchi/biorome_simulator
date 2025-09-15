@@ -25,6 +25,7 @@ body {
   color: var(--color-text);
 }
 
+
 button,
 input,
 select,
@@ -44,6 +45,10 @@ textarea {
   --color-warning: #b45309;
   --color-highlight: #2563eb;
   --radius: 8px;
+    --engine-analytics: #a000e1;
+  --engine-optimizations: #001ef4;
+  --engine-operations: #0ce605;
+  --engine-simulation: #ffbe01;
   --metrics-selected-bg: rgba(37, 99, 235, 0.12);
   --metrics-delta-bg: rgba(148, 163, 184, 0.12);
   --shadow-disabled: rgba(185, 28, 28, 0.18);
@@ -71,6 +76,10 @@ textarea {
   --color-warning: #fbbf24;
   --color-highlight: #93c5fd;
   --radius: 8px;
+   --engine-analytics: #50027a;
+  --engine-optimizations: #01117a;
+  --engine-operations: #057a01;
+  --engine-simulation: #654b01;
   --metrics-selected-bg: rgba(96, 165, 250, 0.22);
   --metrics-delta-bg: rgba(148, 163, 184, 0.16);
   --shadow-disabled: rgba(248, 113, 113, 0.32);
@@ -265,20 +274,36 @@ textarea {
   white-space: normal;
 }
 
-.operations {
-  color: var(--color-accent);
+.operationsText {
+  color: var(--engine-operations);
 }
 
-.analytics {
+.analyticsText {
+  color: var(--engine-analytics);
+}
+
+.optimizationsText {
+  color: var(--engine-optimizations);
+}
+
+.simulationText {
   color: var(--color-warning);
 }
 
-.optimizations {
-  color: var(--color-success);
+.operationsBackground {
+  background: var(--engine-operations);
 }
 
-.simulation {
-  color: var(--color-warning);
+.analyticsBackground {
+  background: var(--engine-analytics);
+}
+
+.optimizationsBackground {
+  background: var(--engine-optimizations);
+}
+
+.simulationBackground {
+  background: var(--color-warning);
 }
 
 .text-bold {
