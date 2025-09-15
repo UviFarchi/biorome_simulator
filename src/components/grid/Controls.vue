@@ -22,12 +22,10 @@ const open = reactive({
 const bioromeTest = ref(false)
 
 function toggleTheme() {
-  game.currentTheme = game.currentTheme === 'dark' ? 'light' : 'dark'
+  document.documentElement.dataset.theme = game.currentTheme = game.currentTheme === 'dark' ? 'light' : 'dark'
 }
 
-watch(() => game.currentTheme, (val) => {
-  document.documentElement.dataset.theme = val
-}, { immediate: true })
+
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
   if (phase.value === 0) {
