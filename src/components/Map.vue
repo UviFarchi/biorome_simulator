@@ -283,12 +283,13 @@ onBeforeUnmount(() => {
   position: sticky;
   top: 0;
   z-index: 3;
+  height: 100%;
 }
 
 /* page layout: top bar + content row */
 .mapWrapper {
   display: grid;
-  grid-template-rows: max-content 1fr;
+  grid-template-rows: 10vh 1fr;
   height: 100vh;
   background: var(--color-background);
 }

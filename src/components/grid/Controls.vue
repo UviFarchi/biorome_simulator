@@ -287,7 +287,19 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('weather')"
                   aria-label="Weather panel"
                   @click.stop="eventBus.emit('overlay', { target: 'weather' })">
-            W
+
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+              <line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="12" y1="19" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="2" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="19" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+
           </button>
           <div class="app-label">Weather</div>
         </div>
@@ -296,7 +308,15 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('news')"
                   aria-label="News feed"
                   @click.stop="eventBus.emit('overlay', { target: 'news' })">
-            N
+
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none" />
+              <line x1="8" y1="9" x2="16.5" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="8" y1="12" x2="16.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="8" y1="15" x2="13.5" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="8" y1="18" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+
           </button>
           <div class="app-label">News</div>
         </div>
@@ -306,7 +326,14 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('log')"
                   aria-label="Event log"
                   @click.stop="eventBus.emit('overlay', { target: 'log' })">
-            L
+
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <circle cx="12" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="12" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="12" cy="16" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+
           </button>
           <div class="app-label">Log</div>
         </div>
@@ -315,7 +342,14 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('analytics')"
                   aria-label="Analytics dashboard"
                   @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
-            A
+
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <line x1="5" y1="19" x2="19" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <rect x="7" y="12" width="2.8" height="5" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
+              <rect x="11" y="9" width="2.8" height="8" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
+              <rect x="15" y="6" width="2.8" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none" />
+            </svg>
+
           </button>
           <div class="app-label">Analytics</div>
         </div>
@@ -324,7 +358,12 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('gate')"
                   aria-label="Operations gate"
                   @click.stop="eventBus.emit('overlay', { target: 'gate' })">
-            G
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M7 18V12a5 5 0 0110 0v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="5" y1="18" x2="19" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="12" y1="13" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+
           </button>
           <div class="app-label">Gate</div>
         </div>
@@ -334,7 +373,14 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('animals')"
                   aria-label="Animal planning"
                   @click.stop="eventBus.emit('overlay', { target: 'animals' })">
-            An
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <ellipse cx="12" cy="15.5" rx="4" ry="3.2" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="8.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="15.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="10" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="14" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+
           </button>
           <div class="app-label">Animals</div>
         </div>
@@ -343,7 +389,12 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('plants')"
                   aria-label="Plant planning"
                   @click.stop="eventBus.emit('overlay', { target: 'plants' })">
-            Pl
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M7 18c0-6.5 5.5-11 10-11 0 6.5-5.5 11-10 11z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 18c3-3 6-4.5 9.5-5.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+
           </button>
           <div class="app-label">Plants</div>
         </div>
@@ -352,7 +403,19 @@ onBeforeUnmount(stopTestingSync)
                   :class="stateClass('assemblies')"
                   aria-label="Assemblies"
                   @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
-            As
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <line x1="12" y1="4" x2="12" y2="6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="12" y1="17.5" x2="12" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="4" y1="12" x2="6.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="17.5" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="6.8" y1="6.8" x2="8.5" y2="8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="15.5" y1="15.5" x2="17.2" y2="17.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="8.5" y1="15.5" x2="6.8" y2="17.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="17.2" y1="6.8" x2="15.5" y2="8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+
           </button>
           <div class="app-label">Assemblies</div>
         </div>
@@ -399,20 +462,26 @@ onBeforeUnmount(stopTestingSync)
 #controlPanel {
   display: flex;
   align-items: stretch;
-  gap: 18px;
-  padding: 18px 24px;
+
+  gap: 12px;
+  padding: 8px 16px;
+
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
   flex-wrap: nowrap;
   overflow-x: auto;
-
+  overflow-y: hidden;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}
 
 .panel-section {
   display: flex;
-  align-items: stretch;
-  gap: 16px;
-
+  align-items: center;
+  gap: 12px;
+  height: 100%;
 }
 
 .left-panel,
@@ -424,38 +493,49 @@ onBeforeUnmount(stopTestingSync)
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
+  align-items: center;
   min-width: 0;
+  height: 100%;
+
 }
 
 .subpanel {
   position: relative;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
+  gap: 10px;
+  padding: 8px 12px;
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  flex-wrap: wrap;
   box-shadow: 0 6px 16px color-mix(in srgb, var(--color-shadow-neutral) 10%, transparent);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .subpanel-title {
-  flex: 0 0 100%;
   margin: 0;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+
   text-transform: uppercase;
   font-weight: 600;
   color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
 }
 
 .subpanel--menu {
-  align-items: stretch;
+  align-items: center;
 }
 
 .subpanel--layout {
-  min-width: 260px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  min-width: 240px;
 }
 
 .subpanel--shortcuts {
@@ -463,15 +543,18 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .subpanel--toggles {
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 16px;
+  overflow-x: auto;
 }
 
-
 .subpanel--info {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
-  min-width: 220px;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  min-width: 260px;
+  overflow-x: auto;
+
 }
 
 .menu-wrap {
@@ -538,10 +621,11 @@ onBeforeUnmount(stopTestingSync)
 
 .layout-controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
   width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow-x: auto;
 }
 
 .layout-btn {
@@ -551,11 +635,10 @@ onBeforeUnmount(stopTestingSync)
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  width: 72px;
-  height: 52px;
+  width: 64px;
+  height: 44px;
   padding: 0;
   border-radius: var(--radius);
-
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
 }
@@ -569,8 +652,8 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .layout-btn svg {
-  width: 50px;
-  height: 32px;
+  width: 44px;
+  height: 28px;
 }
 
 .layout-btn svg rect,
@@ -582,7 +665,7 @@ onBeforeUnmount(stopTestingSync)
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  padding: 0.55rem 1.1rem;
+  padding: 0.45rem 1rem;
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
@@ -597,17 +680,18 @@ onBeforeUnmount(stopTestingSync)
   outline: none;
 }
 
-
 .toolbar-button:active {
   transform: translateY(0);
 }
 
 .controlItem {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  gap: 6px;
-  min-width: 72px;
+  gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .control-divider {
@@ -615,34 +699,38 @@ onBeforeUnmount(stopTestingSync)
   align-self: stretch;
   background: var(--color-border);
   opacity: 0.6;
+  flex: 0 0 1px;
+  margin: 0 6px;
 }
 
 .infoScreen {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 0.35rem 0;
+  gap: 2px;
+  padding: 0;
+  min-width: 110px;
 }
 
 .infoScreen__label {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: color-mix(in srgb, var(--color-text) 55%, var(--color-background));
 }
 
 .infoScreen__value {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
   word-break: break-word;
 }
 
 .nextPhaseBg {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 240px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 220px;
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -657,6 +745,7 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .next-phase__label {
@@ -667,9 +756,11 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .next-phase__value {
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--color-text);
+  text-transform: uppercase;
+
 }
 
 .next-phase-btn {
@@ -678,9 +769,10 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-accent);
   color: #fff;
   font-weight: 600;
-  padding: 0.55rem 1.4rem;
+  padding: 0.45rem 1.2rem;
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
 .next-phase-btn:hover,
@@ -702,36 +794,27 @@ onBeforeUnmount(stopTestingSync)
   border: 0;
 }
 
-
 @media (max-width: 1280px) {
   #controlPanel {
-    padding: 16px;
-    gap: 12px;
-    flex-wrap: wrap;
+    padding: 6px 12px;
+    gap: 8px;
   }
 
   .panel-section {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .centerPanel {
-    justify-content: flex-start;
+    gap: 8px;
   }
 
   .subpanel {
-    flex: 1 1 260px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .layout-controls {
+    gap: 4px;
   }
 
   .subpanel--info {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-
-  .infoScreen {
-    flex: 1 1 160px;
+    gap: 12px;
   }
 }
 </style>

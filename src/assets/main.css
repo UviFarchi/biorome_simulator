@@ -46,10 +46,12 @@ textarea {
   --color-highlight: #2563eb;
   --radius: 8px;
 
+
     --engine-analytics: #a000e1;
   --engine-optimizations: #001ef4;
   --engine-operations: #0ce605;
   --engine-simulation: #ffbe01;
+
 
   --metrics-selected-bg: rgba(37, 99, 235, 0.12);
   --metrics-delta-bg: rgba(148, 163, 184, 0.12);
@@ -79,10 +81,12 @@ textarea {
   --color-highlight: #93c5fd;
   --radius: 8px;
 
+
    --engine-analytics: #50027a;
   --engine-optimizations: #01117a;
   --engine-operations: #057a01;
   --engine-simulation: #654b01;
+
 
   --metrics-selected-bg: rgba(96, 165, 250, 0.22);
   --metrics-delta-bg: rgba(148, 163, 184, 0.16);
@@ -260,6 +264,24 @@ textarea {
   background-color: var(--color-table-stripe);
 }
 
+.kv tbody tr:hover td {
+  background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+}
+
+.kv.inner {
+  border: 0;
+  background: transparent;
+}
+
+.kv.inner td {
+  border: 0;
+  padding: 2px 0;
+}
+
+.kv.inner.onecol td {
+  white-space: normal;
+}
+
 
 .kv tbody tr:hover td {
   background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
@@ -280,51 +302,6 @@ textarea {
 r
 }
 
-.kv.inner {
-  border: 0;
-  background: transparent;
-}
-
-.kv.inner td {
-  border: 0;
-  padding: 2px 0;
-}
-
-.kv.inner.onecol td {
-  white-space: normal;
-}
-
-.operationsText {
-  color: var(--engine-operations);
-}
-
-.analyticsText {
-  color: var(--engine-analytics);
-}
-
-.optimizationsText {
-  color: var(--engine-optimizations);
-}
-
-.simulationText {
-  color: var(--color-warning);
-}
-
-.operationsBackground {
-  background: var(--engine-operations);
-}
-
-.analyticsBackground {
-  background: var(--engine-analytics);
-}
-
-.optimizationsBackground {
-  background: var(--engine-optimizations);
-}
-
-.simulationBackground {
-  background: var(--color-warning);
-}
 
 .text-bold {
   font-weight: 600;
@@ -394,6 +371,7 @@ r
 .btn--return {
   padding: 0.5rem 1.1rem;
 }
+
 
 .btn--new {
   background: var(--color-warning);
@@ -544,6 +522,22 @@ r
 }
 
 
+}
+
+.app-table th {
+  background: color-mix(in srgb, var(--color-background) 70%, var(--color-surface) 30%);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
+}
+
+.app-table tbody tr:nth-child(odd) td {
+  background-color: var(--color-table-stripe);
+}
+
+
+
 .app-table th.selected,
 .app-table td.selected {
   background: var(--metrics-selected-bg);
@@ -569,6 +563,8 @@ r
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  flex-shrink: 0;
+
 }
 
 .app-button:hover:not(.s-disabled),
@@ -600,12 +596,19 @@ r
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-success) 20%, transparent);
 }
 
+.app-button svg {
+  width: 22px;
+  height: 22px;
+
+}
+
 /* Generic label styles */
 .app-label {
-  margin-top: 4px;
-  font-size: 0.75rem;
+  margin-top: 0;
+  font-size: 0.72rem;
   font-weight: 500;
   color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
+  line-height: 1.2;
 }
 
 .app-button.s-disabled + .app-label {
