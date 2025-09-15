@@ -562,10 +562,16 @@ onBeforeUnmount(stopTestingSync)
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   min-width: 0;
   height: 100%;
+}
 
+.centerPanel > .subpanel {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
 }
 
 .subpanel {
@@ -620,7 +626,25 @@ onBeforeUnmount(stopTestingSync)
 .subpanel--toggles {
   justify-content: center;
   gap: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable both-edges;
+}
+
+.subpanel--toggles::-webkit-scrollbar {
+  height: 8px;
+}
+
+.subpanel--toggles::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-border) 65%, transparent);
+  border-radius: 999px;
+}
+
+.subpanel--toggles::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .subpanel--info {
