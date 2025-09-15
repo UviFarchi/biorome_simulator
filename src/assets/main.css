@@ -21,6 +21,11 @@ html, body, #app {
   --color-warning: #ffd600;
   --color-highlight: #97ffb0;
   --radius: 7px;
+  --engine-analytics: #50027a;
+  --engine-optimizations: #01117a;
+  --engine-operations: #057a01;
+  --engine-simulation: #654b01;
+
   --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
   --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
   --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
@@ -47,6 +52,10 @@ html, body, #app {
   --color-warning: #ffd600;
   --color-highlight: #97ffb0;
   --radius: 7px;
+  --engine-analytics: #a000e1;
+  --engine-optimizations: #001ef4;
+  --engine-operations: #0ce605;
+  --engine-simulation: #ffbe01;
   --metrics-selected-bg: color-mix(in srgb, var(--color-warning) 25%, transparent);
   --metrics-delta-bg: color-mix(in srgb, var(--color-warning) 18%, transparent);
   --shadow-disabled: color-mix(in srgb, var(--color-danger) 35%, transparent);
@@ -202,20 +211,36 @@ html, body, #app {
 .kv.inner td { border: 0; padding: 2px 0; }
 .kv.inner.onecol td { white-space: normal; }
 
-.operations {
-  color: var(--color-accent);
+.operationsText {
+  color: var(--engine-operations);
 }
 
-.analytics {
+.analyticsText {
+  color: var(--engine-analytics);
+}
+
+.optimizationsText {
+  color: var(--engine-optimizations);
+}
+
+.simulationText {
   color: var(--color-warning);
 }
 
-.optimizations {
-  color: var(--color-success);
+.operationsBackground {
+  background: var(--engine-operations);
 }
 
-.simulation {
-  color: var(--color-warning);
+.analyticsBackground {
+  background: var(--engine-analytics);
+}
+
+.optimizationsBackground {
+  background: var(--engine-optimizations);
+}
+
+.simulationBackground {
+  background: var(--color-warning);
 }
 
 .text-bold {

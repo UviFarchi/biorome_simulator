@@ -185,7 +185,7 @@ onBeforeUnmount(stopTestingSync)
 
 <template>
 
-  <div id="controlPanel">
+  <div id="controlPanel" :class="currentPhaseLabel+'Background'">
     <div class="left-panel">
       <div class="subpanel">
         <div class="menu-wrap">
@@ -263,10 +263,10 @@ onBeforeUnmount(stopTestingSync)
         </div>
       </div>
       <div class="subpanel">
-        <button id="assemblyStation" class="app-button" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
+        <button id="assemblyStation" class="app-button navButtons" @click.stop="eventBus.emit('nav', 'assembly')">Assembly Station</button>
       </div>
       <div class="subpanel">
-        <button id="marketNav" class="app-button" @click.stop="eventBus.emit('nav', 'market')">Market</button>
+        <button id="marketNav" class="app-button navButtons" @click.stop="eventBus.emit('nav', 'market')">Market</button>
       </div>
     </div>
     <div class="centerPanel">
@@ -376,7 +376,6 @@ onBeforeUnmount(stopTestingSync)
   padding: 6px 10px;
   height: 10vh;
   border-bottom: 2px solid var(--color-border);
-  background-color: color-mix(in srgb, var(--color-text) 50%, var(--color-background));
 }
 
 /* columns */
@@ -488,7 +487,7 @@ onBeforeUnmount(stopTestingSync)
   word-break: break-word;
 }
 
-#assemblyStation {
+.navButtons{
   border-radius: 100%;
   height: 7vh;
   width: 7vh;
@@ -508,7 +507,7 @@ onBeforeUnmount(stopTestingSync)
   align-items: center;
   justify-items: center;
   flex-direction: column;
-  filter: saturate(0.2);
+  filter: saturate(1);
 
 }
 

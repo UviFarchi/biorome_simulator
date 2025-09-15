@@ -108,6 +108,7 @@ async function startGame() {
       </div>
     </div>
     <button type="submit" class="btn btn--start start-btn" :disabled="!name">Start</button>
+    <img src="../assets/small_drone.gif" alt="small drone"/>
   </form>
   <div v-if="resuming" class="terrain-overlay">Loading save…</div>
   <div v-else-if="terrainGeneration" class="terrain-overlay">Generating terrain…</div>

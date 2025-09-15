@@ -9,7 +9,7 @@ const headers = ['Engine', 'Message']
 
 const rows = computed(() =>
     (events.log || []).map(ev => ({
-      className: ev.engine,
+      className: ev.engine + 'Text',
       cells: [ev.engine, ev.msg]
     }))
 )
