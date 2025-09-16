@@ -205,6 +205,7 @@ function fmt(v) {
   background: #000;
 }
 
+
 .tile-info-panel {
   background: var(--color-surface);
   color: var(--color-text);
@@ -213,6 +214,7 @@ function fmt(v) {
   box-shadow: var(--shadow-surface);
   overflow: hidden;
 }
+
 .cell {
   position: relative;
   z-index: 1;
