@@ -65,7 +65,7 @@ function fmt(v) {
 
 <template>
   <div class="grid-fit">
-    <div class="grid-box" v-show="showTileInfo">
+    <div class="grid-box tile-info-panel" v-show="showTileInfo">
       <button v-show="showTileInfo" class="closeModalBtn" @click="closeModal">Close</button>
       <TileInfo />
     </div>
@@ -204,6 +204,17 @@ function fmt(v) {
 .tile-grid {
   background: #000;
 }
+
+
+.tile-info-panel {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+}
+
 .cell {
   position: relative;
   z-index: 1;
