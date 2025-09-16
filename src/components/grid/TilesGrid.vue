@@ -65,12 +65,12 @@ function fmt(v) {
 
 <template>
   <div class="grid-fit">
-    <div class="grid-box" v-show="showTileInfo">
+    <div class="grid-box tile-info-panel" v-show="showTileInfo">
       <button v-show="showTileInfo" class="closeModalBtn" @click="closeModal">Close</button>
       <TileInfo />
     </div>
 
-    <div class="grid-box" v-show="!showTileInfo"
+    <div class="grid-box tile-grid" v-show="!showTileInfo"
          :style="{
            gridTemplateColumns: `repeat(${size}, minmax(0,1fr))`,
            gridTemplateRows: `repeat(${size}, minmax(0,1fr))`
@@ -201,6 +201,18 @@ function fmt(v) {
   display: grid;
   gap: 0;
 }
+.tile-grid {
+  background: #000;
+}
+
+.tile-info-panel {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+}
 .cell {
   position: relative;
   z-index: 1;
@@ -210,14 +222,14 @@ function fmt(v) {
   user-select: none;
   cursor: pointer;
   box-shadow: inset 0 0 0 1px var(--color-background);
-  color: var(--color-background);
+  color: #111;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 .cell.active { outline: 3px solid var(--color-warning); outline-offset: -2px; }
 .cell .cellId { align-self: flex-end; margin: 5px; }
-.cell.unsurveyed .cellId { color: var(--color-text); }
+.cell.unsurveyed .cellId { color: #222; }
 .cell.unsurveyed { background: color-mix(in srgb, var(--color-background) 95%, transparent); }
 
 .icons {
@@ -254,8 +266,8 @@ function fmt(v) {
   gap: .35em;
   font-variant-numeric: tabular-nums;
 }
-.row-res .val.real { color: var(--color-background); }
-.row-res .val.proj { color: var(--color-accent); } /* optimized text */
+.row-res .val.real { color: #111; }
+.row-res .val.proj { color: #1f2d5c; } /* optimized text */
 .row-res .proj .icon-img { opacity: .7; filter: hue-rotate(270deg) saturate(1.2); }
 .row-res .both .icon-img { opacity: 1; }
 .row-res .sep { opacity: .7; padding: 0 .1em; }
