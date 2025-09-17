@@ -533,13 +533,14 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   align-items: stretch;
 
-  gap: 12px;
-  padding: 8px 16px;
+  gap: clamp(6px, 1.4vw, 12px);
+  padding: clamp(6px, 1.2vw, 8px) clamp(10px, 2vw, 16px);
 
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  align-content: flex-start;
   overflow: visible;
   height: 100%;
   min-height: 0;
@@ -549,21 +550,25 @@ onBeforeUnmount(stopTestingSync)
 .panel-section {
   display: flex;
   align-items: stretch;
-  gap: 12px;
+  gap: clamp(6px, 1.4vw, 12px);
   height: 100%;
+  flex: 1 1 320px;
+  min-width: min(100%, 320px);
+  flex-wrap: wrap;
 }
 
 .left-panel,
 .right-panel {
-  flex: 0 0 auto;
+  flex: 0 1 320px;
+  min-width: min(100%, 280px);
 }
 
 .centerPanel {
-  flex: 1 1 auto;
+  flex: 1 1 420px;
   display: flex;
   justify-content: center;
   align-items: stretch;
-  min-width: 0;
+  min-width: min(100%, 320px);
   height: 100%;
 }
 
@@ -579,8 +584,9 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
+  gap: clamp(6px, 1.2vw, 10px);
+  row-gap: clamp(4px, 1vw, 10px);
+  padding: clamp(6px, 1.2vw, 8px) clamp(8px, 1.8vw, 12px);
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -589,6 +595,7 @@ onBeforeUnmount(stopTestingSync)
   min-height: 0;
   overflow: hidden;
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .subpanel-title {
@@ -614,44 +621,32 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: clamp(4px, 1vw, 8px);
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .subpanel--shortcuts {
   justify-content: center;
-  gap: 16px;
+  gap: clamp(8px, 1.4vw, 16px);
+  flex-wrap: wrap;
 }
 
 .subpanel--toggles {
   justify-content: center;
-  gap: 16px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-gutter: stable both-edges;
-}
-
-.subpanel--toggles::-webkit-scrollbar {
-  height: 8px;
-}
-
-.subpanel--toggles::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--color-border) 65%, transparent);
-  border-radius: 999px;
-}
-
-.subpanel--toggles::-webkit-scrollbar-track {
-  background: transparent;
+  gap: clamp(10px, 1.6vw, 16px);
+  row-gap: clamp(6px, 1vw, 12px);
+  flex-wrap: wrap;
+  overflow: visible;
 }
 
 .subpanel--info {
   flex-direction: row;
   align-items: center;
-  gap: 20px;
+  gap: clamp(12px, 2vw, 20px);
   min-width: 0;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .menu-wrap {
@@ -666,8 +661,8 @@ onBeforeUnmount(stopTestingSync)
   border: 1px solid var(--color-border);
   background: var(--color-accent);
   color: #fff;
-  width: 42px;
-  height: 42px;
+  width: clamp(36px, 4vw, 42px);
+  height: clamp(36px, 4vw, 42px);
   padding: 0;
   border-radius: var(--radius);
   font-weight: 600;
@@ -685,8 +680,8 @@ onBeforeUnmount(stopTestingSync)
 
 .menu-button__icon {
   display: inline-flex;
-  width: 20px;
-  height: 20px;
+  width: clamp(16px, 2.4vw, 20px);
+  height: clamp(16px, 2.4vw, 20px);
   color: inherit;
 }
 
@@ -734,8 +729,8 @@ onBeforeUnmount(stopTestingSync)
 
 .layout-controls {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: clamp(6px, 1.2vw, 10px);
   justify-content: center;
 }
 
@@ -746,8 +741,8 @@ onBeforeUnmount(stopTestingSync)
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  width: 64px;
-  height: 44px;
+  width: clamp(56px, 8vw, 64px);
+  height: clamp(38px, 6vw, 44px);
   padding: 0;
   border-radius: var(--radius);
   cursor: pointer;
@@ -763,8 +758,8 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .layout-btn svg {
-  width: 44px;
-  height: 28px;
+  width: clamp(36px, 6vw, 44px);
+  height: clamp(22px, 4vw, 28px);
 }
 
 .layout-btn svg rect,
@@ -777,19 +772,19 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 72px;
+  gap: clamp(4px, 0.8vw, 6px);
+  min-width: clamp(64px, 8vw, 92px);
   white-space: normal;
   text-align: center;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
 }
 
 .controlItem--shortcut {
-  min-width: 96px;
+  min-width: clamp(84px, 12vw, 116px);
 }
 
 .controlItem .app-label {
-  max-width: 110px;
+  max-width: clamp(96px, 14vw, 120px);
   text-align: center;
   line-height: 1.25;
 }
@@ -800,15 +795,15 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-border);
   opacity: 0.6;
   flex: 0 0 1px;
-  margin: 0 10px;
+  margin: 0 clamp(6px, 1.2vw, 10px);
 }
 
 .infoScreen {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: clamp(3px, 0.8vw, 6px);
   padding: 0;
-  min-width: 150px;
+  min-width: clamp(120px, 18vw, 150px);
 }
 
 .infoScreen__label {
@@ -821,7 +816,7 @@ onBeforeUnmount(stopTestingSync)
 .infoScreen__value {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(6px, 1.2vw, 10px);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
@@ -860,22 +855,23 @@ onBeforeUnmount(stopTestingSync)
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: clamp(28px, 4vw, 32px);
+  height: clamp(28px, 4vw, 32px);
   border-radius: 50%;
   background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
   color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 0.6rem + 0.5vw, 1rem);
   font-weight: 600;
 }
 
 .info-panel {
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 
 .info-panel--stage .infoScreen {
-  min-width: 120px;
+  min-width: clamp(110px, 16vw, 140px);
   align-items: center;
   text-align: center;
 }
@@ -888,12 +884,13 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-width: 220px;
+  gap: clamp(8px, 1.6vw, 12px);
+  min-width: clamp(180px, 28vw, 220px);
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: 0 6px 16px color-mix(in srgb, var(--color-shadow-neutral) 12%, transparent);
+  flex-wrap: wrap;
 }
 
 .nextPhaseBg.active {
@@ -903,7 +900,7 @@ onBeforeUnmount(stopTestingSync)
 .next-phase__details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: clamp(2px, 0.6vw, 6px);
   min-width: 0;
 }
 
@@ -928,7 +925,8 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-accent);
   color: #fff;
   font-weight: 600;
-  padding: 0.45rem 1.2rem;
+  padding-block: clamp(0.35rem, calc(0.3rem + 0.6vw), 0.45rem);
+  padding-inline: clamp(0.9rem, calc(0.7rem + 0.9vw), 1.2rem);
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
@@ -955,29 +953,44 @@ onBeforeUnmount(stopTestingSync)
 
 @media (max-width: 1280px) {
   #controlPanel {
-    padding: 6px 12px;
-    gap: 8px;
+    justify-content: center;
   }
 
   .panel-section {
-    gap: 8px;
+    flex: 1 1 360px;
+    min-width: min(100%, 300px);
   }
 
-  .subpanel {
-    padding: 6px 10px;
-    gap: 8px;
+  .left-panel,
+  .right-panel {
+    flex: 1 1 320px;
   }
 
-  .layout-controls {
-    gap: 4px;
+  .centerPanel {
+    flex: 1 1 480px;
+  }
+}
+
+@media (max-width: 980px) {
+  #controlPanel {
+    justify-content: center;
   }
 
-  .subpanel--info {
-    gap: 12px;
+  .panel-section,
+  .left-panel,
+  .centerPanel,
+  .right-panel {
+    flex: 1 1 100%;
+    min-width: 100%;
   }
 
-  .infoScreen {
-    min-width: 130px;
+  .nextPhaseBg {
+    justify-content: center;
+  }
+
+  .next-phase-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 </style>
