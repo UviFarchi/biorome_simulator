@@ -533,7 +533,7 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   align-items: stretch;
 
-  gap: clamp(6px, 1.4vw, 12px);
+  gap: clamp(6px, 1.2vw, 12px);
   padding: clamp(6px, 1.2vw, 8px) clamp(10px, 2vw, 16px);
 
   border-bottom: 1px solid var(--color-border);
@@ -544,27 +544,30 @@ onBeforeUnmount(stopTestingSync)
   overflow: visible;
   height: 100%;
   min-height: 0;
+  min-width: 0;
   box-sizing: border-box;
 }
 
 .panel-section {
   display: flex;
   align-items: stretch;
-  gap: clamp(6px, 1.4vw, 12px);
+  gap: clamp(6px, 1.2vw, 12px);
   height: 100%;
-  flex: 1 1 320px;
-  min-width: min(100%, 320px);
+  flex: 1 1 0;
+  min-width: 0;
+
   flex-wrap: wrap;
 }
 
 .left-panel,
 .right-panel {
-  flex: 0 1 320px;
-  min-width: min(100%, 280px);
+  flex: 0 1 clamp(240px, 28vw, 320px);
+  min-width: 0;
 }
 
 .centerPanel {
-  flex: 1 1 420px;
+  flex: 1 1 clamp(320px, 44vw, 480px);
+
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -584,9 +587,10 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: clamp(6px, 1.2vw, 10px);
-  row-gap: clamp(4px, 1vw, 10px);
-  padding: clamp(6px, 1.2vw, 8px) clamp(8px, 1.8vw, 12px);
+  gap: clamp(6px, 1vw, 10px);
+  row-gap: clamp(4px, 0.9vw, 8px);
+  padding: clamp(6px, 1vw, 8px) clamp(8px, 1.6vw, 12px);
+
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -621,21 +625,24 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: clamp(4px, 1vw, 8px);
+  gap: clamp(4px, 0.9vw, 8px);
+
   min-width: 0;
   flex-wrap: wrap;
 }
 
 .subpanel--shortcuts {
   justify-content: center;
-  gap: clamp(8px, 1.4vw, 16px);
+  gap: clamp(6px, 1.2vw, 16px);
+
   flex-wrap: wrap;
 }
 
 .subpanel--toggles {
   justify-content: center;
-  gap: clamp(10px, 1.6vw, 16px);
-  row-gap: clamp(6px, 1vw, 12px);
+  gap: clamp(8px, 1.4vw, 16px);
+  row-gap: clamp(5px, 0.9vw, 12px);
+
   flex-wrap: wrap;
   overflow: visible;
 }
@@ -727,10 +734,12 @@ onBeforeUnmount(stopTestingSync)
   color: color-mix(in srgb, var(--color-text) 85%, var(--color-surface));
 }
 
+
 .layout-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(6px, 1.2vw, 10px);
+  gap: clamp(6px, 1.1vw, 10px);
+
   justify-content: center;
 }
 
@@ -741,8 +750,9 @@ onBeforeUnmount(stopTestingSync)
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
-  width: clamp(56px, 8vw, 64px);
-  height: clamp(38px, 6vw, 44px);
+  width: clamp(56px, 7.4vw, 64px);
+  height: clamp(38px, 5.6vw, 44px);
+
   padding: 0;
   border-radius: var(--radius);
   cursor: pointer;
@@ -758,8 +768,9 @@ onBeforeUnmount(stopTestingSync)
 }
 
 .layout-btn svg {
-  width: clamp(36px, 6vw, 44px);
-  height: clamp(22px, 4vw, 28px);
+  width: clamp(34px, 5.4vw, 44px);
+  height: clamp(20px, 3.6vw, 28px);
+
 }
 
 .layout-btn svg rect,
@@ -773,20 +784,32 @@ onBeforeUnmount(stopTestingSync)
   align-items: center;
   justify-content: center;
   gap: clamp(4px, 0.8vw, 6px);
-  min-width: clamp(64px, 8vw, 92px);
+  min-width: clamp(60px, 7.4vw, 92px);
+
   white-space: normal;
   text-align: center;
   flex: 0 1 auto;
 }
 
 .controlItem--shortcut {
-  min-width: clamp(84px, 12vw, 116px);
+  min-width: clamp(78px, 11vw, 116px);
 }
 
 .controlItem .app-label {
-  max-width: clamp(96px, 14vw, 120px);
+  max-width: clamp(94px, 13.6vw, 120px);
+
   text-align: center;
   line-height: 1.25;
+}
+
+.controlItem .app-button {
+  width: clamp(54px, 6.8vw, 68px);
+  height: clamp(54px, 6.8vw, 68px);
+}
+
+.controlItem .app-button svg {
+  width: clamp(28px, 3.8vw, 32px);
+  height: clamp(28px, 3.8vw, 32px);
 }
 
 .control-divider {
@@ -795,7 +818,8 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-border);
   opacity: 0.6;
   flex: 0 0 1px;
-  margin: 0 clamp(6px, 1.2vw, 10px);
+  margin: 0 clamp(6px, 1.1vw, 10px);
+
 }
 
 .infoScreen {
@@ -803,7 +827,7 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: column;
   gap: clamp(3px, 0.8vw, 6px);
   padding: 0;
-  min-width: clamp(120px, 18vw, 150px);
+  min-width: clamp(116px, 18vw, 150px);
 }
 
 .infoScreen__label {
@@ -816,7 +840,8 @@ onBeforeUnmount(stopTestingSync)
 .infoScreen__value {
   display: flex;
   align-items: center;
-  gap: clamp(6px, 1.2vw, 10px);
+  gap: clamp(6px, 1.1vw, 10px);
+
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
@@ -855,8 +880,9 @@ onBeforeUnmount(stopTestingSync)
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(28px, 4vw, 32px);
-  height: clamp(28px, 4vw, 32px);
+  width: clamp(28px, 3.6vw, 32px);
+  height: clamp(28px, 3.6vw, 32px);
+
   border-radius: 50%;
   background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
   color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
@@ -884,8 +910,9 @@ onBeforeUnmount(stopTestingSync)
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(8px, 1.6vw, 12px);
-  min-width: clamp(180px, 28vw, 220px);
+  gap: clamp(8px, 1.4vw, 12px);
+  min-width: clamp(180px, 26vw, 220px);
+
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -925,8 +952,9 @@ onBeforeUnmount(stopTestingSync)
   background: var(--color-accent);
   color: #fff;
   font-weight: 600;
-  padding-block: clamp(0.35rem, calc(0.3rem + 0.6vw), 0.45rem);
-  padding-inline: clamp(0.9rem, calc(0.7rem + 0.9vw), 1.2rem);
+  padding-block: clamp(0.35rem, calc(0.28rem + 0.6vw), 0.45rem);
+  padding-inline: clamp(0.88rem, calc(0.68rem + 0.9vw), 1.2rem);
+
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
@@ -951,46 +979,12 @@ onBeforeUnmount(stopTestingSync)
   border: 0;
 }
 
-@media (max-width: 1280px) {
-  #controlPanel {
-    justify-content: center;
-  }
 
-  .panel-section {
-    flex: 1 1 360px;
-    min-width: min(100%, 300px);
   }
 
   .left-panel,
   .right-panel {
-    flex: 1 1 320px;
-  }
 
-  .centerPanel {
-    flex: 1 1 480px;
-  }
-}
-
-@media (max-width: 980px) {
-  #controlPanel {
-    justify-content: center;
-  }
-
-  .panel-section,
-  .left-panel,
-  .centerPanel,
-  .right-panel {
-    flex: 1 1 100%;
-    min-width: 100%;
-  }
-
-  .nextPhaseBg {
-    justify-content: center;
-  }
-
-  .next-phase-btn {
-    width: 100%;
-    text-align: center;
   }
 }
 </style>
