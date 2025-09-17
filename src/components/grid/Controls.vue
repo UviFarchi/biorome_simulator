@@ -532,12 +532,15 @@ onBeforeUnmount(stopTestingSync)
 #controlPanel {
   display: flex;
   align-items: stretch;
+
   gap: clamp(6px, 1.2vw, 12px);
   padding: clamp(6px, 1.2vw, 8px) clamp(10px, 2vw, 16px);
+
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-shadow-neutral) 14%, transparent);
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  align-content: flex-start;
   overflow: visible;
   height: 100%;
   min-height: 0;
@@ -552,6 +555,7 @@ onBeforeUnmount(stopTestingSync)
   height: 100%;
   flex: 1 1 0;
   min-width: 0;
+
   flex-wrap: wrap;
 }
 
@@ -563,10 +567,11 @@ onBeforeUnmount(stopTestingSync)
 
 .centerPanel {
   flex: 1 1 clamp(320px, 44vw, 480px);
+
   display: flex;
   justify-content: center;
   align-items: stretch;
-  min-width: 0;
+  min-width: min(100%, 320px);
   height: 100%;
 }
 
@@ -585,6 +590,7 @@ onBeforeUnmount(stopTestingSync)
   gap: clamp(6px, 1vw, 10px);
   row-gap: clamp(4px, 0.9vw, 8px);
   padding: clamp(6px, 1vw, 8px) clamp(8px, 1.6vw, 12px);
+
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -620,6 +626,7 @@ onBeforeUnmount(stopTestingSync)
   align-items: center;
   justify-content: center;
   gap: clamp(4px, 0.9vw, 8px);
+
   min-width: 0;
   flex-wrap: wrap;
 }
@@ -627,6 +634,7 @@ onBeforeUnmount(stopTestingSync)
 .subpanel--shortcuts {
   justify-content: center;
   gap: clamp(6px, 1.2vw, 16px);
+
   flex-wrap: wrap;
 }
 
@@ -634,6 +642,7 @@ onBeforeUnmount(stopTestingSync)
   justify-content: center;
   gap: clamp(8px, 1.4vw, 16px);
   row-gap: clamp(5px, 0.9vw, 12px);
+
   flex-wrap: wrap;
   overflow: visible;
 }
@@ -730,6 +739,7 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   flex-wrap: wrap;
   gap: clamp(6px, 1.1vw, 10px);
+
   justify-content: center;
 }
 
@@ -742,6 +752,7 @@ onBeforeUnmount(stopTestingSync)
   color: var(--color-text);
   width: clamp(56px, 7.4vw, 64px);
   height: clamp(38px, 5.6vw, 44px);
+
   padding: 0;
   border-radius: var(--radius);
   cursor: pointer;
@@ -759,6 +770,7 @@ onBeforeUnmount(stopTestingSync)
 .layout-btn svg {
   width: clamp(34px, 5.4vw, 44px);
   height: clamp(20px, 3.6vw, 28px);
+
 }
 
 .layout-btn svg rect,
@@ -773,6 +785,7 @@ onBeforeUnmount(stopTestingSync)
   justify-content: center;
   gap: clamp(4px, 0.8vw, 6px);
   min-width: clamp(60px, 7.4vw, 92px);
+
   white-space: normal;
   text-align: center;
   flex: 0 1 auto;
@@ -784,6 +797,7 @@ onBeforeUnmount(stopTestingSync)
 
 .controlItem .app-label {
   max-width: clamp(94px, 13.6vw, 120px);
+
   text-align: center;
   line-height: 1.25;
 }
@@ -805,6 +819,7 @@ onBeforeUnmount(stopTestingSync)
   opacity: 0.6;
   flex: 0 0 1px;
   margin: 0 clamp(6px, 1.1vw, 10px);
+
 }
 
 .infoScreen {
@@ -826,6 +841,7 @@ onBeforeUnmount(stopTestingSync)
   display: flex;
   align-items: center;
   gap: clamp(6px, 1.1vw, 10px);
+
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text);
@@ -866,6 +882,7 @@ onBeforeUnmount(stopTestingSync)
   justify-content: center;
   width: clamp(28px, 3.6vw, 32px);
   height: clamp(28px, 3.6vw, 32px);
+
   border-radius: 50%;
   background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
   color: color-mix(in srgb, var(--color-text) 92%, var(--color-surface));
@@ -895,6 +912,7 @@ onBeforeUnmount(stopTestingSync)
   justify-content: space-between;
   gap: clamp(8px, 1.4vw, 12px);
   min-width: clamp(180px, 26vw, 220px);
+
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -936,6 +954,7 @@ onBeforeUnmount(stopTestingSync)
   font-weight: 600;
   padding-block: clamp(0.35rem, calc(0.28rem + 0.6vw), 0.45rem);
   padding-inline: clamp(0.88rem, calc(0.68rem + 0.9vw), 1.2rem);
+
   cursor: pointer;
   transition: filter 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
@@ -960,626 +979,12 @@ onBeforeUnmount(stopTestingSync)
   border: 0;
 }
 
-@media (max-width: 1280px) {
-  #controlPanel {
-    gap: clamp(4px, 0.9vw, 10px);
-    padding: clamp(5px, 1vw, 7px) clamp(8px, 1.6vw, 12px);
-  }
 
-  .panel-section {
-    gap: clamp(4px, 0.9vw, 10px);
   }
 
   .left-panel,
   .right-panel {
-    flex: 0 1 clamp(220px, 26vw, 300px);
-  }
 
-  .centerPanel {
-    flex: 1 1 clamp(300px, 42vw, 440px);
-  }
-
-  .subpanel {
-    gap: clamp(4px, 0.9vw, 8px);
-    row-gap: clamp(3px, 0.8vw, 6px);
-    padding: clamp(5px, 0.9vw, 7px) clamp(6px, 1.4vw, 10px);
-  }
-
-  .menu-button {
-    padding: clamp(6px, 0.95vw, 8px);
-  }
-
-  .layout-controls {
-    gap: clamp(4px, 0.9vw, 8px);
-  }
-
-  .layout-btn {
-    width: clamp(50px, 6.4vw, 60px);
-    height: clamp(32px, 4.8vw, 38px);
-  }
-
-  .layout-btn svg {
-    width: clamp(30px, 5vw, 36px);
-    height: clamp(18px, 3vw, 22px);
-  }
-
-  .controlItem {
-    min-width: clamp(58px, 7vw, 88px);
-    gap: clamp(4px, 0.75vw, 6px);
-  }
-
-  .controlItem--shortcut {
-    min-width: clamp(74px, 9.5vw, 108px);
-  }
-
-  .controlItem .app-label {
-    max-width: clamp(90px, 12.6vw, 112px);
-  }
-
-  .controlItem .app-button {
-    width: clamp(52px, 6.5vw, 64px);
-    height: clamp(52px, 6.5vw, 64px);
-  }
-
-  .controlItem .app-button svg {
-    width: clamp(26px, 3.5vw, 30px);
-    height: clamp(26px, 3.5vw, 30px);
-  }
-
-  .infoScreen {
-    min-width: clamp(108px, 16vw, 140px);
-  }
-
-  .infoScreen__value {
-    gap: clamp(5px, 0.95vw, 8px);
-  }
-
-  .nextPhaseBg {
-    min-width: clamp(170px, 26vw, 210px);
-    gap: clamp(6px, 1.1vw, 10px);
-  }
-
-  .next-phase-btn {
-    padding-inline: clamp(0.8rem, 0.66rem + 0.8vw, 1.06rem);
-  }
-}
-
-@media (max-width: 1100px) {
-  #controlPanel {
-    gap: clamp(3px, 0.7vw, 6px);
-    padding: clamp(4px, 0.8vw, 6px) clamp(6px, 1.2vw, 10px);
-  }
-
-  .panel-section {
-    gap: clamp(3px, 0.7vw, 6px);
-  }
-
-  .left-panel,
-  .right-panel {
-    flex: 0 1 clamp(200px, 25vw, 260px);
-  }
-
-  .centerPanel {
-    flex: 1 1 clamp(260px, 46vw, 380px);
-  }
-
-  .subpanel {
-    gap: clamp(3px, 0.7vw, 6px);
-    row-gap: clamp(2px, 0.6vw, 6px);
-    padding: clamp(4px, 0.7vw, 6px) clamp(5px, 1vw, 8px);
-  }
-
-  .subpanel--shortcuts {
-    gap: clamp(5px, 1vw, 12px);
-  }
-
-  .subpanel--toggles {
-    gap: clamp(6px, 1.2vw, 12px);
-    row-gap: clamp(4px, 0.8vw, 10px);
-  }
-
-  .menu-button {
-    padding: clamp(5px, 0.8vw, 7px);
-  }
-
-  .menu-button__icon {
-    width: clamp(14px, 1.8vw, 18px);
-    height: clamp(14px, 1.8vw, 18px);
-  }
-
-  .layout-controls {
-    gap: clamp(3px, 0.7vw, 6px);
-  }
-
-  .layout-btn {
-    width: clamp(46px, 5.6vw, 54px);
-    height: clamp(30px, 4.2vw, 36px);
-  }
-
-  .layout-btn svg {
-    width: clamp(28px, 4.4vw, 32px);
-    height: clamp(16px, 2.8vw, 20px);
-  }
-
-  .controlItem {
-    min-width: clamp(52px, 6.2vw, 78px);
-    gap: clamp(3px, 0.6vw, 5px);
-  }
-
-  .controlItem--shortcut {
-    min-width: clamp(68px, 8.5vw, 96px);
-  }
-
-  .controlItem .app-label {
-    font-size: 0.75rem;
-    max-width: clamp(84px, 11.8vw, 104px);
-  }
-
-  .controlItem .app-button {
-    width: clamp(48px, 5.8vw, 60px);
-    height: clamp(48px, 5.8vw, 60px);
-  }
-
-  .controlItem .app-button svg {
-    width: clamp(24px, 3.3vw, 28px);
-    height: clamp(24px, 3.3vw, 28px);
-  }
-
-  .control-divider {
-    margin: 0 clamp(5px, 0.9vw, 8px);
-  }
-
-  .infoScreen {
-    min-width: clamp(100px, 14vw, 132px);
-  }
-
-  .infoScreen__label {
-    font-size: 0.66rem;
-  }
-
-  .infoScreen__value {
-    font-size: 0.82rem;
-    gap: clamp(4px, 0.7vw, 7px);
-  }
-
-  .infoScreen__name {
-    font-size: 0.86rem;
-  }
-
-  .infoScreen__meta {
-    font-size: 0.7rem;
-  }
-
-  .infoScreen__avatar {
-    width: clamp(24px, 3.2vw, 28px);
-    height: clamp(24px, 3.2vw, 28px);
-    font-size: clamp(0.82rem, 0.56rem + 0.45vw, 0.94rem);
-  }
-
-  .nextPhaseBg {
-    min-width: clamp(156px, 24vw, 192px);
-    gap: clamp(5px, 0.9vw, 8px);
-    padding: clamp(4px, 0.8vw, 6px) clamp(6px, 1.2vw, 9px);
-  }
-
-  .next-phase__label {
-    font-size: 0.7rem;
-  }
-
-  .next-phase__value {
-    font-size: 0.88rem;
-  }
-
-  .next-phase-btn {
-    padding-block: clamp(0.26rem, 0.24rem + 0.4vw, 0.38rem);
-    padding-inline: clamp(0.7rem, 0.56rem + 0.6vw, 0.94rem);
-    font-size: 0.86rem;
-  }
-}
-
-@media (max-width: 920px) {
-  #controlPanel {
-    gap: clamp(2px, 0.55vw, 5px);
-    padding: clamp(3px, 0.6vw, 5px) clamp(5px, 1vw, 8px);
-  }
-
-  .panel-section {
-    gap: clamp(2px, 0.55vw, 5px);
-  }
-
-  .left-panel,
-  .right-panel {
-    flex: 0 1 clamp(184px, 27vw, 240px);
-  }
-
-  .centerPanel {
-    flex: 1 1 clamp(240px, 46vw, 340px);
-  }
-
-  .subpanel {
-    gap: clamp(2px, 0.55vw, 5px);
-    row-gap: clamp(2px, 0.55vw, 5px);
-    padding: clamp(3px, 0.6vw, 5px) clamp(4px, 0.8vw, 6px);
-  }
-
-  .subpanel--shortcuts {
-    gap: clamp(4px, 0.8vw, 10px);
-  }
-
-  .subpanel--toggles {
-    gap: clamp(5px, 1vw, 10px);
-    row-gap: clamp(3px, 0.6vw, 8px);
-  }
-
-  .menu-button {
-    padding: clamp(4px, 0.7vw, 6px);
-  }
-
-  .menu-button__icon {
-    width: clamp(13px, 1.6vw, 16px);
-    height: clamp(13px, 1.6vw, 16px);
-  }
-
-  .layout-controls {
-    gap: clamp(2px, 0.55vw, 5px);
-  }
-
-  .layout-btn {
-    width: clamp(42px, 5.2vw, 50px);
-    height: clamp(28px, 4vw, 34px);
-  }
-
-  .layout-btn svg {
-    width: clamp(26px, 4vw, 30px);
-    height: clamp(16px, 2.5vw, 18px);
-  }
-
-  .controlItem {
-    min-width: clamp(48px, 5.6vw, 70px);
-  }
-
-  .controlItem--shortcut {
-    min-width: clamp(62px, 7.5vw, 86px);
-  }
-
-  .controlItem .app-label {
-    font-size: 0.7rem;
-    max-width: clamp(78px, 11vw, 96px);
-  }
-
-  .controlItem .app-button {
-    width: clamp(46px, 5.6vw, 58px);
-    height: clamp(46px, 5.6vw, 58px);
-  }
-
-  .controlItem .app-button svg {
-    width: clamp(24px, 3.2vw, 28px);
-    height: clamp(24px, 3.2vw, 28px);
-  }
-
-  .control-divider {
-    margin: 0 clamp(4px, 0.7vw, 7px);
-  }
-
-  .infoScreen {
-    min-width: clamp(90px, 13vw, 120px);
-  }
-
-  .infoScreen__value {
-    font-size: 0.78rem;
-    gap: clamp(4px, 0.7vw, 6px);
-  }
-
-  .infoScreen__name {
-    font-size: 0.82rem;
-  }
-
-  .infoScreen__meta {
-    font-size: 0.68rem;
-  }
-
-  .infoScreen__avatar {
-    width: clamp(22px, 3vw, 26px);
-    height: clamp(22px, 3vw, 26px);
-    font-size: clamp(0.78rem, 0.54rem + 0.4vw, 0.9rem);
-  }
-
-  .nextPhaseBg {
-    min-width: clamp(142px, 22vw, 180px);
-    gap: clamp(4px, 0.8vw, 7px);
-    padding: clamp(3px, 0.6vw, 5px) clamp(5px, 0.9vw, 7px);
-  }
-
-  .next-phase__details {
-    gap: clamp(2px, 0.5vw, 5px);
-  }
-
-  .next-phase__label {
-    font-size: 0.68rem;
-  }
-
-  .next-phase__value {
-    font-size: 0.84rem;
-  }
-
-  .next-phase-btn {
-    padding-block: clamp(0.24rem, 0.2rem + 0.35vw, 0.34rem);
-    padding-inline: clamp(0.6rem, 0.46rem + 0.55vw, 0.86rem);
-    font-size: 0.82rem;
-  }
-}
-
-@media (max-width: 780px) {
-  #controlPanel {
-    gap: clamp(1px, 0.4vw, 4px);
-    padding: clamp(2px, 0.5vw, 4px) clamp(4px, 0.8vw, 6px);
-  }
-
-  .panel-section {
-    gap: clamp(2px, 0.45vw, 4px);
-  }
-
-  .left-panel,
-  .right-panel {
-    flex: 0 1 clamp(128px, 30vw, 192px);
-  }
-
-  .centerPanel {
-    flex: 1 1 clamp(180px, 38vw, 280px);
-  }
-
-  .subpanel {
-    gap: clamp(2px, 0.5vw, 4px);
-    row-gap: clamp(2px, 0.5vw, 4px);
-    padding: clamp(2px, 0.5vw, 4px) clamp(3px, 0.7vw, 5px);
-  }
-
-  .subpanel--shortcuts {
-    gap: clamp(3px, 0.7vw, 8px);
-  }
-
-  .subpanel--toggles {
-    gap: clamp(4px, 0.9vw, 8px);
-    row-gap: clamp(3px, 0.6vw, 7px);
-  }
-
-  .menu-button {
-    width: clamp(32px, 3.6vw, 38px);
-    height: clamp(32px, 3.6vw, 38px);
-    padding: clamp(3px, 0.6vw, 5px);
-  }
-
-  .menu-button__icon {
-    width: clamp(12px, 1.4vw, 15px);
-    height: clamp(12px, 1.4vw, 15px);
-  }
-
-  .layout-controls {
-    gap: clamp(2px, 0.5vw, 4px);
-  }
-
-  .layout-btn {
-    width: clamp(38px, 4.8vw, 48px);
-    height: clamp(26px, 3.6vw, 32px);
-  }
-
-  .layout-btn svg {
-    width: clamp(24px, 3.6vw, 28px);
-    height: clamp(14px, 2.2vw, 18px);
-  }
-
-  .controlItem {
-    min-width: clamp(44px, 5vw, 64px);
-    gap: clamp(2px, 0.5vw, 4px);
-  }
-
-  .controlItem--shortcut {
-    min-width: clamp(58px, 6.8vw, 80px);
-  }
-
-  .controlItem .app-label {
-    font-size: 0.68rem;
-    max-width: clamp(72px, 10vw, 90px);
-  }
-
-  .controlItem .app-button {
-    width: clamp(42px, 5vw, 54px);
-    height: clamp(42px, 5vw, 54px);
-  }
-
-  .controlItem .app-button svg {
-    width: clamp(22px, 2.8vw, 26px);
-    height: clamp(22px, 2.8vw, 26px);
-  }
-
-  .control-divider {
-    margin: 0 clamp(3px, 0.6vw, 6px);
-  }
-
-  .infoScreen {
-    min-width: clamp(82px, 12vw, 112px);
-  }
-
-  .infoScreen__label {
-    font-size: 0.62rem;
-  }
-
-  .infoScreen__value {
-    font-size: 0.76rem;
-    gap: clamp(3px, 0.6vw, 5px);
-  }
-
-  .infoScreen__name {
-    font-size: 0.8rem;
-  }
-
-  .infoScreen__meta {
-    font-size: 0.66rem;
-  }
-
-  .infoScreen__avatar {
-    width: clamp(20px, 2.8vw, 24px);
-    height: clamp(20px, 2.8vw, 24px);
-    font-size: clamp(0.72rem, 0.5rem + 0.35vw, 0.86rem);
-  }
-
-  .nextPhaseBg {
-    min-width: clamp(126px, 20vw, 168px);
-    gap: clamp(3px, 0.7vw, 6px);
-    padding: clamp(2px, 0.6vw, 5px) clamp(4px, 0.8vw, 6px);
-  }
-
-  .next-phase__details {
-    gap: clamp(2px, 0.45vw, 4px);
-  }
-
-  .next-phase__label {
-    font-size: 0.64rem;
-  }
-
-  .next-phase__value {
-    font-size: 0.8rem;
-  }
-
-  .next-phase-btn {
-    padding-block: clamp(0.22rem, 0.18rem + 0.3vw, 0.32rem);
-    padding-inline: clamp(0.54rem, 0.4rem + 0.5vw, 0.78rem);
-    font-size: 0.78rem;
-  }
-}
-
-@media (max-width: 680px) {
-  #controlPanel {
-    gap: clamp(1px, 0.32vw, 3px);
-    padding: clamp(2px, 0.45vw, 4px) clamp(4px, 0.7vw, 6px);
-  }
-
-  .panel-section {
-    gap: clamp(2px, 0.4vw, 3px);
-  }
-
-  .left-panel,
-  .right-panel {
-    flex: 0 1 clamp(110px, 28vw, 160px);
-  }
-
-  .centerPanel {
-    flex: 1 1 clamp(150px, 36vw, 232px);
-  }
-
-  .subpanel {
-    gap: clamp(2px, 0.45vw, 3px);
-    row-gap: clamp(2px, 0.45vw, 3px);
-    padding: clamp(2px, 0.45vw, 3px) clamp(3px, 0.6vw, 5px);
-  }
-
-  .subpanel--shortcuts {
-    gap: clamp(3px, 0.6vw, 7px);
-  }
-
-  .subpanel--toggles {
-    gap: clamp(4px, 0.8vw, 7px);
-    row-gap: clamp(3px, 0.55vw, 6px);
-  }
-
-  .menu-button {
-    width: clamp(30px, 3.2vw, 36px);
-    height: clamp(30px, 3.2vw, 36px);
-    padding: clamp(2px, 0.55vw, 4px);
-  }
-
-  .menu-button__icon {
-    width: clamp(11px, 1.3vw, 14px);
-    height: clamp(11px, 1.3vw, 14px);
-  }
-
-  .layout-controls {
-    gap: clamp(1px, 0.4vw, 3px);
-  }
-
-  .layout-btn {
-    width: clamp(34px, 4.4vw, 44px);
-    height: clamp(24px, 3.2vw, 30px);
-  }
-
-  .layout-btn svg {
-    width: clamp(22px, 3.2vw, 26px);
-    height: clamp(14px, 2vw, 16px);
-  }
-
-  .controlItem {
-    min-width: clamp(38px, 4.4vw, 56px);
-    gap: clamp(2px, 0.45vw, 3px);
-  }
-
-  .controlItem--shortcut {
-    min-width: clamp(54px, 6.2vw, 76px);
-  }
-
-  .controlItem .app-label {
-    font-size: 0.65rem;
-    max-width: clamp(68px, 9vw, 84px);
-  }
-
-  .controlItem .app-button {
-    width: clamp(36px, 4.4vw, 48px);
-    height: clamp(36px, 4.4vw, 48px);
-  }
-
-  .controlItem .app-button svg {
-    width: clamp(18px, 2.4vw, 22px);
-    height: clamp(18px, 2.4vw, 22px);
-  }
-
-  .control-divider {
-    margin: 0 clamp(3px, 0.55vw, 5px);
-  }
-
-  .infoScreen {
-    min-width: clamp(74px, 10.5vw, 104px);
-  }
-
-  .infoScreen__label {
-    font-size: 0.6rem;
-  }
-
-  .infoScreen__value {
-    font-size: 0.72rem;
-    gap: clamp(3px, 0.5vw, 5px);
-  }
-
-  .infoScreen__name {
-    font-size: 0.76rem;
-  }
-
-  .infoScreen__meta {
-    font-size: 0.64rem;
-  }
-
-  .infoScreen__avatar {
-    width: clamp(18px, 2.4vw, 22px);
-    height: clamp(18px, 2.4vw, 22px);
-    font-size: clamp(0.68rem, 0.46rem + 0.28vw, 0.82rem);
-  }
-
-  .nextPhaseBg {
-    min-width: clamp(112px, 17vw, 152px);
-    gap: clamp(3px, 0.6vw, 6px);
-    padding: clamp(2px, 0.5vw, 4px) clamp(4px, 0.7vw, 6px);
-  }
-
-  .next-phase__label {
-    font-size: 0.62rem;
-  }
-
-  .next-phase__value {
-    font-size: 0.78rem;
-  }
-
-  .next-phase-btn {
-    padding-block: clamp(0.2rem, 0.16rem + 0.28vw, 0.3rem);
-    padding-inline: clamp(0.5rem, 0.38rem + 0.48vw, 0.74rem);
-    font-size: 0.76rem;
   }
 }
 </style>
