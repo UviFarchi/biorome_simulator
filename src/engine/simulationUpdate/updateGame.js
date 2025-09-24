@@ -1,4 +1,3 @@
-import {saveAllStores} from '@/utils/persistance.js';
 import {applyEffects} from '@/engine/simulationUpdate/applyEffects.js';
 import {gameStore} from '@/stores/game.js';
 import calculateWeather from '@/engine/simulationUpdate/calculateWeather.js';
@@ -61,7 +60,6 @@ export default async function () {
     await step('applyStageChanges', applyStageChanges);
     await step('applyEffects', applyEffects);
     await step('marketFlux', marketFlux);
-    await step('saveAllStores', saveAllStores);
 
     const total = now() - t0;
     console.log(

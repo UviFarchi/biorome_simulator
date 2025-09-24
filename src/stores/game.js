@@ -3,7 +3,7 @@ import {computed, ref} from 'vue'
 import { formatDate } from '@/utils/formatting.js'
 
 export const gameStore = defineStore('gameStore', () => {
-    const gold = ref(300000)
+    const money = ref(300000)
     const log = ref([]);
     const currentEvents = ref({
         weather: [],
@@ -29,6 +29,7 @@ export const gameStore = defineStore('gameStore', () => {
 
         }
     ])
+    const ownedModules = ref({station:[],assemblies: []})
     const stageChangeCalendar = [];
     const startDate = ref(formatDate(new Date()))
     const currentTurn = ref(0)
@@ -54,7 +55,7 @@ export const gameStore = defineStore('gameStore', () => {
     const currentTheme = ref('dark')
 
     return {
-        gold,
+        money,
         log,
         startDate,
         currentTurn,
@@ -71,6 +72,7 @@ export const gameStore = defineStore('gameStore', () => {
         currentEvents,
         stageChangeCalendar,
         stationAssemblies,
-        analyticsReport
+        analyticsReport,
+        ownedModules
     }
 })

@@ -182,3 +182,66 @@ function isNonZeroDelta(property) {
 </template>
 
 
+<style scoped>
+.metrics-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.metrics-table-wrapper h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.app-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 720px;
+}
+
+.app-table th,
+.app-table td {
+  padding: 0.55rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border, #334155) 65%, transparent);
+  background: color-mix(in srgb, var(--color-surface, #0f172a) 92%, transparent);
+}
+
+.app-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: color-mix(in srgb, var(--color-surface, #0f172a) 82%, transparent);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.app-table tbody tr.app-table--highlight td {
+  background: color-mix(in srgb, var(--color-warning, #f59e0b) 12%, var(--color-surface, #0f172a));
+  color: inherit;
+}
+
+.app-table td.selected,
+.app-table th.selected {
+  background: color-mix(in srgb, var(--color-highlight, #38bdf8) 18%, var(--color-surface, #0f172a));
+  color: inherit;
+}
+
+.app-table td.selected {
+  font-weight: 600;
+}
+
+.app-table tbody tr.app-table--highlight td.selected {
+  background: color-mix(in srgb, var(--color-highlight, #38bdf8) 22%, var(--color-warning, #f59e0b) 8%, var(--color-surface, #0f172a));
+}
+</style>
+

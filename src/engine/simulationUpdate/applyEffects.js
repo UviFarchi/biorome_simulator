@@ -1,11 +1,11 @@
-// src/engine/steps/applyEffects.js
+// TODO => Make effects matrix and write effects for all targets
 // Parallel applyEffects with a worker pool. Preserves per-tile order.
 
 import {mapStore} from '@/stores/map.js'
 
 // Effects catalogs (sync imports; no requireLike)
 import animalEffects from '@/engine/effects/animalEffects.js'
-import assemblyEffects from '@/engine/effects/assemblyEffects.js'
+import assemblyEffects from '@/engine/effects/actionEffects.js'
 import plantEffects from '@/engine/effects/plantEffects.js'
 import resourceEffects from '@/engine/effects/resourceEffects.js'
 import soilEffects from '@/engine/effects/soilEffects.js'

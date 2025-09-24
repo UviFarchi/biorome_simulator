@@ -5,7 +5,7 @@ import { animalTypes } from '@/dict/animalModels.js'
 import { formatDateTime, roundN } from '@/utils/formatting.js'
 import plantEffects from '@/engine/effects/plantEffects.js';
 import animalEffects from '@/engine/effects/animalEffects.js';
-import assemblyEffects from '@/engine/effects/assemblyEffects.js';
+import assemblyEffects from '@/engine/effects/actionEffects.js';
 
 
 const MAX_HISTORY_LENGTH = 100  // retain up to 100 past entries

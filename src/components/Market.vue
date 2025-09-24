@@ -3,11 +3,13 @@ import { computed } from 'vue'
 import eventBus from '@/eventBus.js'
 import { gameStore } from '@/stores/game.js'
 import { marketStore } from '@/stores/market.js'
+import { mapStore } from '@/stores/map.js'
 import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
 import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js'
 
 const game = gameStore()
 const market = marketStore()
+const map = mapStore()
 
 const fmtMoney = n => formatMoney(n)
 const fmtNum = n => formatNumber(n)
@@ -39,24 +41,76 @@ const openOffers = computed(() =>
 const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, resources: {} })
 const harvested = computed(() => market.harvestedProducts || []) // [{ type, qty, shelfLife? }]
 
+function canAfford(price) {
+  const numeric = Number(price)
+  if (!Number.isFinite(numeric) || numeric <= 0) return false
+  const balance = Number(game.money ?? 0)
+  return balance >= numeric
+}
+
+function buyFromMarket({ category, key, stage, price }) {
+  const numeric = Number(price)
+  if (!Number.isFinite(numeric) || numeric <= 0) return
+  if (!canAfford(numeric)) return
+  game.money -= numeric
+  const entry = {
+    type: category,
+    itemKey: key,
+    stage: stage ?? null,
+    quantity: 1,
+    price: numeric,
+    source: 'market',
+    purchasedAt: new Date().toISOString(),
+    id: `gate-${Date.now()}-${Math.random().toString(36).slice(2,8)}`
+  }
+
+  map.gate.push(entry)
+}
+
+function makePriceCell({ category, key, stage, price }) {
+  const numeric = Number(price)
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return '—'
+  }
+  const formatted = fmtMoney(numeric)
+  return {
+    kind: 'price',
+    price: numeric,
+    display: formatted,
+    buttonLabel: 'Buy',
+    disabled: !canAfford(numeric),
+    onBuy: () => buyFromMarket({ category, key, stage, price: numeric })
+  }
+}
+
 // Price catalog tables
 const inputsHeaders = ['Item', 'Buy', 'Sell']
-const inputsRows = computed(() =>
-    Object.entries(priceCatalog.value.resources || {}).map(([k, v]) => [
-      k,
-      fmtMoney(v?.buy ?? v),
-      fmtMoney(v?.sell ?? (k === 'electricitySellPerKWh' ? v : null)),
-    ])
-)
+const inputsRows = computed(() => {
+  const entries = Object.entries(priceCatalog.value.resources || {})
+  return entries.map(([k, v]) => {
+    const valueObj = typeof v === 'object' && v !== null ? v : { buy: v }
+    const buyPrice = valueObj.buy ?? valueObj.unitPrice ?? null
+    const sellPrice = valueObj.sell ?? (k === 'electricitySellPerKWh' ? v : null)
+    const label = valueObj.label || k
+    return [
+      label,
+      makePriceCell({ category: 'resource', key: k, price: buyPrice }),
+      fmtMoney(sellPrice)
+    ]
+  })
+})
 
 const plantsHeaders = ['Type', 'seed', 'seedling', 'sapling']
 const plantsRows = computed(() =>
-    Object.entries(priceCatalog.value.plants || {}).map(([type, rec]) => [
+  Object.entries(priceCatalog.value.plants || {}).map(([type, rec]) => {
+    const stages = rec?.stagePrices || {}
+    return [
       type,
-      fmtMoney(rec.stagePrices?.seed),
-      fmtMoney(rec.stagePrices?.seedling),
-      fmtMoney(rec.stagePrices?.sapling),
-    ])
+      makePriceCell({ category: 'plant', key: type, stage: 'seed', price: stages.seed }),
+      makePriceCell({ category: 'plant', key: type, stage: 'seedling', price: stages.seedling }),
+      makePriceCell({ category: 'plant', key: type, stage: 'sapling', price: stages.sapling })
+    ]
+  })
 )
 
 const animalsHeaders = ['Type', 'Stage', 'Buy']
@@ -64,7 +118,11 @@ const animalsRows = computed(() => {
   const rows = []
   for (const [type, rec] of Object.entries(priceCatalog.value.animals || {})) {
     for (const [stage, price] of Object.entries(rec.stagePrices || {})) {
-      rows.push([type, stage, fmtMoney(price)])
+      rows.push([
+        type,
+        stage,
+        makePriceCell({ category: 'animal', key: type, stage, price })
+      ])
     }
   }
   return rows
@@ -76,108 +134,107 @@ const animalsRows = computed(() => {
   <div class="market-overlay">
     <header class="bar">
       <div><strong>Market</strong></div>
-      <div>Gold: <strong>{{ fmtNum(game.gold) }}</strong></div>
+      <div>money: <strong>{{ fmtNum(game.money) }}</strong></div>
       <div>Today: {{ fmtDate(game.currentDate) }}</div>
       <div>Last flux: {{ fmtDate(market.lastMarketDate) }}</div>
     </header>
-
-    <section class="panel">
-      <h3>Price Catalog</h3>
-      <simpleTable
-          title="Inputs & Utilities"
-          :headers="inputsHeaders"
-          :data="inputsRows"
-          :startOpen="true"
-          class="noToggle"
-      />
-      <simpleTable
-          title="Plants (seed, seedling/sapling)"
-          :headers="plantsHeaders"
-          :data="plantsRows"
-          :startOpen="true"
-          class="noToggle"
-      />
-      <simpleTable
-          title="Animals (by stage)"
-          :headers="animalsHeaders"
-          :data="animalsRows"
-          :startOpen="true"
-          class="noToggle"
-      />
-    </section>
-
-    <section class="panel">
-      <h3>Open Offers</h3>
-      <div v-if="openOffers.length" class="list">
-        <div v-for="o in openOffers" :key="o.id" class="row">
-          <div>{{ o.productType }} × {{ fmtNum(o.quantity) }}</div>
-          <div>@ {{ fmtMoney(o.pricePerUnit) }}</div>
-          <div>Expires: {{ fmtDate(o.expiryDate) }}</div>
-          <div>Status: {{ o.status }}</div>
-        </div>
+    <div class="market-columns">
+      <div class="market-column">
+        <section class="panel">
+          <h3>Price Catalog</h3>
+          <simpleTable
+              title="Inputs & Utilities"
+              :headers="inputsHeaders"
+              :data="inputsRows"
+          />
+          <simpleTable
+              title="Plants (seed, seedling/sapling)"
+              :headers="plantsHeaders"
+              :data="plantsRows"
+          />
+          <simpleTable
+              title="Animals (by stage)"
+              :headers="animalsHeaders"
+              :data="animalsRows"
+          />
+        </section>
       </div>
-      <p v-else>No open offers.</p>
-    </section>
 
-    <section class="panel">
-      <h3>Contracts</h3>
+      <div class="market-column">
+        <section class="panel">
+          <h3>Your Harvested Products</h3>
+          <div v-if="harvested.length" class="list">
+            <div v-for="p in harvested" :key="p.type" class="row">
+              <div>{{ p.type }}</div>
+              <div>Qty: {{ fmtNum(p.qty) }}</div>
+              <div v-if="p.shelfLife">Shelf: {{ p.shelfLife }}</div>
+            </div>
+          </div>
+          <p v-else>None.</p>
+        </section>
 
-      <h4>Offered</h4>
-      <div v-if="offeredContracts.length" class="list">
-        <div v-for="c in offeredContracts" :key="c.id" class="row">
-          <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
-          <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
-          <div>Due: {{ fmtDate(c.dueDate) }}</div>
-          <div>Type: {{ c.type }}</div>
-          <div>Penalty: {{ fmtMoney(c.penalty) }}</div>
-        </div>
+        <section class="panel">
+          <h3>Open Offers</h3>
+          <div v-if="openOffers.length" class="list">
+            <div v-for="o in openOffers" :key="o.id" class="row">
+              <div>{{ o.productType }} × {{ fmtNum(o.quantity) }}</div>
+              <div>@ {{ fmtMoney(o.pricePerUnit) }}</div>
+              <div>Expires: {{ fmtDate(o.expiryDate) }}</div>
+              <div>Status: {{ o.status }}</div>
+            </div>
+          </div>
+          <p v-else>No open offers.</p>
+        </section>
+
+        <section class="panel">
+          <h3>Contracts</h3>
+
+          <h4>Offered</h4>
+          <div v-if="offeredContracts.length" class="list">
+            <div v-for="c in offeredContracts" :key="c.id" class="row">
+              <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
+              <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
+              <div>Due: {{ fmtDate(c.dueDate) }}</div>
+              <div>Type: {{ c.type }}</div>
+              <div>Penalty: {{ fmtMoney(c.penalty) }}</div>
+            </div>
+          </div>
+          <p v-else>None.</p>
+
+          <h4>Active</h4>
+          <div v-if="activeContracts.length" class="list">
+            <div v-for="c in activeContracts" :key="c.id" class="row">
+              <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
+              <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
+              <div>Due: {{ fmtDate(c.dueDate) }}</div>
+              <div>Type: {{ c.type }}<span v-if="c.interval"> (every {{ c.interval }}d)</span></div>
+              <div>Penalty: {{ fmtMoney(c.penalty) }}</div>
+            </div>
+          </div>
+          <p v-else>None.</p>
+
+          <h4>Completed</h4>
+          <div v-if="completedContracts.length" class="list">
+            <div v-for="c in completedContracts" :key="c.id" class="row">
+              <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
+              <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
+              <div>Date: {{ fmtDate(c.dueDate) }}</div>
+            </div>
+          </div>
+          <p v-else>None.</p>
+
+          <h4>Expired</h4>
+          <div v-if="expiredContracts.length" class="list">
+            <div v-for="c in expiredContracts" :key="c.id" class="row">
+              <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
+              <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
+              <div>Due: {{ fmtDate(c.dueDate) }}</div>
+            </div>
+          </div>
+          <p v-else>None.</p>
+        </section>
       </div>
-      <p v-else>None.</p>
-
-      <h4>Active</h4>
-      <div v-if="activeContracts.length" class="list">
-        <div v-for="c in activeContracts" :key="c.id" class="row">
-          <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
-          <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
-          <div>Due: {{ fmtDate(c.dueDate) }}</div>
-          <div>Type: {{ c.type }}<span v-if="c.interval"> (every {{ c.interval }}d)</span></div>
-          <div>Penalty: {{ fmtMoney(c.penalty) }}</div>
-        </div>
-      </div>
-      <p v-else>None.</p>
-
-      <h4>Completed</h4>
-      <div v-if="completedContracts.length" class="list">
-        <div v-for="c in completedContracts" :key="c.id" class="row">
-          <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
-          <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
-          <div>Date: {{ fmtDate(c.dueDate) }}</div>
-        </div>
-      </div>
-      <p v-else>None.</p>
-
-      <h4>Expired</h4>
-      <div v-if="expiredContracts.length" class="list">
-        <div v-for="c in expiredContracts" :key="c.id" class="row">
-          <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
-          <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
-          <div>Due: {{ fmtDate(c.dueDate) }}</div>
-        </div>
-      </div>
-      <p v-else>None.</p>
-    </section>
-
-    <section class="panel">
-      <h3>Your Harvested Products</h3>
-      <div v-if="harvested.length" class="list">
-        <div v-for="p in harvested" :key="p.type" class="row">
-          <div>{{ p.type }}</div>
-          <div>Qty: {{ fmtNum(p.qty) }}</div>
-          <div v-if="p.shelfLife">Shelf: {{ p.shelfLife }}</div>
-        </div>
-      </div>
-      <p v-else>None.</p>
-    </section>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -186,6 +243,9 @@ const animalsRows = computed(() => {
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .bar {
@@ -193,6 +253,31 @@ const animalsRows = computed(() => {
   grid-template-columns: repeat(4, auto);
   gap: 1rem;
   align-items: center;
+}
+
+.market-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  align-content: start;
+}
+
+.market-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-surface);
 }
 
 .list {

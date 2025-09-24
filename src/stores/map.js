@@ -140,7 +140,7 @@ export const mapStore = defineStore('mapStore', () => {
         )
     )
 
-    const gate = ref({animals: [], plants: [], extras: []})
+    const gate = ref([])
     const station = ref()
     const selectedTile = ref({})
 

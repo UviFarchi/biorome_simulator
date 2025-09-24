@@ -350,7 +350,6 @@
             scientificName: 'Macrobrachium rosenbergii',
             description: 'Giant freshwater prawn, a large shrimp species farmed in ponds; omnivorous, feeding on detritus, algae, and small animals and contributing to water clarity.',
             feed: ['detritus', 'algae'],
-
             feedPerGrowthStage: [20, 35, 55, 45],
             weightPerGrowthStage: [200, 500, 1200, 1100],
             growthStages: ['larva', 'juvenile', 'adult'],

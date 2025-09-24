@@ -51,7 +51,7 @@ async function startGame() {
   game.userAvatar = (avatar.value || '').trim()
   const difficulty = game.difficulty;
   game.difficulty = [1, 2, 3].includes(+difficulty) ? +difficulty : 1;
-  game.gold = game.gold / difficulty;
+  game.money = game.money / difficulty;
   map.size = map.size * difficulty;
 
   terrainGeneration.value = true

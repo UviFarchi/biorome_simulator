@@ -58,6 +58,21 @@ On TileInfo There should be:
 </template>
 
 <style scoped>
-.tile-info { padding: 8px; }
-.empty { opacity: 0.7; }
+.tile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 12px 16px 32px;
+  min-width: 640px;
+  box-sizing: border-box;
+}
+
+.tile-info > * {
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: 12px 16px;
+  opacity: 0.7;
+}
 </style>

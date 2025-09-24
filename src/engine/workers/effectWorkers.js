@@ -3,7 +3,7 @@
 // Logs key stages for debugging.
 
 import animalEffects     from '@/engine/effects/animalEffects.js'
-import assemblyEffects   from '@/engine/effects/assemblyEffects.js'
+import assemblyEffects   from '@/engine/effects/actionEffects.js'
 import plantEffects      from '@/engine/effects/plantEffects.js'
 import resourceEffects   from '@/engine/effects/resourceEffects.js'
 import soilEffects       from '@/engine/effects/soilEffects.js'

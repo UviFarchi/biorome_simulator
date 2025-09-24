@@ -66,7 +66,9 @@ function fmt(v) {
 <template>
   <div class="grid-fit">
     <div class="grid-box tile-info-panel" v-show="showTileInfo">
-      <button v-show="showTileInfo" class="closeModalBtn" @click="closeModal">Close</button>
+      <button v-show="showTileInfo" class="closeModalBtn" @click="closeModal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
       <TileInfo />
     </div>
 
@@ -207,12 +209,13 @@ function fmt(v) {
 
 
 .tile-info-panel {
+  position: relative;
   background: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-surface);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .cell {
@@ -232,7 +235,7 @@ function fmt(v) {
 .cell.active { outline: 3px solid var(--color-warning); outline-offset: -2px; }
 .cell .cellId { align-self: flex-end; margin: 5px; }
 .cell.unsurveyed .cellId { color: #222; }
-.cell.unsurveyed { background: color-mix(in srgb, var(--color-background) 95%, transparent); }
+.cell.unsurveyed { background: color-mix(in srgb, var(--color-background) 80%, transparent); }
 
 .icons {
   position: absolute;
@@ -278,7 +281,39 @@ function fmt(v) {
 
 .row-coord .cellId { align-self: center; margin: 0; opacity: .9; }
 
-.closeModalBtn { position: absolute; top: 5px; right: 20px; }
+.closeModalBtn {
+  position: sticky;
+  top: 12px;
+  justify-self: end;
+  align-self: start;
+  margin: 0 12px;
+  z-index: 5;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-action-button);
+  transition: transform 120ms ease, filter 120ms ease;
+}
+.closeModalBtn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+.closeModalBtn:active {
+  transform: scale(0.98);
+}
+.closeModalBtn:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 2px;
+}
 
 .row-res {
   font-size: small;

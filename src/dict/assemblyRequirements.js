@@ -1,122 +1,193 @@
-// Parent → allowed child types (broad defaults)
-const allowByParent = {
-    'transport:ground': [
-        'arm','sensor','camera','cart','tank','sprayer','spreader','seedbox',
-        'gps','battery','communications','solar','valve','pump','computer'
+export const assemblyRequirements = {
+    "accepts": [
+        {
+            "parent": "mobile_base:*",
+            "children": [
+                "arm:*",
+                "mast:*",
+                "tank:*",
+                "pump:*",
+                "sprayer:*",
+                "manifold:*",
+                "valve:*",
+                "hose:*",
+                "battery_pack:*",
+                "generator:*",
+                "repeater:*",
+                "compute:*",
+                "comms:*",
+                "camera:*",
+                "sensor_*:*",
+                "storage:*",
+                "tray:*",
+                "vision_sort:*"
+            ]
+        },
+        {
+            "parent": "cart:*",
+            "children": [
+                "tank:*",
+                "pump:*",
+                "sprayer:*",
+                "manifold:*",
+                "valve:*",
+                "hose:*",
+                "battery_pack:*",
+                "generator:*",
+                "storage:*",
+                "tray:*",
+                "vision_sort:*",
+                "camera:*",
+                "sensor_*:*"
+            ]
+        },
+        {
+            "parent": "trailer:*",
+            "children": [
+                "tank:*",
+                "pump:*",
+                "sprayer:*",
+                "manifold:*",
+                "valve:*",
+                "hose:*",
+                "battery_pack:*",
+                "generator:*",
+                "storage:*"
+            ]
+        },
+        {
+            "parent": "mast:*",
+            "children": [
+                "camera:*",
+                "repeater:*",
+                "antenna:*",
+                "sensor_*:*",
+                "uwb:*",
+                "lidar:*",
+                "sensor_lidar:*"
+            ]
+        },
+        {
+            "parent": "arm:*",
+            "children": [
+                "tool_*:*",
+                "camera:*",
+                "sensor_*:*",
+                "suction_cup:*",
+                "clippers:*",
+                "gripper:*",
+                "sprayer:*"
+            ]
+        },
+        {
+            "parent": "tank:*",
+            "children": [
+                "pump:*",
+                "filter:*",
+                "manifold:*",
+                "valve:*",
+                "hose:*"
+            ]
+        },
+        {
+            "parent": "pump:*",
+            "children": [
+                "manifold:*",
+                "valve:*",
+                "hose:*",
+                "sprayer:*"
+            ]
+        },
+        {
+            "parent": "manifold:*",
+            "children": [
+                "valve:*",
+                "hose:*",
+                "sprayer:*"
+            ]
+        },
+        {
+            "parent": "valve:*",
+            "children": [
+                "hose:*",
+                "sprayer:*"
+            ]
+        },
+        {
+            "parent": "air_compressor:*",
+            "children": [
+                "air_filter:*",
+                "air_jet:*"
+            ]
+        },
+        {
+            "parent": "uav:*",
+            "children": [
+                "camera:*",
+                "sensor_*:*",
+                "sprayer:*",
+                "repeater:*"
+            ]
+        },
+        {
+            "parent": "drone:*",
+            "children": [
+                "camera:*",
+                "sensor_*:*",
+                "sprayer:*",
+                "repeater:*"
+            ]
+        },
+        {
+            "parent": "repeater:*",
+            "children": [
+                "antenna:*"
+            ]
+        },
+        {
+            "parent": "sprayer:*",
+            "children": [
+                "camera:*",
+                "sensor_*:*"
+            ]
+        }
     ],
-    'transport:flying': [
-        'sensor','camera','gps','battery','communications','computer'
+    "forbidden": [
+        {
+            "parent": "uav:*",
+            "child": "tank:*"
+        },
+        {
+            "parent": "drone:*",
+            "child": "tank:*"
+        },
+        {
+            "parent": "uav:*",
+            "child": "arm:*"
+        },
+        {
+            "parent": "drone:*",
+            "child": "arm:*"
+        },
+        {
+            "parent": "battery_pack:*",
+            "child": "*:*"
+        },
+        {
+            "parent": "generator:*",
+            "child": "*:*"
+        },
+        {
+            "parent": "camera:*",
+            "child": "*:*"
+        },
+        {
+            "parent": "sensor_*:*",
+            "child": "*:*"
+        }
     ],
-    'support:pole': [
-        'sensor','camera','communications','solar','valve','pump'
-    ],
-    'support:antenna': [
-        'communications'
-    ],
-    'support:shelfRack': [
-        'arm','sensor','press','tray','mold','dryer','dehumidifier','conveyor','humidifier','heating'
-    ],
-    'internalSpace:*': [
-        'shelf','conveyor','sensor','computer','communications','hvac','heating','humidifier',
-        'mixer','steam_gen','sterilizer','pasteurizer','dispenser','tray','mold','dryer','dehumidifier',
-        'generator','engine','pump','tank','press','separator','heat_recovery','air_filter','fan','rfid',
-        'power_elec','gas_storage','gas_move','gas_dry','gas_clean','gas_filter','gas_control','safety',
-        'vessel'
-    ]
-}
-
-// Child-specific overrides (narrower allow / explicit forbids)
-// Keys are "type" or "type:subtype". Use "*" as wildcard.
-const childOverrides = {
-    'arm:heavy':      { forbid: ['transport:flying','support:pole','support:shelfRack'] },
-    'arm:medium':     { forbid: ['transport:flying'] },
-
-    'tool:flattener': { allow: ['arm:*','transport:ground'] },
-    'tool:grader':    { allow: ['arm:*','transport:ground'] },
-    'tool:*':         { allow: ['arm:*'] }, // default for tools
-
-    'cart:*':         { allow: ['transport:ground'] },
-    'tank:*':         { forbid: ['transport:flying'] },
-    'sprayer:*':      { allow: ['transport:*'] },
-
-    'valve:*':        { allow: ['transport:*','internalSpace:*','support:pole'] },
-    'pump:*':         { allow: ['transport:*','internalSpace:*','support:pole'] },
-
-    'solar:*':        { allow: ['support:pole','transport:ground'] },
-
-    'computer:server':   { allow: ['internalSpace:*'] },
-    'computer:storage':  { allow: ['internalSpace:*'] },
-    'communications:router_core': { allow: ['internalSpace:*'] },
-    'communications:repeater':    { allow: ['support:pole','support:antenna'] },
-    'computer:rt_control':         { allow: ['transport:*','internalSpace:*'] },
-
-    'shelf:robotic': { allow: ['internalSpace:*'] },
-    'conveyor:*':    { allow: ['internalSpace:*'] },
-    'rfid:*':        { allow: ['internalSpace:*'] },
-    'hvac:*':        { allow: ['internalSpace:*'] },
-
-    // Biogas plantStore modules
-    'feed:*':        { allow: ['internalSpace:*'] },
-    'pretreat:*':    { allow: ['internalSpace:*'] },
-    'conveyor:auger':{ allow: ['internalSpace:*'] },
-    'pump:slurry':   { allow: ['internalSpace:*'] },
-    'vessel:*':      { allow: ['internalSpace:*'] },
-    'mixer:*':       { allow: ['internalSpace:*'] },
-    'heater:*':      { allow: ['internalSpace:*'] },
-    'heat_xfer:*':   { allow: ['internalSpace:*'] },
-    'gas_storage:*': { allow: ['internalSpace:*'] },
-    'gas_move:*':    { allow: ['internalSpace:*'] },
-    'gas_dry:*':     { allow: ['internalSpace:*'] },
-    'gas_clean:*':   { allow: ['internalSpace:*'] },
-    'gas_filter:*':  { allow: ['internalSpace:*'] },
-    'gas_control:*': { allow: ['internalSpace:*'] },
-    'safety:*':      { allow: ['internalSpace:*','support:pole'] },
-    'flare:*':       { allow: ['support:pole','internalSpace:*'] },
-    'engine:*':      { allow: ['internalSpace:*'] },
-    'generator:*':   { allow: ['internalSpace:*'] },
-    'heat_recovery:*': { allow: ['internalSpace:*'] },
-    'power_elec:*':  { allow: ['internalSpace:*'] },
-    'separator:*':   { allow: ['internalSpace:*'] },
-    'pump:digestate':{ allow: ['internalSpace:*'] },
-    'tank:digestate':{ allow: ['internalSpace:*'] },
-
-    // Mycelium box reactor modules
-    'steam_gen:*':     { allow: ['internalSpace:*'] },
-    'sterilizer:*':    { allow: ['internalSpace:*'] },
-    'pasteurizer:*':   { allow: ['internalSpace:*'] },
-    'air_clean:laminar': { allow: ['internalSpace:*'] },
-    'air_filter:hepa': { allow: ['internalSpace:*'] },
-    'fan:*':           { allow: ['internalSpace:*'] },
-    'dispenser:spawn': { allow: ['internalSpace:*'] },
-    'tray:*':          { allow: ['internalSpace:*','shelf:robotic'] },
-    'mold:box':        { allow: ['internalSpace:*','shelf:robotic'] },
-    'dryer:dehydrator':{ allow: ['internalSpace:*'] },
-    'dehumidifier:*':  { allow: ['internalSpace:*'] }
-}
-
-// Extra co-requirements (beyond module-level requires)
-const coRequires = {
-    'transport:ground': ['gps','communications','battery'],
-    'transport:flying': ['gps','communications','battery'],
-
-    'sprayer:*':     ['tank','battery'],
-    'valve:*':       ['tank','battery'],
-    'pump:*':        ['tank','battery'],
-
-    'generator:*':   ['engine'],
-    'power_elec:*':  ['generator'],
-
-    'sterilizer:autoclave': ['steam_gen'],
-    'pasteurizer:*':        ['steam_gen'],
-    'dispenser:spawn':      ['air_clean:laminar']
-}
-
-// Explicit forbids where mass rules aren’t enough
-const forbid = {
-    'transport:flying': ['cart','tank','arm_heavy']
-}
-
-// Precedence (for consumers of this data):
-// childOverrides.allow / forbid → forbid → allowByParent (broad)
-
-export const assemblyRequirements = { allowByParent, childOverrides, coRequires, forbid }
+    "portPolicy": {
+        "useAcesPorts": true,
+        "useParentPortsUsed": true
+    }
+};

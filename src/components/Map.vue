@@ -13,13 +13,14 @@ import AnimalsMenu from '@/components/menus/AnimalsMenu.vue'
 import PlantsMenu from '@/components/menus/PlantsMenu.vue'
 import FarmGate from '@/components/menus/FarmGate.vue'
 import TilesGrid from '@/components/grid/TilesGrid.vue'
-import {loadAllStores} from '@/utils/persistance.js'
+import {loadAllStores, saveAllStores} from '@/utils/persistance.js'
 import News from '@/components/menus/News.vue'
 import {produceReport} from '@/engine/phases/analytics/produceReport.js';
 import updateGame from '@/engine/simulationUpdate/updateGame.js';
 // TODO => Add coverage % mechanic to plants, and adjust seed and seedling prices to coverage, as well as yield.
 const game = gameStore()
 const map = mapStore()
+const currentPhaseLabel = computed(() => game.engines[(game.phase) % game.engines.length])
 
 /* ---------------- Open/close truth per overlay ---------------- */
 const show = ref({
@@ -199,20 +200,21 @@ function handlePhaseChange() {
 
   } else if (next === 2) { // Phase 2 — Operations
     setLayoutWidth('double')
-    on('weather');
-    on('news');
-    on('log');
+    off('weather');
+    off('news');
+    off('log');
     on('gate');
     off('analytics');
     off('animals');
     off('plants');
-    off('assemblies');
+    on('assemblies');
 
     disable('resources');
     eventBus.emit('log', {engine: 'operations', msg: 'Executing instructions...'})
   }
 
   game.phase = next
+  saveAllStores()
   setTimeout(() => {
     eventBus.emit('spinner', false)
   }, 1000)
@@ -237,7 +239,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="mapWrapper">
+  <div class="mapWrapper" :class="currentPhaseLabel + 'Background'">
     <ControlPanel class="control"/>
 
     <!-- content wrapper: add fullscreen class -->
@@ -291,7 +293,7 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-rows: 10vh 1fr;
   height: 100vh;
-  background: var(--color-background);
+
 }
 
 /* three columns: left lane | grid | right lane */
@@ -302,7 +304,7 @@ onBeforeUnmount(() => {
   height: 100%;
   gap: 18px;
   padding: 18px 22px;
-  background: color-mix(in srgb, var(--color-background) 92%, transparent);
+  background: color-mix(in srgb, var(--color-background) 80%, transparent);
   overflow: hidden; /* keep the page from double-scrolling */
   box-sizing: border-box;
 }
@@ -311,6 +313,7 @@ onBeforeUnmount(() => {
 .grid {
   overflow: auto;
   z-index: 1;
+  background: black !important;
 }
 
 /* lanes fill leftover space on both sides */
