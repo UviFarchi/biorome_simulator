@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { mapStore } from '@/stores/map.js'
-import { formatMoney, formatDateLocale } from '@/utils/formatting.js'
+import { formatDateLocale } from '@/utils/formatting.js'
 
 const map = mapStore()
 
@@ -9,25 +9,34 @@ const gateItems = computed(() => map.gate)
 
 const hasItems = computed(() => gateItems.value.length > 0)
 
+function isResource(item) {
+  return item?.kind === 'resource'
+}
+
 function titleFor(item) {
-  const parts = [item.itemKey || item.type || 'Unknown']
-  if (item.stage) parts.push(`(${item.stage})`)
-  return parts.join(' ')
+  return item?.type || 'Unknown'
 }
 
-function quantityLabel(item) {
-  const qty = Number.isFinite(item.quantity) ? item.quantity : 1
-  return `Qty: ${qty}`
+function stageLabel(item) {
+  if (isResource(item)) {
+    const qty = Number.isFinite(item?.quantity) ? item.quantity : 1
+    return `Qty: ${qty}`
+  }
+  if (!item?.growthStage) return ''
+  return `Stage: ${item.growthStage}`
 }
 
-function purchasedLabel(item) {
-  if (!item.purchasedAt) return ''
-  return `Bought: ${formatDateLocale(item.purchasedAt)}`
+function deployedLabel(item) {
+  if (!item?.dateDeployed) return ''
+  return `Bought: ${formatDateLocale(item.dateDeployed)}`
 }
 
-function priceLabel(item) {
-  if (!Number.isFinite(item.price)) return ''
-  return formatMoney(item.price)
+function domainLabel(item) {
+  if (!item) return ''
+  if (isResource(item)) return 'Resource'
+  if (item.weight) return 'Animal'
+  if (item.height) return 'Plant'
+  return ''
 }
 </script>
 
@@ -41,16 +50,14 @@ function priceLabel(item) {
     <p v-if="!hasItems" class="gate-empty">No items waiting at the gate.</p>
 
     <ul v-else class="gate-list">
-      <li v-for="item in gateItems" :key="item.id" class="gate-item">
+      <li v-for="instance in gateItems" :key="instance.id" class="gate-item">
         <div class="gate-row">
-          <span class="gate-title">{{ titleFor(item) }}</span>
-          <span v-if="priceLabel(item)" class="gate-price">{{ priceLabel(item) }}</span>
+          <span class="gate-title">{{ titleFor(instance) }}</span>
+          <span v-if="domainLabel(instance)" class="gate-price">{{ domainLabel(instance) }}</span>
         </div>
         <div class="gate-meta">
-          <span>{{ quantityLabel(item) }}</span>
-          <span v-if="item.type">Type: {{ item.type }}</span>
-          <span v-if="item.source">Source: {{ item.source }}</span>
-          <span v-if="purchasedLabel(item)">{{ purchasedLabel(item) }}</span>
+          <span v-if="stageLabel(instance)">{{ stageLabel(instance) }}</span>
+          <span v-if="deployedLabel(instance)">{{ deployedLabel(instance) }}</span>
         </div>
       </li>
     </ul>

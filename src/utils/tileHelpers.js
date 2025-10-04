@@ -93,7 +93,11 @@ function getAdjacentTiles(tile, tilesGrid) {
     return adjacent
 }
 
-const stageImages = import.meta.glob('/src/assets/{plants,animals}/*/*.png', { eager: true, as: 'url' })
+const stageImages = import.meta.glob('/src/assets/{plants,animals}/*/*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+})
 
 function getImageOrIcon(domain, type, stage) {
     if (domain && type && stage) {

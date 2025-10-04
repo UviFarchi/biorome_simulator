@@ -50,7 +50,7 @@ textarea {
     --engine-analytics: #c700e4;
     --engine-optimizations: #001ef4;
     --engine-operations: #0ce605;
-    --engine-simulation: #ffbe01;
+    --engine-simulation: #a57c00;
 
 
     --metrics-selected-bg: rgba(37, 99, 235, 0.12);
@@ -85,7 +85,7 @@ textarea {
     --engine-analytics: #6e027a;
     --engine-optimizations: #01117a;
     --engine-operations: #057a01;
-    --engine-simulation: #654b01;
+    --engine-simulation: #836102;
 
 
     --metrics-selected-bg: rgba(96, 165, 250, 0.22);
@@ -121,7 +121,7 @@ textarea {
 }
 .simulationText {
     color: var(--engine-simulation) !important;
-    filter: brightness(200%);
+    filter: brightness(100%);
 }
 
 .analyticsBackground {

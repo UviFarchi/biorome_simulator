@@ -7,6 +7,7 @@ import {onBeforeUnmount, onMounted, ref} from 'vue'
 import Map from '/src/components/Map.vue';
 import AssemblyAssemblyAssembly from '@/components/AssemblyStation.vue';
 import Market from '/src/components/Market.vue';
+import { saveAllStores } from '@/utils/persistance.js'
 
 
 
@@ -15,6 +16,7 @@ const currentArea = ref('start')
 
 function handleNav(area) {
       currentArea.value = area;
+      saveAllStores()
 }
 
 

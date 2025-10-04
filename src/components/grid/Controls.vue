@@ -487,9 +487,9 @@ onBeforeUnmount(stopTestingSync)
           <div class="app-label">Plants</div>
         </div>
         <div class="controlItem" v-show="allowedSet.has('assemblies')">
-          <button id="showAssemblies" type="button" class="app-button"
+          <button id="showActionMenu" type="button" class="app-button"
                   :class="stateClass('assemblies')"
-                  aria-label="Assemblies"
+                  aria-label="Action menu"
                   @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
             <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
               <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -509,7 +509,7 @@ onBeforeUnmount(stopTestingSync)
             </svg>
 
           </button>
-          <div class="app-label">Assemblies</div>
+          <div class="app-label">Action Menu</div>
         </div>
       </div>
       <div class="subpanel subpanel--info">

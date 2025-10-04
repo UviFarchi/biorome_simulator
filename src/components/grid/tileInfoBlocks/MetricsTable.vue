@@ -1,11 +1,10 @@
 <script setup>
-import {computed, ref, onMounted, onBeforeUnmount, nextTick} from 'vue'
+import {computed, ref} from 'vue'
 
-
-import {mapStore} from '@/stores/map.js'
+import {gameStore} from '@/stores/game.js'
 import {roundN} from '@/utils/formatting.js';
 
-const map = mapStore()
+const game = gameStore()
 
 const props = defineProps({
   title: {type: String, required: true},
@@ -14,13 +13,70 @@ const props = defineProps({
 
 const fieldData = computed(() => props.data || {})
 
+const phaseIndex = computed(() => {
+  const engines = game.engines || []
+  const len = Array.isArray(engines) ? engines.length : 0
+  if (!len) return 0
+  const raw = Number(game.phase ?? 0)
+  const idx = Number.isFinite(raw) ? raw : 0
+  return ((idx % len) + len) % len
+})
+
+const currentEngine = computed(() => {
+  const engines = game.engines || []
+  return Array.isArray(engines) ? engines[phaseIndex.value] ?? null : null
+})
+
+const canToggleCollect = computed(() => currentEngine.value === 'analytics' || currentEngine.value === 'optimizations')
+const isOperationsPhase = computed(() => currentEngine.value === 'operations')
+
+const columnLabels = Object.freeze({
+  3: 'Previous',
+  4: 'Historical average',
+  5: 'Current',
+  6: 'Optimized'
+})
+
+function isCollectChecked(property) {
+  return Boolean(property?.measured?.collect)
+}
+
+function updateCollect(property, value) {
+  if (!property || typeof property !== 'object') return
+  if (!property.measured || typeof property.measured !== 'object') return
+  property.measured.collect = value
+}
+
+function handleCollectToggle(event, property) {
+  if (!canToggleCollect.value) return
+  if (!event?.target) return
+  updateCollect(property, event.target.checked)
+}
+
+function rowClasses(property) {
+  return {
+    'app-table--highlight': isNonZeroDelta(property),
+    'app-table--collect': isOperationsPhase.value && isCollectChecked(property)
+  }
+}
+
+function deltaTooltip() {
+  if (selectedColumns.value.length !== 2) {
+    return 'Select two columns by clicking their headers'
+  }
+  const [leftIdx, rightIdx] = selectedColumns.value
+  const leftLabel = columnLabels[leftIdx] || `col${leftIdx}`
+  const rightLabel = columnLabels[rightIdx] || `col${rightIdx}`
+  return `Δ = ${rightLabel} − ${leftLabel}`
+}
+
 
 // --- column selection for delta via header clicks ---
-const selectedColumns = ref([]) // holds up to 2 indices from [2,3,4,5]
+const selectedColumns = ref([]) // holds up to 2 indices from [3,4,5,6]
 
 function isSelectableColumn(index) {
-  // 0: Property, 1: Expiry, 2: Previous, 3: Last average, 4: Current, 5: Optimized, 6: Delta
-  return index === 2 || index === 3 || index === 4 || index === 5
+  // 0: Measure, 1: Property, 2: Expiry, 3: Previous, 4: Historical average, 5: Current, 6: Optimized, 7: Delta
+  return index === 3 || index === 4 || index === 5 || index === 6
 }
 
 function isColumnSelected(index) {
@@ -65,19 +121,18 @@ function getDelta(property) {
   const [leftIdx, rightIdx] = sel
   const h = getHistoryData(property)
   const a =
-      leftIdx === 2 ? h.last :
-          leftIdx === 3 ? h.mean :
-              leftIdx === 4 ? property?.measured?.value :
-                  leftIdx === 5 ? property?.optimized : null
+      leftIdx === 3 ? h.last :
+          leftIdx === 4 ? h.mean :
+              leftIdx === 5 ? property?.measured?.value :
+                  leftIdx === 6 ? property?.optimized : null
   const b =
-      rightIdx === 2 ? h.last :
-          rightIdx === 3 ? h.mean :
-              rightIdx === 4 ? property?.measured?.value :
-                  rightIdx === 5 ? property?.optimized : null
+      rightIdx === 3 ? h.last :
+          rightIdx === 4 ? h.mean :
+              rightIdx === 5 ? property?.measured?.value :
+                  rightIdx === 6 ? property?.optimized : null
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null
   return Number(b - a)
 }
-// TODO => Add measurement tick to turn mneasured.collect true during the analytics phase.
 //TODO => Recalculate Optimized values so that they are always computed on top of the current. For example, if an animal is projected to have an effect on a property, that effect is always on top of the current value, not set once.
 function formatDelta(value) {
   return value === null ? 'Not enough data' : value
@@ -99,32 +154,33 @@ function isNonZeroDelta(property) {
     <table class="app-table">
       <thead>
       <tr>
+        <th class="collect-col">Measure</th>
         <th>Property</th>
         <th>Expiry</th>
-        <th
-            @click="handleHeaderClick(2)"
-            :class="{ selected: isColumnSelected(2) }"
-            title="Click to select for Δ"
-        >
-          Previous
-        </th>
         <th
             @click="handleHeaderClick(3)"
             :class="{ selected: isColumnSelected(3) }"
             title="Click to select for Δ"
         >
-          Historical average
+          Previous
         </th>
         <th
             @click="handleHeaderClick(4)"
             :class="{ selected: isColumnSelected(4) }"
             title="Click to select for Δ"
         >
-          Current
+          Historical average
         </th>
         <th
             @click="handleHeaderClick(5)"
             :class="{ selected: isColumnSelected(5) }"
+            title="Click to select for Δ"
+        >
+          Current
+        </th>
+        <th
+            @click="handleHeaderClick(6)"
+            :class="{ selected: isColumnSelected(6) }"
             title="Click to select for Δ"
         >
           Optimized
@@ -137,19 +193,28 @@ function isNonZeroDelta(property) {
       <tr
           v-for="(property, key) in fieldData"
           :key="key + ':' + getHistoryData(property).digest + ':' + (property.measured?.date || '')"
-          :class="{ 'app-table--highlight': isNonZeroDelta(property) }"
+          :class="rowClasses(property)"
       >
+        <td class="collect-cell">
+          <input
+              type="checkbox"
+              :checked="isCollectChecked(property)"
+              :disabled="!canToggleCollect"
+              @change="handleCollectToggle($event, property)"
+              :aria-label="`Toggle measurement for ${key}`"
+          />
+        </td>
         <td>{{ key }}</td>
         <td>{{ property.measured?.date }}</td>
 
         <!-- Previous -->
-        <td :class="{ selected: isColumnSelected(2) }">
+        <td :class="{ selected: isColumnSelected(3) }">
           {{ getHistoryData(property).last ?? '-' }}
           <!-- keep your expand button if you still use it -->
         </td>
 
         <!-- History average -->
-        <td :class="{ selected: isColumnSelected(3) }">
+        <td :class="{ selected: isColumnSelected(4) }">
   <span
       :title="(getHistoryData(property).values || []).join(', ')"
       style="cursor: help; text-decoration: underline dotted;"
@@ -159,18 +224,16 @@ function isNonZeroDelta(property) {
         </td>
 
         <!-- Current -->
-        <td :class="{ selected: isColumnSelected(4) }">
+        <td :class="{ selected: isColumnSelected(5) }">
           {{ property.measured?.value ?? '-' }}
         </td>
 
         <!-- Optimized -->
-        <td :class="{ selected: isColumnSelected(5) }">
+        <td :class="{ selected: isColumnSelected(6) }">
           {{ property.optimized ?? '-' }}
         </td>
 
-        <td :title="selectedColumns.length === 2
-              ? `Δ = col${selectedColumns[1]} − col${selectedColumns[0]}`
-              : 'Select two columns by clicking their headers'">
+        <td :title="deltaTooltip()">
           {{ formatDelta(getDelta(property)) }}
         </td>
 
@@ -195,6 +258,10 @@ function isNonZeroDelta(property) {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
+}
+
+.collect-col {
+  width: 3.5rem;
 }
 
 .app-table {
@@ -230,6 +297,15 @@ function isNonZeroDelta(property) {
   color: inherit;
 }
 
+.app-table tbody tr.app-table--collect td {
+  color: var(--engine-operations, #057a01);
+  font-weight: 600;
+}
+
+.app-table tbody tr.app-table--collect td.selected {
+  color: var(--engine-operations, #057a01);
+}
+
 .app-table td.selected,
 .app-table th.selected {
   background: color-mix(in srgb, var(--color-highlight, #38bdf8) 18%, var(--color-surface, #0f172a));
@@ -243,5 +319,18 @@ function isNonZeroDelta(property) {
 .app-table tbody tr.app-table--highlight td.selected {
   background: color-mix(in srgb, var(--color-highlight, #38bdf8) 22%, var(--color-warning, #f59e0b) 8%, var(--color-surface, #0f172a));
 }
-</style>
 
+.collect-cell {
+  text-align: center;
+  width: 3.5rem;
+}
+
+.collect-cell input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.collect-cell input[type="checkbox"][disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+</style>

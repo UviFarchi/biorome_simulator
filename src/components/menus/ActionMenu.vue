@@ -5,7 +5,7 @@ import { gameStore } from '@/stores/game.js'
 import { actionRequirements } from '@/dict/actionRequirements.js'
 import assemblyEffects from '@/engine/effects/actionEffects.js'
 import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
-import {applyOperationEffects} from '@/engine/phases/operations/applyOperationEffects.js';
+import {handleAction} from '@/engine/phases/operations/handleAction.js';
 
 const map = mapStore()
 const game = gameStore()
@@ -79,7 +79,7 @@ function addActionToTile(category, actionKey) {
   tile.assemblies.optimized.push(inst)
   const phase = currentPhase.value
   if (phase === 2) {
-    applyOperationEffects('assembly', actionKey, tile, inst)
+    handleAction('assembly', actionKey, tile, inst)
   } else if (phase === 1) {
     applyOptimizationEffects('assembly', actionKey, tile, inst)
   }
@@ -133,37 +133,14 @@ function formatDelta(delta) {
 </script>
 
 <template>
-  <div class="panel assembliesMenu">
+  <div class="panel actionMenu">
     <div class="panel-header-row">
-      <h4>Assemblies</h4>
+      <h4>Action Menu</h4>
     </div>
 
-    <div v-if="!currentTile" class="hint">Select a tile to plan assembly actions.</div>
+    <div v-if="!currentTile" class="hint">Select a tile to plan actions.</div>
 
     <div v-else class="menu-body">
-      <div class="assemblies-list">
-        <div
-          v-for="assembly in game.stationAssemblies"
-          :key="assembly.id"
-          class="card"
-        >
-          <div class="card-header">
-            <div class="card-title">{{ assembly.name }}</div>
-          </div>
-          <div class="card-body">
-            <div>Built: {{ assembly.built ? 'Yes' : 'No' }}</div>
-            <div>Deployed: {{ assembly.deployed ? 'Yes' : 'No' }}</div>
-            <div>Moves: {{ assembly.moves }}</div>
-            <div>Actions: {{ assembly.actions }}</div>
-            <div class="modules">
-              <div v-for="(m, i) in assembly.modules" :key="i">
-                {{ m.type }}<span v-if="m.subtype">: {{ m.subtype }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="actions-list">
         <div
           v-for="group in actionGroups"
@@ -257,7 +234,7 @@ function formatDelta(delta) {
 </template>
 
 <style scoped>
-.assembliesMenu {
+.actionMenu {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -265,11 +242,11 @@ function formatDelta(delta) {
 
 .menu-body {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   height: 100%;
 }
 
-.assemblies-list,
 .actions-list {
   flex: 1 1 0;
   display: flex;
@@ -430,30 +407,6 @@ function formatDelta(delta) {
 .requirements-empty {
   opacity: 0.7;
   margin: 0;
-}
-
-.card {
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: color-mix(in srgb, var(--color-background) 25%, transparent);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-title {
-  font-weight: 600;
-}
-
-.modules {
-  margin-top: 4px;
 }
 
 .hint {

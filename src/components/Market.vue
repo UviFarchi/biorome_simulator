@@ -6,6 +6,7 @@ import { marketStore } from '@/stores/market.js'
 import { mapStore } from '@/stores/map.js'
 import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
 import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js'
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
 
 const game = gameStore()
 const market = marketStore()
@@ -41,6 +42,32 @@ const openOffers = computed(() =>
 const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, resources: {} })
 const harvested = computed(() => market.harvestedProducts || []) // [{ type, qty, shelfLife? }]
 
+const serviceKeys = new Set(['waste', 'electricity', 'water'])
+
+function normalizeResourceEntry(key, value) {
+  const valueObj = typeof value === 'object' && value !== null ? value : { buy: value }
+  return {
+    key,
+    label: valueObj.label || key,
+    buyPrice: valueObj.buy ?? valueObj.unitPrice ?? null,
+    sellPrice: valueObj.sell ?? null
+  }
+}
+
+const gateResources = computed(() => {
+  const catalog = priceCatalog.value.resources || {}
+  return Object.entries(catalog)
+      .filter(([key]) => !serviceKeys.has(key))
+      .map(([key, value]) => normalizeResourceEntry(key, value))
+})
+
+const serviceResources = computed(() => {
+  const catalog = priceCatalog.value.resources || {}
+  return Object.entries(catalog)
+      .filter(([key]) => serviceKeys.has(key))
+      .map(([key, value]) => normalizeResourceEntry(key, value))
+})
+
 function canAfford(price) {
   const numeric = Number(price)
   if (!Number.isFinite(numeric) || numeric <= 0) return false
@@ -48,23 +75,36 @@ function canAfford(price) {
   return balance >= numeric
 }
 
+function makeResourceEntry(key) {
+  return {
+    id: `resource-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    kind: 'resource',
+    type: key,
+    quantity: 1,
+    dateDeployed: new Date().toISOString()
+  }
+}
+
 function buyFromMarket({ category, key, stage, price }) {
   const numeric = Number(price)
   if (!Number.isFinite(numeric) || numeric <= 0) return
   if (!canAfford(numeric)) return
-  game.money -= numeric
-  const entry = {
-    type: category,
-    itemKey: key,
-    stage: stage ?? null,
-    quantity: 1,
-    price: numeric,
-    source: 'market',
-    purchasedAt: new Date().toISOString(),
-    id: `gate-${Date.now()}-${Math.random().toString(36).slice(2,8)}`
-  }
 
-  map.gate.push(entry)
+  if (category === 'animal' || category === 'plant') {
+    let instance = null
+    try {
+      instance = makeInstance(category, key, stage)
+    } catch (err) {
+      console.error('Failed to create biota instance from market purchase', err)
+    }
+    if (!instance) return
+    game.money -= numeric
+    map.gate.push(instance)
+  } else if (category === 'resource') {
+    const entry = makeResourceEntry(key)
+    game.money -= numeric
+    map.gate.push(entry)
+  }
 }
 
 function makePriceCell({ category, key, stage, price }) {
@@ -73,32 +113,35 @@ function makePriceCell({ category, key, stage, price }) {
     return '—'
   }
   const formatted = fmtMoney(numeric)
+  const buyableCategories = new Set(['animal', 'plant', 'resource'])
+  const isBuyable = buyableCategories.has(category)
   return {
     kind: 'price',
     price: numeric,
     display: formatted,
     buttonLabel: 'Buy',
-    disabled: !canAfford(numeric),
+    disabled: !canAfford(numeric) || !isBuyable,
     onBuy: () => buyFromMarket({ category, key, stage, price: numeric })
   }
 }
 
 // Price catalog tables
 const inputsHeaders = ['Item', 'Buy', 'Sell']
-const inputsRows = computed(() => {
-  const entries = Object.entries(priceCatalog.value.resources || {})
-  return entries.map(([k, v]) => {
-    const valueObj = typeof v === 'object' && v !== null ? v : { buy: v }
-    const buyPrice = valueObj.buy ?? valueObj.unitPrice ?? null
-    const sellPrice = valueObj.sell ?? (k === 'electricitySellPerKWh' ? v : null)
-    const label = valueObj.label || k
-    return [
-      label,
-      makePriceCell({ category: 'resource', key: k, price: buyPrice }),
-      fmtMoney(sellPrice)
-    ]
-  })
-})
+const inputsRows = computed(() =>
+  gateResources.value.map(({ key, label, buyPrice, sellPrice }) => [
+    label,
+    makePriceCell({ category: 'resource', key, price: buyPrice }),
+    fmtMoney(sellPrice)
+  ])
+)
+
+const servicesHeaders = ['Service', 'Unit Price']
+const servicesRows = computed(() =>
+  serviceResources.value.map(({ label, buyPrice }) => [
+    label,
+    fmtMoney(buyPrice)
+  ])
+)
 
 const plantsHeaders = ['Type', 'seed', 'seedling', 'sapling']
 const plantsRows = computed(() =>
@@ -143,7 +186,7 @@ const animalsRows = computed(() => {
         <section class="panel">
           <h3>Price Catalog</h3>
           <simpleTable
-              title="Inputs & Utilities"
+              title="Resources (deliver to gate)"
               :headers="inputsHeaders"
               :data="inputsRows"
           />
@@ -161,6 +204,16 @@ const animalsRows = computed(() => {
       </div>
 
       <div class="market-column">
+        <section class="panel">
+          <h3>Services Pricing</h3>
+          <simpleTable
+              title="Utilities & Waste"
+              :headers="servicesHeaders"
+              :data="servicesRows"
+              :start-open="true"
+          />
+        </section>
+
         <section class="panel">
           <h3>Your Harvested Products</h3>
           <div v-if="harvested.length" class="list">

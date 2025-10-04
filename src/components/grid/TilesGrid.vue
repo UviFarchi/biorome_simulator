@@ -39,7 +39,11 @@ function closeModal() {
 }
 
 /* ---------- assets ---------- */
-const resImages = import.meta.glob('/src/assets/resources/*.png', { eager: true, as: 'url' })
+const resImages = import.meta.glob('/src/assets/resources/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
 function resImg(key) {
   return resImages[`/src/assets/resources/${key}.png`] || null
 }

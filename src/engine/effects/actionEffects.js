@@ -543,7 +543,7 @@ export default {
     "harvest_corn_cob": [
         {
             "target": "market",
-            "property": "corn_kg",
+            "property": "corn",
             "delta": {
                 "$fn": "plantOrAnimalYield"
             }

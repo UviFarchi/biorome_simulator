@@ -9,7 +9,7 @@ import { gameStore } from '@/stores/game.js';
 const numberFormatter = new Intl.NumberFormat('en-US');
 
 const game = gameStore();
-const { money, ownedModules } = storeToRefs(game);
+const { money, ownedModules, stationAssemblies } = storeToRefs(game);
 
 if (!ownedModules.value) {
   ownedModules.value = { station: [], assemblies: [] };
@@ -34,6 +34,12 @@ const currentAssembly = ref([])
 
 const stationInventory = computed(() => ownedModules.value?.station ?? [])
 const assemblyInventory = computed(() => ownedModules.value?.assemblies ?? [])
+const stationAssemblyList = computed(() => Array.isArray(stationAssemblies.value) ? stationAssemblies.value : [])
+const stationAssemblyEntries = computed(() => stationAssemblyList.value.map(assembly => ({
+  assembly,
+  modules: Array.isArray(assembly.modules) ? assembly.modules : []
+})))
+const stationAssemblyCount = computed(() => stationAssemblyEntries.value.length)
 
 function buildCountMap(list = []) {
   return list.reduce((acc, key) => {
@@ -477,46 +483,90 @@ function formatObject(value) {
     </aside>
 
     <section class="assembly-area">
-      <div class="section-title">
-        <h2>Assembly Workspace</h2>
-        <span class="section-count">{{ currentAssembly.length }} modules</span>
-      </div>
-      <div class="assembly-board">
-        <p v-if="!currentAssembly.length" class="assembly-empty">
-          No modules in the current assembly yet. Buy and add modules from the catalog to get started.
-        </p>
-        <div v-else class="assembly-grid">
-          <article v-for="entry in currentAssemblySummary" :key="entry.module.key" class="card assembly-card">
+      <div class="station-assemblies">
+        <div class="section-title">
+          <h2>Station Assemblies</h2>
+          <span class="section-count">{{ stationAssemblyCount }} in station</span>
+        </div>
+        <div class="station-assemblies-list">
+          <p v-if="!stationAssemblyEntries.length" class="requirements-empty">No assemblies are staged at the station.</p>
+          <article
+            v-for="entry in stationAssemblyEntries"
+            :key="entry.assembly.id || entry.assembly.name"
+            class="card station-assembly-card"
+          >
             <header class="card-header">
               <div>
-                <h3>{{ entry.module.name }}</h3>
+                <h3>{{ entry.assembly.name }}</h3>
                 <p class="card-subtitle">
-                  {{ entry.module.type }}
-                  <span v-if="entry.module.subtype"> · {{ entry.module.subtype }}</span>
+                  Moves {{ entry.assembly.moves ?? '—' }} · Actions {{ entry.assembly.actions ?? '—' }}
                 </p>
               </div>
-              <span class="assembly-count">×{{ entry.count }}</span>
+              <div class="assembly-status">
+                <span class="assembly-flag" :class="{ active: entry.assembly.built }">Built</span>
+                <span class="assembly-flag" :class="{ active: entry.assembly.deployed }">Deployed</span>
+              </div>
             </header>
-
-            <dl class="module-stats compact">
-              <div class="stat-row">
-                <dt>Mass</dt>
-                <dd>{{ entry.module.mass }} kg</dd>
-              </div>
-              <div class="stat-row">
-                <dt>Volume</dt>
-                <dd>{{ entry.module.volume }}</dd>
-              </div>
-              <div class="stat-row">
-                <dt>Electricity</dt>
-                <dd>{{ entry.module.electricity }}</dd>
-              </div>
-              <div class="stat-row">
-                <dt>Slots</dt>
-                <dd>{{ entry.module.slots }}</dd>
-              </div>
-            </dl>
+            <div class="station-assembly-body">
+              <template v-if="entry.modules.length">
+                <h4 class="modules-title">Modules</h4>
+                <ul class="module-list">
+                  <li
+                    v-for="(module, index) in entry.modules"
+                    :key="`${entry.assembly.id || entry.assembly.name}-module-${index}`"
+                  >
+                    {{ module.type }}<span v-if="module.subtype">: {{ module.subtype }}</span>
+                  </li>
+                </ul>
+              </template>
+              <p v-else class="requirements-empty">No modules assigned.</p>
+            </div>
           </article>
+        </div>
+      </div>
+
+      <div class="workspace-section">
+        <div class="section-title">
+          <h2>Assembly Workspace</h2>
+          <span class="section-count">{{ currentAssembly.length }} modules</span>
+        </div>
+        <div class="assembly-board">
+          <p v-if="!currentAssembly.length" class="assembly-empty">
+            No modules in the current assembly yet. Buy and add modules from the catalog to get started.
+          </p>
+          <div v-else class="assembly-grid">
+            <article v-for="entry in currentAssemblySummary" :key="entry.module.key" class="card assembly-card">
+              <header class="card-header">
+                <div>
+                  <h3>{{ entry.module.name }}</h3>
+                  <p class="card-subtitle">
+                    {{ entry.module.type }}
+                    <span v-if="entry.module.subtype"> · {{ entry.module.subtype }}</span>
+                  </p>
+                </div>
+                <span class="assembly-count">×{{ entry.count }}</span>
+              </header>
+
+              <dl class="module-stats compact">
+                <div class="stat-row">
+                  <dt>Mass</dt>
+                  <dd>{{ entry.module.mass }} kg</dd>
+                </div>
+                <div class="stat-row">
+                  <dt>Volume</dt>
+                  <dd>{{ entry.module.volume }}</dd>
+                </div>
+                <div class="stat-row">
+                  <dt>Electricity</dt>
+                  <dd>{{ entry.module.electricity }}</dd>
+                </div>
+                <div class="stat-row">
+                  <dt>Slots</dt>
+                  <dd>{{ entry.module.slots }}</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
         </div>
       </div>
     </section>
@@ -534,7 +584,7 @@ function formatObject(value) {
     'catalog actions'
     'catalog assembly';
   gap: 1.5rem;
-padding: 1.5rem;
+  padding: 1.5rem;
   height: 100%;
   box-sizing: border-box;
   color: var(--color-text);
@@ -549,10 +599,8 @@ padding: 1.5rem;
   align-items: center;
   justify-content: space-between;
   justify-self: center;
-width: 100%;
-
-  margin:0;
-
+  width: 100%;
+  margin: 0;
 }
 
 
@@ -654,6 +702,82 @@ width: 100%;
   min-width: 0;
 }
 
+.assembly-area {
+  grid-area: assembly;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+
+.station-assemblies,
+.workspace-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+
+.workspace-section {
+  flex: 1 1 auto;
+}
+
+.station-assemblies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.station-assembly-card {
+  gap: 0.75rem;
+}
+
+.assembly-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+
+.assembly-flag {
+  padding: 0.2rem 0.5rem;
+  border-radius: calc(var(--radius) / 2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-border) 35%, transparent);
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.assembly-flag.active {
+  background: color-mix(in srgb, var(--color-highlight) 30%, transparent);
+  color: var(--color-text);
+}
+
+.station-assembly-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modules-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.module-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
 .action-scroll {
   display: flex;
   flex-direction: row;
@@ -727,14 +851,6 @@ width: 100%;
 .module-card:focus-visible {
   outline: 2px solid var(--color-highlight);
   outline-offset: 2px;
-}
-
-.assembly-area {
-  grid-area: assembly;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-height: 0;
 }
 
 .assembly-board {

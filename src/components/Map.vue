@@ -8,7 +8,7 @@ import ControlPanel from '@/components/grid/Controls.vue'
 import WeatherPanel from '@/components/menus/Weather.vue'
 import EventLog from '@/components/menus/EventLog.vue'
 import AnalyticsReport from '@/components/menus/AnalyticsReport.vue'
-import AssembliesMenu from '@/components/menus/AssembliesMenu.vue'
+import ActionMenu from '@/components/menus/ActionMenu.vue'
 import AnimalsMenu from '@/components/menus/AnimalsMenu.vue'
 import PlantsMenu from '@/components/menus/PlantsMenu.vue'
 import FarmGate from '@/components/menus/FarmGate.vue'
@@ -43,7 +43,7 @@ const compByKey = {
   analytics: AnalyticsReport,
   animals: AnimalsMenu,
   plants: PlantsMenu,
-  assemblies: AssembliesMenu,
+  assemblies: ActionMenu,
   gate: FarmGate,
   news: News
 }
