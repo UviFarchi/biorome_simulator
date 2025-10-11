@@ -1,78 +1,85 @@
 <script setup>
-import { computed } from 'vue'
-import eventBus from '@/eventBus.js'
-import { gameStore } from '@/stores/game.js'
-import { marketStore } from '@/stores/market.js'
-import { mapStore } from '@/stores/map.js'
-import simpleTable from '@/components/menus/blocks/SimpleTable.vue'
-import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js'
-import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
+import { computed } from 'vue';
+import eventBus from '@/eventBus.js';
+import { gameStore } from '@/stores/game.js';
+import { marketStore } from '@/stores/market.js';
+import { mapStore } from '@/stores/map.js';
+import simpleTable from '@/components/menus/blocks/SimpleTable.vue';
+import { formatDateLocale, formatMoney, formatNumber } from '@/utils/formatting.js';
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js';
 
-const game = gameStore()
-const market = marketStore()
-const map = mapStore()
+const game = gameStore();
+const market = marketStore();
+const map = mapStore();
 
-const fmtMoney = n => formatMoney(n)
-const fmtNum = n => formatNumber(n)
-const fmtDate = d => formatDateLocale(d)
+const fmtMoney = (n) => formatMoney(n);
+const fmtNum = (n) => formatNumber(n);
+const fmtDate = (d) => formatDateLocale(d);
 
 // Group contracts
 const offeredContracts = computed(() =>
-    (market.contracts || []).filter(c => c.status === 'offered')
-        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-)
+  (market.contracts || [])
+    .filter((c) => c.status === 'offered')
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+);
 const activeContracts = computed(() =>
-    (market.contracts || []).filter(c => c.status === 'pending')
-        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-)
+  (market.contracts || [])
+    .filter((c) => c.status === 'pending')
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+);
 const completedContracts = computed(() =>
-    (market.contracts || []).filter(c => c.status === 'completed')
-        .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
-)
+  (market.contracts || [])
+    .filter((c) => c.status === 'completed')
+    .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+);
 const expiredContracts = computed(() =>
-    (market.contracts || []).filter(c => c.status === 'expired')
-        .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
-)
+  (market.contracts || [])
+    .filter((c) => c.status === 'expired')
+    .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+);
 
 const openOffers = computed(() =>
-    (market.openMarketOffers || []).filter(o => o.status === 'open')
-        .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate))
-)
+  (market.openMarketOffers || [])
+    .filter((o) => o.status === 'open')
+    .sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate))
+);
 
-const priceCatalog = computed(() => market.priceCatalog || { plants: {}, animals: {}, resources: {} })
-const harvested = computed(() => market.harvestedProducts || []) // [{ type, qty, shelfLife? }]
+const priceCatalog = computed(
+  () => market.priceCatalog || { plants: {}, animals: {}, resources: {} }
+);
+const harvested = computed(() => market.harvestedProducts || []); // [{ type, qty, shelfLife? }]
 
-const serviceKeys = new Set(['waste', 'electricity', 'water'])
+const serviceKeys = new Set(['waste', 'electricity', 'water']);
 
 function normalizeResourceEntry(key, value) {
-  const valueObj = typeof value === 'object' && value !== null ? value : { buy: value }
+  const valueObj = typeof value === 'object' && value !== null ? value : { buy: value };
   return {
     key,
     label: valueObj.label || key,
     buyPrice: valueObj.buy ?? valueObj.unitPrice ?? null,
-    sellPrice: valueObj.sell ?? null
-  }
+    sellPrice: valueObj.sell ?? null,
+  };
 }
 
 const gateResources = computed(() => {
-  const catalog = priceCatalog.value.resources || {}
+  const catalog = priceCatalog.value.resources || {};
   return Object.entries(catalog)
-      .filter(([key]) => !serviceKeys.has(key))
-      .map(([key, value]) => normalizeResourceEntry(key, value))
-})
+    .filter(([key]) => !serviceKeys.has(key))
+    .map(([key, value]) => normalizeResourceEntry(key, value));
+});
 
 const serviceResources = computed(() => {
-  const catalog = priceCatalog.value.resources || {}
+  const catalog = priceCatalog.value.resources || {};
   return Object.entries(catalog)
-      .filter(([key]) => serviceKeys.has(key))
-      .map(([key, value]) => normalizeResourceEntry(key, value))
-})
+    .filter(([key]) => serviceKeys.has(key))
+    .map(([key, value]) => normalizeResourceEntry(key, value));
+});
 
 function canAfford(price) {
-  const numeric = Number(price)
-  if (!Number.isFinite(numeric) || numeric <= 0) return false
-  const balance = Number(game.money ?? 0)
-  return balance >= numeric
+  const numeric = Number(price);
+  if (!Number.isFinite(numeric) || numeric <= 0) return false;
+  const balance = Number(game.money ?? 0);
+  return balance >= numeric;
 }
 
 function makeResourceEntry(key) {
@@ -81,103 +88,97 @@ function makeResourceEntry(key) {
     kind: 'resource',
     type: key,
     quantity: 1,
-    dateDeployed: new Date().toISOString()
-  }
+    dateDeployed: new Date().toISOString(),
+  };
 }
 
 function buyFromMarket({ category, key, stage, price }) {
-  const numeric = Number(price)
-  if (!Number.isFinite(numeric) || numeric <= 0) return
-  if (!canAfford(numeric)) return
+  const numeric = Number(price);
+  if (!Number.isFinite(numeric) || numeric <= 0) return;
+  if (!canAfford(numeric)) return;
 
   if (category === 'animal' || category === 'plant') {
-    let instance = null
+    let instance = null;
     try {
-      instance = makeInstance(category, key, stage)
+      instance = makeInstance(category, key, stage);
     } catch (err) {
-      console.error('Failed to create biota instance from market purchase', err)
+      console.error('Failed to create biota instance from market purchase', err);
     }
-    if (!instance) return
-    game.money -= numeric
-    map.gate.push(instance)
+    if (!instance) return;
+    game.money -= numeric;
+    map.gate.push(instance);
   } else if (category === 'resource') {
-    const entry = makeResourceEntry(key)
-    game.money -= numeric
-    map.gate.push(entry)
+    const entry = makeResourceEntry(key);
+    game.money -= numeric;
+    map.gate.push(entry);
   }
 }
 
 function makePriceCell({ category, key, stage, price }) {
-  const numeric = Number(price)
+  const numeric = Number(price);
   if (!Number.isFinite(numeric) || numeric <= 0) {
-    return '—'
+    return '—';
   }
-  const formatted = fmtMoney(numeric)
-  const buyableCategories = new Set(['animal', 'plant', 'resource'])
-  const isBuyable = buyableCategories.has(category)
+  const formatted = fmtMoney(numeric);
+  const buyableCategories = new Set(['animal', 'plant', 'resource']);
+  const isBuyable = buyableCategories.has(category);
   return {
     kind: 'price',
     price: numeric,
     display: formatted,
     buttonLabel: 'Buy',
     disabled: !canAfford(numeric) || !isBuyable,
-    onBuy: () => buyFromMarket({ category, key, stage, price: numeric })
-  }
+    onBuy: () => buyFromMarket({ category, key, stage, price: numeric }),
+  };
 }
 
 // Price catalog tables
-const inputsHeaders = ['Item', 'Buy', 'Sell']
+const inputsHeaders = ['Item', 'Buy', 'Sell'];
 const inputsRows = computed(() =>
   gateResources.value.map(({ key, label, buyPrice, sellPrice }) => [
     label,
     makePriceCell({ category: 'resource', key, price: buyPrice }),
-    fmtMoney(sellPrice)
+    fmtMoney(sellPrice),
   ])
-)
+);
 
-const servicesHeaders = ['Service', 'Unit Price']
+const servicesHeaders = ['Service', 'Unit Price'];
 const servicesRows = computed(() =>
-  serviceResources.value.map(({ label, buyPrice }) => [
-    label,
-    fmtMoney(buyPrice)
-  ])
-)
+  serviceResources.value.map(({ label, buyPrice }) => [label, fmtMoney(buyPrice)])
+);
 
-const plantsHeaders = ['Type', 'seed', 'seedling', 'sapling']
+const plantsHeaders = ['Type', 'seed', 'seedling', 'sapling'];
 const plantsRows = computed(() =>
   Object.entries(priceCatalog.value.plants || {}).map(([type, rec]) => {
-    const stages = rec?.stagePrices || {}
+    const stages = rec?.stagePrices || {};
     return [
       type,
       makePriceCell({ category: 'plant', key: type, stage: 'seed', price: stages.seed }),
       makePriceCell({ category: 'plant', key: type, stage: 'seedling', price: stages.seedling }),
-      makePriceCell({ category: 'plant', key: type, stage: 'sapling', price: stages.sapling })
-    ]
+      makePriceCell({ category: 'plant', key: type, stage: 'sapling', price: stages.sapling }),
+    ];
   })
-)
+);
 
-const animalsHeaders = ['Type', 'Stage', 'Buy']
+const animalsHeaders = ['Type', 'Stage', 'Buy'];
 const animalsRows = computed(() => {
-  const rows = []
+  const rows = [];
   for (const [type, rec] of Object.entries(priceCatalog.value.animals || {})) {
     for (const [stage, price] of Object.entries(rec.stagePrices || {})) {
-      rows.push([
-        type,
-        stage,
-        makePriceCell({ category: 'animal', key: type, stage, price })
-      ])
+      rows.push([type, stage, makePriceCell({ category: 'animal', key: type, stage, price })]);
     }
   }
-  return rows
-})
-
+  return rows;
+});
 </script>
 <template>
   <button @click="eventBus.emit('nav', 'map')">Back to map</button>
   <div class="market-overlay">
     <header class="bar">
       <div><strong>Market</strong></div>
-      <div>money: <strong>{{ fmtNum(game.money) }}</strong></div>
+      <div>
+        money: <strong>{{ fmtNum(game.money) }}</strong>
+      </div>
       <div>Today: {{ fmtDate(game.currentDate) }}</div>
       <div>Last flux: {{ fmtDate(market.lastMarketDate) }}</div>
     </header>
@@ -186,20 +187,16 @@ const animalsRows = computed(() => {
         <section class="panel">
           <h3>Price Catalog</h3>
           <simpleTable
-              title="Resources (deliver to gate)"
-              :headers="inputsHeaders"
-              :data="inputsRows"
+            title="Resources (deliver to gate)"
+            :headers="inputsHeaders"
+            :data="inputsRows"
           />
           <simpleTable
-              title="Plants (seed, seedling/sapling)"
-              :headers="plantsHeaders"
-              :data="plantsRows"
+            title="Plants (seed, seedling/sapling)"
+            :headers="plantsHeaders"
+            :data="plantsRows"
           />
-          <simpleTable
-              title="Animals (by stage)"
-              :headers="animalsHeaders"
-              :data="animalsRows"
-          />
+          <simpleTable title="Animals (by stage)" :headers="animalsHeaders" :data="animalsRows" />
         </section>
       </div>
 
@@ -207,10 +204,10 @@ const animalsRows = computed(() => {
         <section class="panel">
           <h3>Services Pricing</h3>
           <simpleTable
-              title="Utilities & Waste"
-              :headers="servicesHeaders"
-              :data="servicesRows"
-              :start-open="true"
+            title="Utilities & Waste"
+            :headers="servicesHeaders"
+            :data="servicesRows"
+            :start-open="true"
           />
         </section>
 
@@ -260,7 +257,9 @@ const animalsRows = computed(() => {
               <div>{{ c.productType }} × {{ fmtNum(c.quantity) }}</div>
               <div>@ {{ fmtMoney(c.pricePerUnit) }}</div>
               <div>Due: {{ fmtDate(c.dueDate) }}</div>
-              <div>Type: {{ c.type }}<span v-if="c.interval"> (every {{ c.interval }}d)</span></div>
+              <div>
+                Type: {{ c.type }}<span v-if="c.interval"> (every {{ c.interval }}d)</span>
+              </div>
               <div>Penalty: {{ fmtMoney(c.penalty) }}</div>
             </div>
           </div>
@@ -335,22 +334,22 @@ const animalsRows = computed(() => {
 
 .list {
   display: grid;
-  gap: .35rem;
+  gap: 0.35rem;
 }
 
 .row {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 h3 {
-  margin: .2rem 0 .4rem;
+  margin: 0.2rem 0 0.4rem;
   color: var(--color-accent);
 }
 
 h4 {
-  margin: .2rem 0;
+  margin: 0.2rem 0;
   color: var(--color-warning);
 }
 </style>

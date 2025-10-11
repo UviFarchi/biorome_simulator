@@ -1,41 +1,38 @@
 <script setup>
-import {computed} from 'vue'
-import {mapStore} from '@/stores/map.js'
-import {gameStore} from '@/stores/game.js'
-import {marketStore} from '@/stores/market.js'
-import { animalTypes } from '@/dict/animalModels.js'
-import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
+import { computed } from 'vue';
+import { mapStore } from '@/stores/map.js';
+import { marketStore } from '@/stores/market.js';
+import { animalTypes } from '@/dict/animalModels.js';
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js';
+import { applyOptimizationEffects } from '@/engine/phases/optimizations/applyOptimizationEffects.js';
 
-const map = mapStore()
-const game = gameStore()
-const market = marketStore()
+const map = mapStore();
+const market = marketStore();
 const currentTile = computed(() => {
-  const selected = map.selectedTile
-  return selected && typeof selected === 'object' && 'value' in selected ? selected.value : selected
-})
+  const selected = map.selectedTile;
+  return selected && typeof selected === 'object' && 'value' in selected
+    ? selected.value
+    : selected;
+});
 
 const selectedTileKey = computed(() => {
-  return currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
-})
+  return currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null;
+});
 
-const animalTypesList = animalTypes
+const animalTypesList = animalTypes;
 
 function addAnimalToTile(animalType, growthStage) {
-  const tile = currentTile.value
-  const domain = 'animal'
+  const tile = currentTile.value;
+  const domain = 'animal';
 
   // capture instance
-  const inst = makeInstance(domain, animalType, growthStage)
+  const inst = makeInstance(domain, animalType, growthStage);
 
   // push into optimized list
-  tile.animals.optimized.push(inst)
+  tile.animals.optimized.push(inst);
 
-
-  //Pass animal model
-  const model = animalTypesList.filter(animal => animal.type === animalType)[0]
   // pass instance as subject
-  applyOptimizationEffects(domain, animalType, tile, inst)
+  applyOptimizationEffects(domain, animalType, tile, inst);
 }
 </script>
 
@@ -45,14 +42,12 @@ function addAnimalToTile(animalType, growthStage) {
       <h4>Animals</h4>
     </div>
 
-    <div v-if="!currentTile" class="hint">Select a tile to add animals to its optimization plan.</div>
+    <div v-if="!currentTile" class="hint">
+      Select a tile to add animals to its optimization plan.
+    </div>
 
     <div v-else class="cards">
-      <div
-          v-for="animal in animalTypesList"
-          :key="animal.type"
-          class="card"
-      >
+      <div v-for="animal in animalTypesList" :key="animal.type" class="card">
         <div class="card-header">
           <div class="card-title">
             {{ animal.type }}
@@ -63,18 +58,19 @@ function addAnimalToTile(animalType, growthStage) {
         <div class="card-body">
           <div class="phase-buttons">
             <button
-                v-for="growthStage in animal.growthStages"
-                :key="growthStage"
-                class="phase-button"
-                :disabled="!selectedTileKey"
-                @click="addAnimalToTile(animal.type , growthStage)"
+              v-for="growthStage in animal.growthStages"
+              :key="growthStage"
+              class="phase-button"
+              :disabled="!selectedTileKey"
+              @click="addAnimalToTile(animal.type, growthStage)"
             >
               <span class="phase-label">{{ growthStage }}</span>
               <span class="phase-price">
                 <span>
-                  {{ market.priceCatalog.animals[animal.type].stagePrices[growthStage] || 'No price' }}
+                  {{
+                    market.priceCatalog.animals[animal.type].stagePrices[growthStage] || 'No price'
+                  }}
                 </span>
-
               </span>
             </button>
           </div>

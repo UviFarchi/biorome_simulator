@@ -1,77 +1,68 @@
 <script setup>
-import {ref, onMounted, nextTick} from 'vue'
-import eventBus from '@/eventBus.js'
-import {gameStore} from '@/stores/game.js'
-import generate from '@/engine/terrain/generate.js'
-import {hasSavedState, loadAllStores, saveAllStores} from '@/utils/persistance.js'
-import {mapStore} from '@/stores/map.js';
+import { ref, onMounted, nextTick } from 'vue';
+import eventBus from '@/eventBus.js';
+import { gameStore } from '@/stores/game.js';
+import generate from '@/engine/terrain/generate.js';
+import { hasSavedState, loadAllStores, saveAllStores } from '@/utils/persistance.js';
 
-const game = gameStore()
-const map = mapStore()
-const terrainGeneration = ref(false)
-const resuming = ref(false)
+const game = gameStore();
 
-const name = ref('')
+const terrainGeneration = ref(false);
+const resuming = ref(false);
+
+const name = ref('');
 const avatarOptions = [
-  {emoji: '😀', label: 'Smiling Face'},
-  {emoji: '😎', label: 'Cool Face'},
-  {emoji: '🤖', label: 'Robot'},
-  {emoji: '👽', label: 'Alien'},
-  {emoji: '🦊', label: 'Fox'},
-  {emoji: '🐸', label: 'Frog'},
-  {emoji: '🐵', label: 'Monkey'},
-  {emoji: '🐙', label: 'Octopus'},
-  {emoji: '🍕', label: 'Pizza'},
-  {emoji: '🌵', label: 'Cactus'}
-]
-const avatar = ref(avatarOptions[0].emoji)
-const difficultyOptions = [
-  {value: 1, label: 'Easy'},
-  {value: 2, label: 'Medium'},
-  {value: 3, label: 'Hard'},
-]
-const difficulty = ref(1)
-
+  { emoji: '😀', label: 'Smiling Face' },
+  { emoji: '😎', label: 'Cool Face' },
+  { emoji: '🤖', label: 'Robot' },
+  { emoji: '👽', label: 'Alien' },
+  { emoji: '🦊', label: 'Fox' },
+  { emoji: '🐸', label: 'Frog' },
+  { emoji: '🐵', label: 'Monkey' },
+  { emoji: '🐙', label: 'Octopus' },
+  { emoji: '🍕', label: 'Pizza' },
+  { emoji: '🌵', label: 'Cactus' },
+];
+const avatar = ref(avatarOptions[0].emoji);
+const gridSize = ref(game.size);
 
 onMounted(async () => {
   if (hasSavedState()) {
-    resuming.value = true            // show "Loading save…" immediately
-    await nextTick()
-    await new Promise(requestAnimationFrame) // let overlay paint
+    resuming.value = true; // show "Loading save…" immediately
+    await nextTick();
+    await new Promise(requestAnimationFrame); // let overlay paint
     // defer actual loading to next task so UI stays responsive
     setTimeout(() => {
-      loadAllStores()
-      eventBus.emit('nav', 'map')
-    }, 0)
+      loadAllStores();
+      eventBus.emit('nav', 'map');
+    }, 0);
   }
-})
+});
 
 async function startGame() {
-  game.userName = (name.value || '').trim()
-  game.userAvatar = (avatar.value || '').trim()
-  const difficulty = game.difficulty;
-  game.difficulty = [1, 2, 3].includes(+difficulty) ? +difficulty : 1;
-  game.money = game.money / difficulty;
-  map.size = map.size * difficulty;
+  game.userName = (name.value || '').trim();
+  game.userAvatar = (avatar.value || '').trim();
+  const selectedSize = Math.min(20, Math.max(1, +gridSize.value || 1));
+  game.size = selectedSize;
 
-  terrainGeneration.value = true
-  await nextTick()
-  await new Promise(requestAnimationFrame) // paint overlay before heavy work
+  terrainGeneration.value = true;
+  await nextTick();
+  await new Promise(requestAnimationFrame); // paint overlay before heavy work
   // run generator in the next macrotask so UI stays responsive
-  await new Promise(resolve => setTimeout(() => {
-    generate();
-    resolve()
-  }, 0))
+  await new Promise((resolve) =>
+    setTimeout(() => {
+      generate();
+      resolve();
+    }, 1000)
+  );
 
-  saveAllStores()
-  terrainGeneration.value = false
-  eventBus.emit('nav', 'map')
-  await nextTick()
-  eventBus.emit('phase', {})
-
+  saveAllStores();
+  terrainGeneration.value = false;
+  eventBus.emit('nav', 'map');
+  await nextTick();
+  eventBus.emit('phase', {});
 }
 </script>
-
 
 <template>
   <div class="starting-screen">
@@ -83,35 +74,51 @@ async function startGame() {
     <form @submit.prevent="startGame" class="start-form" v-if="!resuming && !terrainGeneration">
       <div class="form-field">
         <label for="userName" class="text-bold">Operator name</label>
-        <input id="userName" type="text" v-model="name" autocomplete="off" autofocus placeholder="Enter your name"/>
+        <input
+          id="userName"
+          type="text"
+          v-model="name"
+          autocomplete="off"
+          autofocus
+          placeholder="Enter your name"
+        />
       </div>
 
       <div class="form-field">
         <label for="userAvatar" class="text-bold">Profile marker</label>
         <select id="userAvatar" v-model="avatar">
-          <option v-for="option in avatarOptions" :key="option.emoji" :value="option.emoji" :title="option.label">
+          <option
+            v-for="option in avatarOptions"
+            :key="option.emoji"
+            :value="option.emoji"
+            :title="option.label"
+          >
             {{ option.label }} {{ option.emoji }}
           </option>
         </select>
       </div>
 
       <div class="form-field">
-        <label class="text-bold" id="difficulty-label">Simulation fidelity</label>
-        <div class="difficulty-options" role="radiogroup" aria-labelledby="difficulty-label">
-          <label v-for="option in difficultyOptions" :key="option.value" class="difficulty-option">
-            <input
-                type="radio"
-                name="difficulty"
-                :value="option.value"
-                v-model="difficulty"
-
-            />
-            {{ option.label }}
-          </label>
+        <label for="gridSize" class="text-bold">Grid size (tiles per side)</label>
+        <div class="slider-wrap">
+          <input
+            id="gridSize"
+            v-model.number="gridSize"
+            type="range"
+            min="1"
+            max="20"
+            step="1"
+            aria-valuemin="1"
+            aria-valuemax="20"
+            :aria-valuenow="gridSize"
+          />
+          <span class="slider-value">{{ gridSize }}</span>
         </div>
       </div>
-      <button type="submit" class="btn btn--start start-btn" :disabled="!name">Enter console</button>
-      <img src="../assets/small_drone_blue.gif" alt="small drone"/>
+      <button type="submit" class="btn btn--start start-btn" :disabled="!name">
+        Enter console
+      </button>
+      <img src="../assets/small_drone_blue.gif" alt="small drone" />
     </form>
     <div v-if="resuming" class="terrain-overlay">Loading saved configuration…</div>
     <div v-else-if="terrainGeneration" class="terrain-overlay">Preparing operational map…</div>
@@ -176,21 +183,37 @@ async function startGame() {
   font-size: 0.95rem;
 }
 
-.difficulty-options {
+.size-options {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.difficulty-option {
+.size-option {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   font-weight: 500;
 }
 
-.difficulty-option input[type="radio"] {
+.size-option input[type='radio'] {
   accent-color: var(--color-accent);
+}
+
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.slider-wrap input[type='range'] {
+  flex: 1;
+}
+
+.slider-value {
+  min-width: 2ch;
+  font-weight: 600;
+  text-align: right;
 }
 
 .start-btn {

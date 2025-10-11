@@ -1,11 +1,11 @@
-function flatten(context){
-    return 1
+function flatten(_context) {
+  return 1;
 }
 
 export default {
-    elevation: [{target: 'resources', property: 'electricity', delta: 1}],
-    slopeDeg: [{target: 'resources', property: 'electricity', delta: flatten}],
-    aspectDeg: [{target: 'resources', property: 'electricity', delta: 1}],
-    waterTable: [{target: 'resources', property: 'electricity', delta: 1}],
-    drainageIndex:[{target: 'resources', property: 'electricity', delta: 1}],
-}
+  elevation: [{ target: 'resources', property: 'electricity', delta: 1 }],
+  slopeDeg: [{ target: 'resources', property: 'electricity', delta: flatten }],
+  aspectDeg: [{ target: 'resources', property: 'electricity', delta: 1 }],
+  waterTable: [{ target: 'resources', property: 'electricity', delta: 1 }],
+  drainageIndex: [{ target: 'resources', property: 'electricity', delta: 1 }],
+};

@@ -1,78 +1,76 @@
-import {defineStore} from 'pinia'
-import {computed, ref} from 'vue'
-import { formatDate } from '@/utils/formatting.js'
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+import { formatDate } from '@/utils/formatting.js';
 
 export const gameStore = defineStore('gameStore', () => {
-    const money = ref(300000)
-    const log = ref([]);
-    const currentEvents = ref({
-        weather: [],
-        market: [],
-        ecosystem: []
-    })
-    const analyticsReport = ref({})
-    const stationAssemblies = ref([
-        {
-            id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
-            modules: [
-                {type: 'transport', subtype: 'ground'},
-                {type: 'arm', subtype: 'medium'},
-                {type: 'tool', subtype: 'seeder'},
-                {type: 'tool', subtype: 'borer'}
-            ],
-            name: 'Seed Planter',
-            deployed: false,
-            built: true,
-            moves: 1,
-            actions: 1,
-            orders: []
+  const money = ref(300000);
+  const log = ref([]);
+  const currentEvents = ref({
+    weather: [],
+    market: [],
+    ecosystem: [],
+  });
+  const analyticsReport = ref({});
+  const stationAssemblies = ref([
+    {
+      id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
+      modules: [
+        { type: 'transport', subtype: 'ground' },
+        { type: 'arm', subtype: 'medium' },
+        { type: 'tool', subtype: 'seeder' },
+        { type: 'tool', subtype: 'borer' },
+      ],
+      name: 'Seed Planter',
+      deployed: false,
+      built: true,
+      moves: 1,
+      actions: 1,
+      orders: [],
+    },
+  ]);
+  const ownedModules = ref({ station: [], assemblies: [] });
+  const stageChangeCalendar = [];
+  const startDate = ref(formatDate(new Date()));
+  const currentTurn = ref(0);
+  const currentDate = computed(() => {
+    const d = new Date(startDate.value);
+    d.setDate(d.getDate() + (currentTurn.value - 1));
+    return d;
+  });
+  const currentSeason = ref({ label: 'Unknown', icon: '' });
 
-        }
-    ])
-    const ownedModules = ref({station:[],assemblies: []})
-    const stageChangeCalendar = [];
-    const startDate = ref(formatDate(new Date()))
-    const currentTurn = ref(0)
-    const currentDate = computed(() => {
-        const d = new Date(startDate.value);
-        d.setDate(d.getDate() + (currentTurn.value - 1));
-        return d
-    })
-    const currentSeason = ref({label: 'Unknown', icon: ''})
+  const bioromizationStage = ref(0);
+  const bioromizationStages = ref(['discovery', 'design', 'deployment']);
 
+  //phase set to 3 to allow for first turn to start from phase 1
+  const phase = ref(-1);
+  const engines = ref(['analytics', 'optimizations', 'operations']);
 
-    const bioromizationStage = ref(0)
-    const bioromizationStages = ref(['discovery', 'design', 'deployment'])
+  const userName = ref('');
+  const userAvatar = ref('');
 
-    //phase set to 3 to allow for first turn to start from phase 1
-    const phase = ref(-1)
-    const engines = ref(['analytics', 'optimizations', 'operations'])
+  const size = ref(10);
+  const currentTheme = ref('dark');
 
-    const userName = ref('')
-    const userAvatar = ref('')
-
-    const difficulty = ref(1)
-    const currentTheme = ref('dark')
-
-    return {
-        money,
-        log,
-        startDate,
-        currentTurn,
-        currentDate,
-        currentSeason,
-        userName,
-        userAvatar,
-        difficulty,
-        currentTheme,
-        bioromizationStage,
-        bioromizationStages,
-        phase,
-        engines,
-        currentEvents,
-        stageChangeCalendar,
-        stationAssemblies,
-        analyticsReport,
-        ownedModules
-    }
-})
+  return {
+    money,
+    log,
+    startDate,
+    currentTurn,
+    currentDate,
+    currentSeason,
+    userName,
+    userAvatar,
+    size,
+    currentTheme,
+    bioromizationStage,
+    bioromizationStages,
+    phase,
+    engines,
+    currentEvents,
+    stageChangeCalendar,
+    stationAssemblies,
+    analyticsReport,
+    ownedModules,
+  };
+});

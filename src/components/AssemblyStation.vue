@@ -3,7 +3,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import eventBus from '@/eventBus.js';
 import { moduleTypes } from '@/dict/moduleModels.js';
-import { actionRequirements } from '@/dict/actionRequirements.js';
+import { actionModels } from '@/dict/actionModels.js';
 import { gameStore } from '@/stores/game.js';
 
 const numberFormatter = new Intl.NumberFormat('en-US');
@@ -16,79 +16,81 @@ if (!ownedModules.value) {
 }
 
 const moduleCards = computed(() =>
-  moduleTypes.map(module => {
+  moduleTypes.map((module) => {
     const functionEntries = Object.entries(module.exposedFunctions || {});
     return {
       ...module,
       exposedFunctionEntries: functionEntries.map(([functionKey, details]) => ({
         key: functionKey,
         params: details?.params ?? {},
-        caps: details?.caps ?? {}
+        caps: details?.caps ?? {},
       })),
-      exposedFunctionKeys: functionEntries.map(([functionKey]) => functionKey)
+      exposedFunctionKeys: functionEntries.map(([functionKey]) => functionKey),
     };
   })
 );
 
-const currentAssembly = ref([])
+const currentAssembly = ref([]);
 
-const stationInventory = computed(() => ownedModules.value?.station ?? [])
-const assemblyInventory = computed(() => ownedModules.value?.assemblies ?? [])
-const stationAssemblyList = computed(() => Array.isArray(stationAssemblies.value) ? stationAssemblies.value : [])
-const stationAssemblyEntries = computed(() => stationAssemblyList.value.map(assembly => ({
-  assembly,
-  modules: Array.isArray(assembly.modules) ? assembly.modules : []
-})))
-const stationAssemblyCount = computed(() => stationAssemblyEntries.value.length)
+const stationInventory = computed(() => ownedModules.value?.station ?? []);
+const assemblyInventory = computed(() => ownedModules.value?.assemblies ?? []);
+const stationAssemblyList = computed(() =>
+  Array.isArray(stationAssemblies.value) ? stationAssemblies.value : []
+);
+const stationAssemblyEntries = computed(() =>
+  stationAssemblyList.value.map((assembly) => ({
+    assembly,
+    modules: Array.isArray(assembly.modules) ? assembly.modules : [],
+  }))
+);
+const stationAssemblyCount = computed(() => stationAssemblyEntries.value.length);
 
 function buildCountMap(list = []) {
   return list.reduce((acc, key) => {
-    acc[key] = (acc[key] || 0) + 1
-    return acc
-  }, {})
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
 }
 
-const stationModuleCounts = computed(() => buildCountMap(stationInventory.value))
+const stationModuleCounts = computed(() => buildCountMap(stationInventory.value));
 const ownedModuleCounts = computed(() =>
-  buildCountMap([
-    ...stationInventory.value,
-    ...assemblyInventory.value
-  ])
-)
+  buildCountMap([...stationInventory.value, ...assemblyInventory.value])
+);
 
 const currentAssemblySummary = computed(() => {
-  const summary = new Map()
-  currentAssembly.value.forEach(module => {
-    const existing = summary.get(module.key)
+  const summary = new Map();
+  currentAssembly.value.forEach((module) => {
+    const existing = summary.get(module.key);
     if (existing) {
-      existing.count += 1
+      existing.count += 1;
     } else {
-      summary.set(module.key, { module, count: 1 })
+      summary.set(module.key, { module, count: 1 });
     }
-  })
-  return Array.from(summary.values())
-})
+  });
+  return Array.from(summary.values());
+});
 
-const formattedmoney = computed(() => numberFormatter.format(money.value ?? 0))
+const formattedmoney = computed(() => numberFormatter.format(money.value ?? 0));
 
 const DEFAULT_ACTION_CATEGORY = 'General';
 
 const actionGroups = computed(() => {
   const groups = new Map();
 
-  Object.entries(actionRequirements || {}).forEach(([actionKey, definition = {}]) => {
-    const categories = Array.isArray(definition.categories) && definition.categories.length
-      ? definition.categories
-      : [DEFAULT_ACTION_CATEGORY];
+  Object.entries(actionModels || {}).forEach(([actionKey, definition = {}]) => {
+    const categories =
+      Array.isArray(definition.categories) && definition.categories.length
+        ? definition.categories
+        : [DEFAULT_ACTION_CATEGORY];
 
     const actionEntry = {
       key: actionKey,
       name: definition.displayName || formatTitle(actionKey),
       description: definition.description || '',
-      requires: Array.isArray(definition.requires) ? definition.requires : []
+      requires: Array.isArray(definition.requires) ? definition.requires : [],
     };
 
-    categories.forEach(category => {
+    categories.forEach((category) => {
       const groupKey = category || DEFAULT_ACTION_CATEGORY;
       if (!groups.has(groupKey)) {
         groups.set(groupKey, { target: groupKey, actions: [] });
@@ -98,11 +100,9 @@ const actionGroups = computed(() => {
   });
 
   return Array.from(groups.values())
-    .map(group => ({
+    .map((group) => ({
       target: group.target,
-      actions: group.actions
-        .slice()
-        .sort((a, b) => a.name.localeCompare(b.name))
+      actions: group.actions.slice().sort((a, b) => a.name.localeCompare(b.name)),
     }))
     .sort((a, b) => a.target.localeCompare(b.target));
 });
@@ -113,19 +113,19 @@ const expandedActions = reactive({});
 const hasInitializedActionSelection = ref(false);
 
 const flatActions = computed(() =>
-  actionGroups.value.flatMap(group =>
-    group.actions.map(action => ({
+  actionGroups.value.flatMap((group) =>
+    group.actions.map((action) => ({
       key: action.key,
       action,
       title: action.name,
       target: group.target,
-      targetTitle: formatTitle(group.target || DEFAULT_ACTION_CATEGORY)
+      targetTitle: formatTitle(group.target || DEFAULT_ACTION_CATEGORY),
     }))
   )
 );
 
-const selectedAction = computed(() =>
-  flatActions.value.find(entry => entry.key === selectedActionKey.value) || null
+const selectedAction = computed(
+  () => flatActions.value.find((entry) => entry.key === selectedActionKey.value) || null
 );
 
 const selectedActionRequirements = computed(() => selectedAction.value?.action?.requires ?? []);
@@ -134,37 +134,29 @@ const filteredModuleCards = computed(() => {
   const requirements = selectedActionRequirements.value;
 
   return moduleCards.value
-    .map(module => {
-      const matchingFunctions = module.exposedFunctionKeys.filter(functionKey => requirements.includes(functionKey));
+    .map((module) => {
+      const matchingFunctions = module.exposedFunctionKeys.filter((functionKey) =>
+        requirements.includes(functionKey)
+      );
       return {
         ...module,
-        matchingFunctions
+        matchingFunctions,
       };
     })
-    .filter(module => !requirements.length || module.matchingFunctions.length);
-});
-
-const selectedActionLabel = computed(() => {
-  const entry = selectedAction.value;
-  if (!entry) return 'None selected';
-  const parts = [
-    `Category (${entry.targetTitle})`,
-    `Action (${entry.title || entry.action.key})`
-  ];
-  return parts.join(' - ');
+    .filter((module) => !requirements.length || module.matchingFunctions.length);
 });
 
 const isActionFilterActive = computed(() => !!selectedActionKey.value);
 
 watch(
   filteredModuleCards,
-  cards => {
+  (cards) => {
     if (!cards.length) {
       selectedModuleKey.value = '';
       return;
     }
 
-    if (!cards.some(module => module.key === selectedModuleKey.value)) {
+    if (!cards.some((module) => module.key === selectedModuleKey.value)) {
       selectedModuleKey.value = cards[0].key;
     }
   },
@@ -173,7 +165,7 @@ watch(
 
 watch(
   flatActions,
-  actions => {
+  (actions) => {
     if (actions.length && !hasInitializedActionSelection.value) {
       selectedActionKey.value = actions[0].key;
       hasInitializedActionSelection.value = true;
@@ -196,7 +188,7 @@ function isActionExpanded(actionKey) {
   return !!expandedActions[actionKey];
 }
 
-const totalActionCount = computed(() => Object.keys(actionRequirements || {}).length);
+const totalActionCount = computed(() => Object.keys(actionModels || {}).length);
 
 function selectModule(moduleKey) {
   selectedModuleKey.value = moduleKey;
@@ -263,7 +255,7 @@ function addModuleToAssembly(module) {
     return;
   }
 
-  const stationIndex = stationList.findIndex(key => key === module.key);
+  const stationIndex = stationList.findIndex((key) => key === module.key);
   if (stationIndex === -1) {
     return;
   }
@@ -285,22 +277,26 @@ function humanize(text) {
 
 function formatTitle(text) {
   const base = humanize(text);
-  return base.replace(/\b\w/g, letter => letter.toUpperCase());
+  return base.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function formatObject(value) {
   if (!value || (typeof value === 'object' && !Object.keys(value).length)) {
     return 'None';
   }
-  return JSON.stringify(value, (_key, val) => {
-    if (val === Number) {
-      return 'Number';
-    }
-    if (typeof val === 'function') {
-      return val.name || 'Function';
-    }
-    return val;
-  }, 2);
+  return JSON.stringify(
+    value,
+    (_key, val) => {
+      if (val === Number) {
+        return 'Number';
+      }
+      if (typeof val === 'function') {
+        return val.name || 'Function';
+      }
+      return val;
+    },
+    2
+  );
 }
 </script>
 
@@ -311,14 +307,16 @@ function formatObject(value) {
         <span>Money available</span>
         <strong>{{ formattedmoney }}</strong>
       </div>
-        <h1 class="station-title">Assembly Station</h1>
-        <button class="nav-btn" @click="eventBus.emit('nav', 'map')">Back to map</button>
+      <h1 class="station-title">Assembly Station</h1>
+      <button class="nav-btn" @click="eventBus.emit('nav', 'map')">Back to map</button>
     </header>
 
     <section class="action-menu">
       <div class="section-title">
         <h2>Action Requirements</h2>
-        <span class="section-count">{{ totalActionCount }} actions across {{ actionGroups.length }} targets</span>
+        <span class="section-count"
+          >{{ totalActionCount }} actions across {{ actionGroups.length }} targets</span
+        >
       </div>
       <div class="action-scroll">
         <article v-for="group in actionGroups" :key="group.target" class="card action-card">
@@ -343,7 +341,9 @@ function formatObject(value) {
               <div class="action-entry-header">
                 <div class="action-header-main">
                   <h4>{{ action.name }}</h4>
-                  <p v-if="action.description" class="action-description">{{ action.description }}</p>
+                  <p v-if="action.description" class="action-description">
+                    {{ action.description }}
+                  </p>
                   <span class="action-meta">{{ action.requires.length }} required functions</span>
                 </div>
                 <button
@@ -352,7 +352,11 @@ function formatObject(value) {
                   v-if="action.requires.length"
                   @click.stop="toggleActionExpansion(action.key)"
                 >
-                  {{ isActionExpanded(action.key) ? 'Hide required functions' : 'Show required functions' }}
+                  {{
+                    isActionExpanded(action.key)
+                      ? 'Hide required functions'
+                      : 'Show required functions'
+                  }}
                 </button>
               </div>
               <template v-if="isActionExpanded(action.key)">
@@ -375,14 +379,17 @@ function formatObject(value) {
       <div class="section-title">
         <h2>Module Catalog</h2>
       </div>
-      <div v-if="isActionFilterActive" >
+      <div v-if="isActionFilterActive">
         <button type="button" class="filter-clear" @click="clearActionSelection">
-          Remove action filter (<span class="section-count">{{ filteredModuleCards.length }} modules</span>)
+          Remove action filter (<span class="section-count"
+            >{{ filteredModuleCards.length }} modules</span
+          >)
         </button>
-
       </div>
       <div class="module-scroll">
-        <p v-if="!filteredModuleCards.length" class="requirements-empty">No modules match the selected action.</p>
+        <p v-if="!filteredModuleCards.length" class="requirements-empty">
+          No modules match the selected action.
+        </p>
         <article
           v-for="module in filteredModuleCards"
           :key="module.key"
@@ -409,9 +416,14 @@ function formatObject(value) {
             <span>Available: {{ stationCountFor(module.key) }}</span>
           </div>
 
-          <div v-if="module.matchingFunctions && module.matchingFunctions.length" class="module-matches">
+          <div
+            v-if="module.matchingFunctions && module.matchingFunctions.length"
+            class="module-matches"
+          >
             <span class="match-label">Matches</span>
-            <span class="match-values">{{ module.matchingFunctions.map(formatTitle).join(', ') }}</span>
+            <span class="match-values">{{
+              module.matchingFunctions.map(formatTitle).join(', ')
+            }}</span>
           </div>
 
           <dl class="module-stats">
@@ -489,7 +501,9 @@ function formatObject(value) {
           <span class="section-count">{{ stationAssemblyCount }} in station</span>
         </div>
         <div class="station-assemblies-list">
-          <p v-if="!stationAssemblyEntries.length" class="requirements-empty">No assemblies are staged at the station.</p>
+          <p v-if="!stationAssemblyEntries.length" class="requirements-empty">
+            No assemblies are staged at the station.
+          </p>
           <article
             v-for="entry in stationAssemblyEntries"
             :key="entry.assembly.id || entry.assembly.name"
@@ -499,12 +513,15 @@ function formatObject(value) {
               <div>
                 <h3>{{ entry.assembly.name }}</h3>
                 <p class="card-subtitle">
-                  Moves {{ entry.assembly.moves ?? '—' }} · Actions {{ entry.assembly.actions ?? '—' }}
+                  Moves {{ entry.assembly.moves ?? '—' }} · Actions
+                  {{ entry.assembly.actions ?? '—' }}
                 </p>
               </div>
               <div class="assembly-status">
                 <span class="assembly-flag" :class="{ active: entry.assembly.built }">Built</span>
-                <span class="assembly-flag" :class="{ active: entry.assembly.deployed }">Deployed</span>
+                <span class="assembly-flag" :class="{ active: entry.assembly.deployed }"
+                  >Deployed</span
+                >
               </div>
             </header>
             <div class="station-assembly-body">
@@ -532,10 +549,15 @@ function formatObject(value) {
         </div>
         <div class="assembly-board">
           <p v-if="!currentAssembly.length" class="assembly-empty">
-            No modules in the current assembly yet. Buy and add modules from the catalog to get started.
+            No modules in the current assembly yet. Buy and add modules from the catalog to get
+            started.
           </p>
           <div v-else class="assembly-grid">
-            <article v-for="entry in currentAssemblySummary" :key="entry.module.key" class="card assembly-card">
+            <article
+              v-for="entry in currentAssemblySummary"
+              :key="entry.module.key"
+              class="card assembly-card"
+            >
               <header class="card-header">
                 <div>
                   <h3>{{ entry.module.name }}</h3>
@@ -574,7 +596,6 @@ function formatObject(value) {
 </template>
 
 <style scoped>
-
 .assembly-station {
   display: grid;
   grid-template-columns: minmax(280px, 340px) 1fr;
@@ -588,7 +609,6 @@ function formatObject(value) {
   height: 100%;
   box-sizing: border-box;
   color: var(--color-text);
-
 }
 
 .station-header {
@@ -602,8 +622,6 @@ function formatObject(value) {
   width: 100%;
   margin: 0;
 }
-
-
 
 .station-title {
   margin: 0;
@@ -631,7 +649,9 @@ function formatObject(value) {
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-action-button);
-  transition: transform 120ms ease, filter 120ms ease;
+  transition:
+    transform 120ms ease,
+    filter 120ms ease;
 }
 
 .nav-btn:hover {
@@ -812,7 +832,9 @@ function formatObject(value) {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
   margin: 0 1rem;
 }
 
@@ -838,14 +860,19 @@ function formatObject(value) {
 .module-card {
   flex: 0 0 auto;
   cursor: pointer;
-  transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
   border-color: color-mix(in srgb, var(--color-border) 85%, transparent);
 }
 
 .module-card.selected {
   border-color: var(--color-highlight);
   background: color-mix(in srgb, var(--color-highlight) 15%, var(--color-surface));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-highlight) 50%, transparent) inset, var(--shadow-surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-highlight) 50%, transparent) inset,
+    var(--shadow-surface);
 }
 
 .module-card:focus-visible {
@@ -880,7 +907,11 @@ function formatObject(value) {
 .assembly-count {
   font-size: 1.15rem;
   font-weight: 700;
-  background: color-mix(in srgb, var(--metrics-selected-bg, rgba(37, 99, 235, 0.16)) 40%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--metrics-selected-bg, rgba(37, 99, 235, 0.16)) 40%,
+    transparent
+  );
   color: var(--color-text);
   padding: 0.3rem 0.6rem;
   border-radius: calc(var(--radius) / 1.2);
@@ -915,17 +946,27 @@ function formatObject(value) {
   gap: 0.45rem;
   padding: 0.5rem 0.55rem;
   border-radius: calc(var(--radius) / 1.5);
-  background: color-mix(in srgb, var(--metrics-delta-bg, rgba(148, 163, 184, 0.12)) 35%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--metrics-delta-bg, rgba(148, 163, 184, 0.12)) 35%,
+    transparent
+  );
   border: 1px solid transparent;
   cursor: pointer;
-  transition: border-color 120ms ease, background 120ms ease;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
   flex: 0 0 auto;
   min-width: 220px;
 }
 
 .action-entry.selected {
   border-color: var(--color-highlight);
-  background: color-mix(in srgb, var(--metrics-delta-bg, rgba(148, 163, 184, 0.18)) 55%, var(--color-surface) 45%);
+  background: color-mix(
+    in srgb,
+    var(--metrics-delta-bg, rgba(148, 163, 184, 0.18)) 55%,
+    var(--color-surface) 45%
+  );
 }
 
 .action-entry:focus-visible {
@@ -968,7 +1009,9 @@ function formatObject(value) {
   letter-spacing: 0.05em;
   padding: 0.3rem 0.65rem;
   cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
 }
 
 .toggle-requirements:hover {
@@ -1042,7 +1085,11 @@ function formatObject(value) {
   font-size: 0.8rem;
   font-weight: 600;
   color: inherit;
-  background: color-mix(in srgb, var(--metrics-selected-bg, rgba(37, 99, 235, 0.16)) 45%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--metrics-selected-bg, rgba(37, 99, 235, 0.16)) 45%,
+    transparent
+  );
   border-radius: calc(var(--radius) / 1.4);
   padding: 0.35rem 0.5rem;
 }
@@ -1074,7 +1121,10 @@ function formatObject(value) {
   background: var(--color-surface);
   color: inherit;
   cursor: pointer;
-  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
 }
 
 .module-btn:hover:not(:disabled) {
@@ -1127,7 +1177,11 @@ function formatObject(value) {
   gap: 0.35rem;
   padding: 0.5rem;
   border-radius: calc(var(--radius) / 1.5);
-  background: color-mix(in srgb, var(--metrics-delta-bg, rgba(148, 163, 184, 0.12)) 60%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--metrics-delta-bg, rgba(148, 163, 184, 0.12)) 60%,
+    transparent
+  );
 }
 
 .function-title {
@@ -1172,7 +1226,11 @@ function formatObject(value) {
   gap: 0.25rem;
   padding: 0.4rem;
   border-radius: calc(var(--radius) / 1.5);
-  background: color-mix(in srgb, var(--metrics-selected-bg, rgba(37, 99, 235, 0.12)) 40%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--metrics-selected-bg, rgba(37, 99, 235, 0.12)) 40%,
+    transparent
+  );
 }
 
 .requirement-head {
@@ -1201,7 +1259,4 @@ function formatObject(value) {
 .detail-value {
   word-break: break-word;
 }
-
-
-
 </style>

@@ -1,57 +1,61 @@
 <script setup>
-import eventBus from '@/eventBus.js'
-
-import {gameStore} from '/src/stores/game.js';
-import StartingScreen from '/src/components/StartingScreen.vue'
-import {onBeforeUnmount, onMounted, ref} from 'vue'
-import Map from '/src/components/Map.vue';
+import eventBus from '@/eventBus.js';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { gameStore } from '@/stores/game.js';
+import StartingScreen from '@/components/StartingScreen.vue';
+import Map from '@/components/Map.vue';
 import AssemblyAssemblyAssembly from '@/components/AssemblyStation.vue';
-import Market from '/src/components/Market.vue';
-import { saveAllStores } from '@/utils/persistance.js'
+import Market from '@/components/Market.vue';
+import { saveAllStores, clearSavedStores } from '@/utils/persistance.js';
 
+const events = gameStore();
+const currentArea = ref('start');
 
+function handleNav(payload) {
+  const isObject = typeof payload === 'object' && payload !== null;
+  const area = isObject ? payload.area : payload;
+  if (!area) return;
 
-const events = gameStore()
-const currentArea = ref('start')
+  currentArea.value = area;
 
-function handleNav(area) {
-      currentArea.value = area;
-      saveAllStores()
+  if (isObject && payload.clearStores) {
+    clearSavedStores();
+  }
+
+  const skipSave = area === 'start' || (isObject && payload.skipSave);
+  if (!skipSave) {
+    saveAllStores();
+  }
 }
-
-
 
 function logEvent(content) {
-
-  events.log.push(content)
-
+  events.log.push(content);
 }
 
-
 onMounted(() => {
-  eventBus.on('nav', handleNav)
-  eventBus.on('log', logEvent)
-})
+  eventBus.on('nav', handleNav);
+  eventBus.on('log', logEvent);
+});
 
 onBeforeUnmount(() => {
-  eventBus.off('nav', handleNav)
-  eventBus.off('log', logEvent)
-})
-
-
+  eventBus.off('nav', handleNav);
+  eventBus.off('log', logEvent);
+});
 </script>
 
 <template>
   <main>
-    <StartingScreen v-if="currentArea === 'start'"/>
-      <Map v-if="currentArea === 'map'"/>
-      <AssemblyAssemblyAssembly v-if="currentArea=== 'assembly'"/>
-      <Market v-if="currentArea === 'market'"/>
-    </main>
-  </template>
+    <StartingScreen v-if="currentArea === 'start'" />
+    <Map v-if="currentArea === 'map'" />
+    <AssemblyAssemblyAssembly v-if="currentArea === 'assembly'" />
+    <Market v-if="currentArea === 'market'" />
+  </main>
+</template>
 
 <style>
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   height: 100%;
   overflow: hidden;

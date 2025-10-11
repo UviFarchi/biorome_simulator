@@ -1,15 +1,17 @@
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const props = defineProps({
   title: { type: String, required: true },
   // Keep the contract: all subcomponents receive `data`
-  data:  { type: Array,  default: () => [] },
-  startOpen: { type: Boolean, default: false }
-})
+  data: { type: Array, default: () => [] },
+  startOpen: { type: Boolean, default: false },
+});
 
-const isOpen = ref(!!props.startOpen)
-const toggle = () => { isOpen.value = !isOpen.value }
+const isOpen = ref(!!props.startOpen);
+const toggle = () => {
+  isOpen.value = !isOpen.value;
+};
 </script>
 
 <template>
@@ -23,12 +25,12 @@ const toggle = () => { isOpen.value = !isOpen.value }
 
     <table v-if="isOpen" class="kv compact fixed lane-fit">
       <tbody>
-      <tr>
-        <td class="wrap">
-          Not implemented yet.
-          <span v-if="Array.isArray(data)"> (received {{ data.length }} day entries) </span>
-        </td>
-      </tr>
+        <tr>
+          <td class="wrap">
+            Not implemented yet.
+            <span v-if="Array.isArray(data)"> (received {{ data.length }} day entries) </span>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

@@ -1,164 +1,169 @@
 <script setup>
-import {onMounted, watch, ref, computed} from 'vue'
-import { mapStore } from '@/stores/map.js'
-import {gameStore} from '@/stores/game.js';
+import { onMounted, watch, ref, computed } from 'vue';
+import { mapStore } from '@/stores/map.js';
+import { gameStore } from '@/stores/game.js';
 
-const canvas = ref(null)
-const map = mapStore()
-const game = gameStore()
-const phase = computed(() => game.phase)
-const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
-
+const canvas = ref(null);
+const map = mapStore();
+const game = gameStore();
+const phase = computed(() => game.phase);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
 const palette = computed(() => ({
   landHueLow: phase.value === 1 ? 220 : 240,
   landHueHigh: 20,
   landSat: 1,
-  gamma: phase.value === 1 ? 0.45 : 0.6,     // smaller = more contrast
+  gamma: phase.value === 1 ? 0.45 : 0.6, // smaller = more contrast
   quantizeBands: phase.value === 1 ? 6 : 0,
   lightBase: 0.58,
   lightRange: 0.28,
-  shadeStrength: 0.30,
+  shadeStrength: 0.3,
   waterHue: 205,
   waterSat: 0.75,
   waterLightBase: 0.62,
-  waterLightRange: 0.30
-}))
+  waterLightRange: 0.3,
+}));
 
+function paint() {
+  const el = canvas.value;
+  if (!el) return;
+  const pal = palette.value;
+  // use pal.quantizeBands, pal.landHueLow, etc.
 
-function paint () {
-  const el = canvas.value
-  if (!el) return
-  const pal = palette.value
-// use pal.quantizeBands, pal.landHueLow, etc.
+  const tiles = map.tiles;
+  const rows = tiles.length,
+    cols = rows ? tiles[0].length : 0;
+  if (!rows || !cols) return;
 
-  const tiles = map.tiles
-  const rows = tiles.length, cols = rows ? tiles[0].length : 0
-  if (!rows || !cols) return
+  const pxPerTile = 12;
+  const w = cols * pxPerTile;
+  const h = rows * pxPerTile;
 
-  const pxPerTile = 12
-  const w = cols * pxPerTile
-  const h = rows * pxPerTile
+  const dpr = window.devicePixelRatio || 1;
+  el.width = w * dpr;
+  el.height = h * dpr;
+  el.style.width = '100%';
+  el.style.height = '100%';
 
-  const dpr = window.devicePixelRatio || 1
-  el.width = w * dpr
-  el.height = h * dpr
-  el.style.width = '100%'
-  el.style.height = '100%'
+  const ctx = el.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const img = ctx.createImageData(w, h);
+  const data = img.data;
 
-  const ctx = el.getContext('2d')
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-  const img = ctx.createImageData(w, h)
-  const data = img.data
-
-  const [emin, emax] = map.topographyConstraints?.elevationRange ?? [0, 100]
-  const espan = Math.max(1e-6, emax - emin)
+  const [emin, emax] = map.topographyConstraints?.elevationRange ?? [0, 100];
+  const espan = Math.max(1e-6, emax - emin);
 
   // bilinear sampler over the tile grid
-  function sample (u, v, getter) {
-    const x = clamp(u, 0, cols - 1)
-    const y = clamp(v, 0, rows - 1)
-    const c0 = Math.floor(x), r0 = Math.floor(y)
-    const c1 = Math.min(c0 + 1, cols - 1), r1 = Math.min(r0 + 1, rows - 1)
-    const tx = x - c0, ty = y - r0
+  function sample(u, v, getter) {
+    const x = clamp(u, 0, cols - 1);
+    const y = clamp(v, 0, rows - 1);
+    const c0 = Math.floor(x),
+      r0 = Math.floor(y);
+    const c1 = Math.min(c0 + 1, cols - 1),
+      r1 = Math.min(r0 + 1, rows - 1);
+    const tx = x - c0,
+      ty = y - r0;
 
-    const z00 = getter(tiles[r0][c0])
-    const z10 = getter(tiles[r0][c1])
-    const z01 = getter(tiles[r1][c0])
-    const z11 = getter(tiles[r1][c1])
+    const z00 = getter(tiles[r0][c0]);
+    const z10 = getter(tiles[r0][c1]);
+    const z01 = getter(tiles[r1][c0]);
+    const z11 = getter(tiles[r1][c1]);
 
-    const a = z00 * (1 - tx) + z10 * tx
-    const b = z01 * (1 - tx) + z11 * tx
-    return a * (1 - ty) + b * ty
+    const a = z00 * (1 - tx) + z10 * tx;
+    const b = z01 * (1 - tx) + z11 * tx;
+    return a * (1 - ty) + b * ty;
   }
 
-  const elevAt = (u, v) => sample(u, v, t => t.topography.elevation.env)
-  const wtabAt = (u, v) => sample(u, v, t => t.topography.waterTable.env)
+  const elevAt = (u, v) => sample(u, v, (t) => t.topography.elevation.env);
+  const wtabAt = (u, v) => sample(u, v, (t) => t.topography.waterTable.env);
 
   // gentle hillshade from elevation gradient
-  const grad = 0.25
-  function shade (u, v) {
-    const e1 = elevAt(u + grad, v), e2 = elevAt(u - grad, v)
-    const e3 = elevAt(u, v + grad), e4 = elevAt(u, v - grad)
-    const gx = (e1 - e2)
-    const gy = (e3 - e4)
-    const g = clamp(Math.hypot(gx, gy) / (espan * 0.15), 0, 1)
-    return 1 - 0.35 * g // 0.65..1.0
+  const grad = 0.25;
+  function shade(u, v) {
+    const e1 = elevAt(u + grad, v),
+      e2 = elevAt(u - grad, v);
+    const e3 = elevAt(u, v + grad),
+      e4 = elevAt(u, v - grad);
+    const gx = e1 - e2;
+    const gy = e3 - e4;
+    const g = clamp(Math.hypot(gx, gy) / (espan * 0.15), 0, 1);
+    return 1 - 0.35 * g; // 0.65..1.0
   }
 
-  function hslToRgb (h, s, l) {
-    s = clamp(s, 0, 1); l = clamp(l, 0, 1)
-    const c = (1 - Math.abs(2 * l - 1)) * s
-    const hh = ((h % 360) + 360) % 360 / 60
-    const x = c * (1 - Math.abs((hh % 2) - 1))
-    let r = 0, g = 0, b = 0
-    if (0 <= hh && hh < 1) [r, g, b] = [c, x, 0]
-    else if (1 <= hh && hh < 2) [r, g, b] = [x, c, 0]
-    else if (2 <= hh && hh < 3) [r, g, b] = [0, c, x]
-    else if (3 <= hh && hh < 4) [r, g, b] = [0, x, c]
-    else if (4 <= hh && hh < 5) [r, g, b] = [x, 0, c]
-    else [r, g, b] = [c, 0, x]
-    const m = l - c / 2
-    return [(r + m) * 255, (g + m) * 255, (b + m) * 255]
+  function hslToRgb(h, s, l) {
+    s = clamp(s, 0, 1);
+    l = clamp(l, 0, 1);
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const hh = (((h % 360) + 360) % 360) / 60;
+    const x = c * (1 - Math.abs((hh % 2) - 1));
+    let r = 0,
+      g = 0,
+      b = 0;
+    if (0 <= hh && hh < 1) [r, g, b] = [c, x, 0];
+    else if (1 <= hh && hh < 2) [r, g, b] = [x, c, 0];
+    else if (2 <= hh && hh < 3) [r, g, b] = [0, c, x];
+    else if (3 <= hh && hh < 4) [r, g, b] = [0, x, c];
+    else if (4 <= hh && hh < 5) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+    const m = l - c / 2;
+    return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
   }
 
-  let p = 0
+  let p = 0;
   for (let y = 0; y < h; y++) {
-    const v = (y + 0.5) / pxPerTile
+    const v = (y + 0.5) / pxPerTile;
     for (let x = 0; x < w; x++) {
-      const u = (x + 0.5) / pxPerTile
+      const u = (x + 0.5) / pxPerTile;
 
-      const e = elevAt(u, v)
-      const wt = wtabAt(u, v)
+      const e = elevAt(u, v);
+      const wt = wtabAt(u, v);
 
-      let r, g, b
+      let r, g, b;
       if (e <= wt) {
         // water: darker as it gets deeper
-        const depth = clamp((wt - e) / Math.max(1, espan * 0.15), 0, 1)
-        const L = pal.waterLightBase - pal.waterLightRange * depth
-        ;[r, g, b] = hslToRgb(pal.waterHue, pal.waterSat, L)
+        const depth = clamp((wt - e) / Math.max(1, espan * 0.15), 0, 1);
+        const L = pal.waterLightBase - pal.waterLightRange * depth;
+        [r, g, b] = hslToRgb(pal.waterHue, pal.waterSat, L);
       } else {
         // land: wider hue span, optional quantization, gamma curve, hillshade
-        let t = clamp((e - emin) / espan, 0, 1)
+        let t = clamp((e - emin) / espan, 0, 1);
         if (pal.quantizeBands > 1) {
-          t = Math.round(t * (pal.quantizeBands - 1)) / (pal.quantizeBands - 1)
+          t = Math.round(t * (pal.quantizeBands - 1)) / (pal.quantizeBands - 1);
         }
-        t = Math.pow(t, pal.gamma)
+        t = Math.pow(t, pal.gamma);
 
-        const hue = pal.landHueLow + (pal.landHueHigh - pal.landHueLow) * t
-        const lightNoShade = pal.lightBase + pal.lightRange * (1 - t)
-        const sh = clamp(shade(u, v), 0, 1)
-        const light = lightNoShade * (1 - pal.shadeStrength * (1 - sh))
+        const hue = pal.landHueLow + (pal.landHueHigh - pal.landHueLow) * t;
+        const lightNoShade = pal.lightBase + pal.lightRange * (1 - t);
+        const sh = clamp(shade(u, v), 0, 1);
+        const light = lightNoShade * (1 - pal.shadeStrength * (1 - sh));
 
-        ;[r, g, b] = hslToRgb(hue, pal.landSat, light)
+        [r, g, b] = hslToRgb(hue, pal.landSat, light);
       }
 
-      data[p++] = r | 0
-      data[p++] = g | 0
-      data[p++] = b | 0
-      data[p++] = 255
+      data[p++] = r | 0;
+      data[p++] = g | 0;
+      data[p++] = b | 0;
+      data[p++] = 255;
     }
   }
-  ctx.putImageData(img, 0, 0)
+  ctx.putImageData(img, 0, 0);
 }
 
-onMounted(paint)
-watch(() => [map.size, map.tiles], paint, { deep: true })
-watch(phase, paint)
-
+onMounted(paint);
+watch(() => [map.size, map.tiles], paint, { deep: true });
+watch(phase, paint);
 </script>
-
 
 <template>
   <canvas ref="canvas" class="terrain-canvas" />
 </template>
 
 <style scoped>
-.terrain-canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
+.terrain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 </style>

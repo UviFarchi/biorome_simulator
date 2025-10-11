@@ -1,40 +1,45 @@
 <script setup>
-import {onMounted, onBeforeUnmount, ref, computed, watch} from 'vue'
-import eventBus from '@/eventBus.js'
-import {gameStore} from '@/stores/game.js'
-import {mapStore} from '@/stores/map.js'
+import { onMounted, onBeforeUnmount, ref, computed } from 'vue';
+import eventBus from '@/eventBus.js';
+import { gameStore } from '@/stores/game.js';
 
-import ControlPanel from '@/components/grid/Controls.vue'
-import WeatherPanel from '@/components/menus/Weather.vue'
-import EventLog from '@/components/menus/EventLog.vue'
-import AnalyticsReport from '@/components/menus/AnalyticsReport.vue'
-import ActionMenu from '@/components/menus/ActionMenu.vue'
-import AnimalsMenu from '@/components/menus/AnimalsMenu.vue'
-import PlantsMenu from '@/components/menus/PlantsMenu.vue'
-import FarmGate from '@/components/menus/FarmGate.vue'
-import TilesGrid from '@/components/grid/TilesGrid.vue'
-import {loadAllStores, saveAllStores} from '@/utils/persistance.js'
-import News from '@/components/menus/News.vue'
-import {produceReport} from '@/engine/phases/analytics/produceReport.js';
+import ControlPanel from '@/components/grid/Controls.vue';
+import WeatherPanel from '@/components/menus/Weather.vue';
+import EventLog from '@/components/menus/EventLog.vue';
+import AnalyticsReport from '@/components/menus/AnalyticsReport.vue';
+import ActionMenu from '@/components/menus/ActionMenu.vue';
+import AnimalsMenu from '@/components/menus/AnimalsMenu.vue';
+import PlantsMenu from '@/components/menus/PlantsMenu.vue';
+import FarmGate from '@/components/menus/FarmGate.vue';
+import TilesGrid from '@/components/grid/TilesGrid.vue';
+import { loadAllStores, saveAllStores } from '@/utils/persistance.js';
+import News from '@/components/menus/News.vue';
+import { produceReport } from '@/engine/phases/analytics/produceReport.js';
 import updateGame from '@/engine/simulationUpdate/updateGame.js';
 // TODO => Add coverage % mechanic to plants, and adjust seed and seedling prices to coverage, as well as yield.
-const game = gameStore()
-const map = mapStore()
-const currentPhaseLabel = computed(() => game.engines[(game.phase) % game.engines.length])
+const game = gameStore();
+const currentPhaseLabel = computed(() => game.engines[game.phase % game.engines.length]);
 
 /* ---------------- Open/close truth per overlay ---------------- */
 const show = ref({
-  log: false, analytics: false, animals: false, plants: false, assemblies: false,
-  gate: false, weather: false, resources: false, news: false
-})
+  log: false,
+  analytics: false,
+  animals: false,
+  plants: false,
+  assemblies: false,
+  gate: false,
+  weather: false,
+  resources: false,
+  news: false,
+});
 
 /* ---------------- Lane manager (placement + order) ---------------- */
 const lanes = ref({
-  left: [],               // visual order
+  left: [], // visual order
   right: [],
   sideByKey: Object.create(null), // key -> 'left' | 'right'
   nextSide: 'left',
-})
+});
 
 /* ---------------- Registry for dynamic components ---------------- */
 const compByKey = {
@@ -45,125 +50,124 @@ const compByKey = {
   plants: PlantsMenu,
   assemblies: ActionMenu,
   gate: FarmGate,
-  news: News
-}
+  news: News,
+};
 
 /* ---------------- Layout modes: singleWidth | doubleWidth | fullWidth ---------------- */
-const doubleWidth = ref(false)
-const fullWidth = ref(false)
-const isSingleWidth = computed(() => !doubleWidth.value && !fullWidth.value)
+const doubleWidth = ref(false);
+const fullWidth = ref(false);
+const isSingleWidth = computed(() => !doubleWidth.value && !fullWidth.value);
 
 /** Move all overlays from right → left (preserve order and open/close state). */
 function moveAllRightToLeft() {
-  const s = lanes.value
-  if (!s.right.length) return
-  const moving = [...s.right]
+  const s = lanes.value;
+  if (!s.right.length) return;
+  const moving = [...s.right];
   for (const key of moving) {
-    removeFromLane(key)
-    s.sideByKey[key] = 'left'
-    s.left.push(key)
+    removeFromLane(key);
+    s.sideByKey[key] = 'left';
+    s.left.push(key);
   }
-  s.right.length = 0
+  s.right.length = 0;
 }
 
 /** Explicitly set layout: 'single' | 'double' | 'full'. */
 function setLayoutWidth(mode) {
   if (mode === 'full') {
-    fullWidth.value = true
-    doubleWidth.value = false
-    moveAllRightToLeft()
+    fullWidth.value = true;
+    doubleWidth.value = false;
+    moveAllRightToLeft();
   } else if (mode === 'double') {
-    doubleWidth.value = true
-    fullWidth.value = false
-    moveAllRightToLeft()
+    doubleWidth.value = true;
+    fullWidth.value = false;
+    moveAllRightToLeft();
   } else {
     // singleWidth
-    doubleWidth.value = false
-    fullWidth.value = false
+    doubleWidth.value = false;
+    fullWidth.value = false;
   }
 }
-
-
 
 /* ---------------- Lane placement helpers ---------------- */
 function addToLane(key) {
-  const s = lanes.value
-  if (s.sideByKey[key]) return
-  let side
+  const s = lanes.value;
+  if (s.sideByKey[key]) return;
+  let side;
   if (!isSingleWidth.value) {
-    side = 'left' // double/full modes render only left lane
+    side = 'left'; // double/full modes render only left lane
   } else {
-    const l = s.left.length, r = s.right.length
-    if (l < r) side = 'left'
-    else if (r < l) side = 'right'
+    const l = s.left.length,
+      r = s.right.length;
+    if (l < r) side = 'left';
+    else if (r < l) side = 'right';
     else {
       side = s.nextSide;
-      s.nextSide = (s.nextSide === 'left' ? 'right' : 'left')
+      s.nextSide = s.nextSide === 'left' ? 'right' : 'left';
     }
   }
-  s.sideByKey[key] = side
-  s[side].push(key)
+  s.sideByKey[key] = side;
+  s[side].push(key);
 }
 
 function removeFromLane(key) {
-  const s = lanes.value
-  const side = s.sideByKey[key]
-  if (!side) return
-  const arr = s[side]
-  const i = arr.indexOf(key)
-  if (i !== -1) arr.splice(i, 1)
-  delete s.sideByKey[key]
+  const s = lanes.value;
+  const side = s.sideByKey[key];
+  if (!side) return;
+  const arr = s[side];
+  const i = arr.indexOf(key);
+  if (i !== -1) arr.splice(i, 1);
+  delete s.sideByKey[key];
 }
 
 /* ---------------- Overlay open/close API (via eventBus) ---------------- */
-function toggleOverlay({target, show: explicit}) {
-  if (!(target in show.value)) return
-  const next = explicit === undefined ? !show.value[target] : !!explicit
-  show.value[target] = next
-  next ? addToLane(target) : removeFromLane(target)
+function toggleOverlay({ target, show: explicit }) {
+  if (!(target in show.value)) return;
+  const next = explicit === undefined ? !show.value[target] : !!explicit;
+  show.value[target] = next;
+  next ? addToLane(target) : removeFromLane(target);
 }
 
 /* ---------------- Reordering + switching lanes ---------------- */
 function moveOverlay(key, dir) {
-  const s = lanes.value
-  const side = s.sideByKey[key]
-  if (!side) return
-  const arr = s[side]
+  const s = lanes.value;
+  const side = s.sideByKey[key];
+  if (!side) return;
+  const arr = s[side];
   const i = arr.indexOf(key);
-  if (i === -1) return
-  const j = i + (dir === 'up' ? -1 : 1)
-  if (j < 0 || j >= arr.length) return
-      ;
-  [arr[i], arr[j]] = [arr[j], arr[i]]
+  if (i === -1) return;
+  const j = i + (dir === 'up' ? -1 : 1);
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
 function switchLane(key) {
-  if (!isSingleWidth.value) return // disabled in double/full
-  const s = lanes.value
-  const from = s.sideByKey[key]
-  if (!from) return
-  const arr = s[from]
+  if (!isSingleWidth.value) return; // disabled in double/full
+  const s = lanes.value;
+  const from = s.sideByKey[key];
+  if (!from) return;
+  const arr = s[from];
   const i = arr.indexOf(key);
-  if (i === -1) return
-  arr.splice(i, 1)
-  const to = from === 'left' ? 'right' : 'left'
-  s.sideByKey[key] = to
-  s[to].push(key)
+  if (i === -1) return;
+  arr.splice(i, 1);
+  const to = from === 'left' ? 'right' : 'left';
+  s.sideByKey[key] = to;
+  s[to].push(key);
 }
 
 function handlePhaseChange() {
-  eventBus.emit('spinner', true)
-  const engines = game.engines
-  const next = ((game.phase + 1) % engines.length + engines.length) % engines.length
+  eventBus.emit('spinner', true);
+  const engines = game.engines;
+  const next = (((game.phase + 1) % engines.length) + engines.length) % engines.length;
 
-  const on = (target) => eventBus.emit('overlay', {target, show: true, enable: true})
-  const off = (target) => eventBus.emit('overlay', {target, show: false, enable: true})
-  const disable = (target) => eventBus.emit('overlay', {target, show: false, enable: false})
+  const on = (target) => eventBus.emit('overlay', { target, show: true, enable: true });
+  const off = (target) => eventBus.emit('overlay', { target, show: false, enable: true });
+  const disable = (target) => eventBus.emit('overlay', { target, show: false, enable: false });
 
-  if (next === 0) { // Phase 0 — Analytics
+  if (next === 0) {
+    // Phase 0 — Analytics
     // auto-open
-    on('log')
-    setLayoutWidth('single')
+    on('log');
+    setLayoutWidth('single');
     // available but closed
     off('analytics');
     off('weather');
@@ -173,16 +177,19 @@ function handlePhaseChange() {
     disable('plants');
     disable('resources');
     disable('assemblies');
-    disable('gate')
+    disable('gate');
 
-    eventBus.emit('log', {engine: 'analytics', msg: 'Day ' + game.currentTurn + ' in the biorome'})
+    eventBus.emit('log', {
+      engine: 'analytics',
+      msg: 'Day ' + game.currentTurn + ' in the biorome',
+    });
     setTimeout(async () => {
       await updateGame();
-      produceReport()
-    }, 1)
-
-  } else if (next === 1) { // Phase 1 — Optimization
-    setLayoutWidth('single')
+      produceReport();
+    }, 1);
+  } else if (next === 1) {
+    // Phase 1 — Optimization
+    setLayoutWidth('single');
     // auto-open planners
     on('animals');
     on('plants');
@@ -191,15 +198,15 @@ function handlePhaseChange() {
     off('weather');
     off('news');
     off('analytics');
-    off('log')
+    off('log');
     // not allowed
 
-    disable('gate')
+    disable('gate');
 
-    eventBus.emit('log', {engine: 'optimizations', msg: 'Running simulations...'})
-
-  } else if (next === 2) { // Phase 2 — Operations
-    setLayoutWidth('double')
+    eventBus.emit('log', { engine: 'optimizations', msg: 'Running simulations...' });
+  } else if (next === 2) {
+    // Phase 2 — Operations
+    setLayoutWidth('double');
     off('weather');
     off('news');
     off('log');
@@ -210,73 +217,69 @@ function handlePhaseChange() {
     on('assemblies');
 
     disable('resources');
-    eventBus.emit('log', {engine: 'operations', msg: 'Executing instructions...'})
+    eventBus.emit('log', { engine: 'operations', msg: 'Executing instructions...' });
   }
 
-  game.phase = next
-  saveAllStores()
+  game.phase = next;
+  saveAllStores();
   setTimeout(() => {
-    eventBus.emit('spinner', false)
-  }, 1000)
+    eventBus.emit('spinner', false);
+  }, 1000);
 }
 
-
-
 onMounted(() => {
-  eventBus.on('overlay', toggleOverlay)
-  eventBus.on('phase', handlePhaseChange)
-  eventBus.on('layout', setLayoutWidth)
-  loadAllStores()
-})
+  eventBus.on('overlay', toggleOverlay);
+  eventBus.on('phase', handlePhaseChange);
+  eventBus.on('layout', setLayoutWidth);
+  loadAllStores();
+});
 
 onBeforeUnmount(() => {
-  eventBus.off('overlay', toggleOverlay)
-  eventBus.off('phase', handlePhaseChange)
-  eventBus.off('layout', setLayoutWidth)
-  })
-
-
+  eventBus.off('overlay', toggleOverlay);
+  eventBus.off('phase', handlePhaseChange);
+  eventBus.off('layout', setLayoutWidth);
+});
 </script>
 
 <template>
   <div class="mapWrapper" :class="currentPhaseLabel + 'Background'">
-    <ControlPanel class="control"/>
+    <ControlPanel class="control" />
 
     <!-- content wrapper: add fullscreen class -->
-    <div class="content" :class="{
-  'doubleWidth': doubleWidth,
-  'fullWidth': fullWidth
-}">
+    <div
+      class="content"
+      :class="{
+        doubleWidth: doubleWidth,
+        fullWidth: fullWidth,
+      }"
+    >
       <!-- Left lane -->
       <div class="lane left">
-
-        <div v-for="k in lanes.left" :key="'L-'+k" class="overlay-wrapper">
+        <div v-for="k in lanes.left" :key="'L-' + k" class="overlay-wrapper">
           <div class="overlay-controls">
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
             <button v-if="isSingleWidth" @click="switchLane(k)" aria-label="Switch lane">→</button>
           </div>
-          <component :is="compByKey[k]" v-show="show[k]" class="overlay"/>
+          <component :is="compByKey[k]" v-show="show[k]" class="overlay" />
         </div>
       </div>
 
       <!-- Grid -->
-      <TilesGrid class="grid"/>
+      <TilesGrid class="grid" />
 
       <!-- Right lane -->
       <div class="lane right">
-        <div v-for="k in lanes.right" :key="'R-'+k" class="overlay-wrapper">
+        <div v-for="k in lanes.right" :key="'R-' + k" class="overlay-wrapper">
           <div class="overlay-controls">
             <button @click="moveOverlay(k, 'up')">↑</button>
             <button @click="moveOverlay(k, 'down')">↓</button>
             <button @click="switchLane(k)" aria-label="Switch lane">←</button>
           </div>
-          <component :is="compByKey[k]" v-show="show[k]" class="overlay"/>
+          <component :is="compByKey[k]" v-show="show[k]" class="overlay" />
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
 <style scoped>
@@ -293,7 +296,6 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-rows: 10vh 1fr;
   height: 100vh;
-
 }
 
 /* three columns: left lane | grid | right lane */
@@ -353,7 +355,11 @@ onBeforeUnmount(() => {
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .overlay-controls button:hover,
@@ -414,6 +420,4 @@ onBeforeUnmount(() => {
 .content.fullWidth .lane.right {
   display: none;
 }
-
-
 </style>

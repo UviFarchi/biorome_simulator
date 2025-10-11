@@ -1,50 +1,47 @@
 <script setup>
-import { computed } from 'vue'
-import { mapStore } from '@/stores/map.js'
-import { gameStore } from '@/stores/game.js'
-import { marketStore } from '@/stores/market.js'
-import { plantTypes } from '@/dict/plantModels.js'
-import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js'
-import {applyOptimizationEffects} from '@/engine/phases/optimizations/applyOptimizationEffects.js';
+import { computed } from 'vue';
+import { mapStore } from '@/stores/map.js';
+import { marketStore } from '@/stores/market.js';
+import { plantTypes } from '@/dict/plantModels.js';
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js';
+import { applyOptimizationEffects } from '@/engine/phases/optimizations/applyOptimizationEffects.js';
 
-const map = mapStore()
-const game = gameStore()
-const market = marketStore()
+const map = mapStore();
+const market = marketStore();
 const currentTile = computed(() => {
-  const selected = map.selectedTile
-  return selected && typeof selected === 'object' && 'value' in selected ? selected.value : selected
-})
+  const selected = map.selectedTile;
+  return selected && typeof selected === 'object' && 'value' in selected
+    ? selected.value
+    : selected;
+});
 
 const selectedTileKey = computed(() => {
-  return currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null
-})
+  return currentTile.value ? `${currentTile.value.row},${currentTile.value.col}` : null;
+});
 
-const plantTypesList = plantTypes
+const plantTypesList = plantTypes;
 
 function addPlantToTile(plantType, growthStage) {
-  const tile = currentTile.value
-  const domain = 'plant'
+  const tile = currentTile.value;
+  const domain = 'plant';
 
   // capture instance
-  const inst = makeInstance(domain, plantType, growthStage)
+  const inst = makeInstance(domain, plantType, growthStage);
 
   // push into optimized list
-  tile.plants.optimized.push(inst)
+  tile.plants.optimized.push(inst);
 
-
-  //Pass plant model
-  const model = plantTypesList.filter(plant => plant.type === plantType)[0]
   // pass instance as subject
-  applyOptimizationEffects(domain, plantType, tile, inst)
+  applyOptimizationEffects(domain, plantType, tile, inst);
 }
 
 function plantStagePrice(plant, growthStage) {
-  const entry = market.priceCatalog.plants?.[plant.type]
-  const sp = entry?.stagePrices
-  if (!sp) return 'No price'
+  const entry = market.priceCatalog.plants?.[plant.type];
+  const sp = entry?.stagePrices;
+  if (!sp) return 'No price';
   return Array.isArray(sp)
-      ? sp[plant.growthStages.indexOf(growthStage)] ?? 'No price'
-      : sp[growthStage] ?? 'No price'
+    ? (sp[plant.growthStages.indexOf(growthStage)] ?? 'No price')
+    : (sp[growthStage] ?? 'No price');
 }
 </script>
 
@@ -54,14 +51,12 @@ function plantStagePrice(plant, growthStage) {
       <h4>Plants</h4>
     </div>
 
-    <div v-if="!currentTile" class="hint">Select a tile to add plants to its optimization plan.</div>
+    <div v-if="!currentTile" class="hint">
+      Select a tile to add plants to its optimization plan.
+    </div>
 
     <div v-else class="cards">
-      <div
-          v-for="plant in plantTypesList"
-          :key="plant.type"
-          class="card"
-      >
+      <div v-for="plant in plantTypesList" :key="plant.type" class="card">
         <div class="card-header">
           <div class="card-title">{{ plant.type }}</div>
           <div class="card-icon" v-if="plant.icon">{{ plant.icon }}</div>
@@ -70,20 +65,19 @@ function plantStagePrice(plant, growthStage) {
         <div class="card-body">
           <div class="phase-buttons">
             <button
-                v-for="growthStage in plant.growthStages.slice(0, 2)"
-            :key="growthStage"
-            class="phase-button"
-            :disabled="!selectedTileKey"
-            @click="addPlantToTile(plant.type, growthStage)"
+              v-for="growthStage in plant.growthStages.slice(0, 2)"
+              :key="growthStage"
+              class="phase-button"
+              :disabled="!selectedTileKey"
+              @click="addPlantToTile(plant.type, growthStage)"
             >
-            <span class="phase-label">{{ growthStage }}</span>
-            <span class="phase-price">
+              <span class="phase-label">{{ growthStage }}</span>
+              <span class="phase-price">
                 {{ plantStagePrice(plant, growthStage) }}
               </span>
             </button>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -118,21 +112,43 @@ function plantStagePrice(plant, growthStage) {
   justify-content: space-between;
 }
 
-.card-title { font-weight: 600; }
-.card-icon { font-size: 20px; }
+.card-title {
+  font-weight: 600;
+}
+.card-icon {
+  font-size: 20px;
+}
 
-.phase-buttons { display: grid; gap: 6px; }
+.phase-buttons {
+  display: grid;
+  gap: 6px;
+}
 
 .phase-button {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 8px 10px; border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
   border: 1px solid var(--color-border);
-  background: transparent; cursor: pointer; color: var(--color-text);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text);
 }
-.phase-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.phase-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-.phase-label { font-weight: 500; }
-.phase-price { font-variant-numeric: tabular-nums; }
+.phase-label {
+  font-weight: 500;
+}
+.phase-price {
+  font-variant-numeric: tabular-nums;
+}
 
-.hint { opacity: 0.8; }
+.hint {
+  opacity: 0.8;
+}
 </style>

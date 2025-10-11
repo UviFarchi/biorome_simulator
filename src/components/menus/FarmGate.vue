@@ -1,42 +1,42 @@
 <script setup>
-import { computed } from 'vue'
-import { mapStore } from '@/stores/map.js'
-import { formatDateLocale } from '@/utils/formatting.js'
+import { computed } from 'vue';
+import { mapStore } from '@/stores/map.js';
+import { formatDateLocale } from '@/utils/formatting.js';
 
-const map = mapStore()
+const map = mapStore();
 
-const gateItems = computed(() => map.gate)
+const gateItems = computed(() => map.gate);
 
-const hasItems = computed(() => gateItems.value.length > 0)
+const hasItems = computed(() => gateItems.value.length > 0);
 
 function isResource(item) {
-  return item?.kind === 'resource'
+  return item?.kind === 'resource';
 }
 
 function titleFor(item) {
-  return item?.type || 'Unknown'
+  return item?.type || 'Unknown';
 }
 
 function stageLabel(item) {
   if (isResource(item)) {
-    const qty = Number.isFinite(item?.quantity) ? item.quantity : 1
-    return `Qty: ${qty}`
+    const qty = Number.isFinite(item?.quantity) ? item.quantity : 1;
+    return `Qty: ${qty}`;
   }
-  if (!item?.growthStage) return ''
-  return `Stage: ${item.growthStage}`
+  if (!item?.growthStage) return '';
+  return `Stage: ${item.growthStage}`;
 }
 
 function deployedLabel(item) {
-  if (!item?.dateDeployed) return ''
-  return `Bought: ${formatDateLocale(item.dateDeployed)}`
+  if (!item?.dateDeployed) return '';
+  return `Bought: ${formatDateLocale(item.dateDeployed)}`;
 }
 
 function domainLabel(item) {
-  if (!item) return ''
-  if (isResource(item)) return 'Resource'
-  if (item.weight) return 'Animal'
-  if (item.height) return 'Plant'
-  return ''
+  if (!item) return '';
+  if (isResource(item)) return 'Resource';
+  if (item.weight) return 'Animal';
+  if (item.height) return 'Plant';
+  return '';
 }
 </script>
 

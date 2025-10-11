@@ -1,180 +1,201 @@
 <script setup>
-import {reactive, computed, onMounted, onBeforeUnmount, watch, ref} from 'vue'
-import eventBus from '@/eventBus.js'
-import {gameStore} from '@/stores/game.js'
-import {clearSavedStores, loadAllStores} from '@/utils/persistance.js'
-import {formatDateLocale} from '@/utils/formatting.js'
+import { reactive, computed, onMounted, onBeforeUnmount, watch, ref } from 'vue';
+import eventBus from '@/eventBus.js';
+import { gameStore } from '@/stores/game.js';
+import { clearSavedStores, loadAllStores } from '@/utils/persistance.js';
+import { formatDateLocale } from '@/utils/formatting.js';
 
-const game = gameStore()
-const phase = computed(() => game.phase)
-const currentPhaseLabel = computed(() => game.engines[(phase.value) % game.engines.length])
-const nextPhaseLabel = computed(() => game.engines[(phase.value + 1) % game.engines.length])
+const game = gameStore();
+const phase = computed(() => game.phase);
+const currentPhaseLabel = computed(() => game.engines[phase.value % game.engines.length]);
+const nextPhaseLabel = computed(() => game.engines[(phase.value + 1) % game.engines.length]);
 
-const userName = computed(() => game.userName)
-const userAvatar = computed(() => game.userAvatar)
-const money = computed(() => game.money)
+const userName = computed(() => game.userName);
+const userAvatar = computed(() => game.userAvatar);
+const money = computed(() => game.money);
 const formattedmoney = computed(() => {
-  const value = Number(money.value ?? 0)
-  if (!Number.isFinite(value)) return '—'
+  const value = Number(money.value ?? 0);
+  if (!Number.isFinite(value)) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(value)
-})
-const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery')
-const userAvatarDisplay = computed(() => userAvatar.value || '👤')
+  }).format(value);
+});
+const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery');
+const userAvatarDisplay = computed(() => userAvatar.value || '👤');
 
-const settingsOpen = ref(false)
-const settingsWrap = ref(null)
+const settingsOpen = ref(false);
+const settingsWrap = ref(null);
 
 function closeSettingsMenu() {
-  settingsOpen.value = false
+  settingsOpen.value = false;
 }
 
 function toggleSettingsMenu() {
-  settingsOpen.value = !settingsOpen.value
+  settingsOpen.value = !settingsOpen.value;
 }
 
 function handleClickOutsideSettings(event) {
-  if (!settingsOpen.value) return
-  const wrap = settingsWrap.value
+  if (!settingsOpen.value) return;
+  const wrap = settingsWrap.value;
   if (wrap && !wrap.contains(event.target)) {
-    settingsOpen.value = false
+    settingsOpen.value = false;
   }
 }
 
 // Active highlight per overlay (toggled via existing `overlay` events)
 const open = reactive({
-  weather: false, news: false, log: false, analytics: false,
-  gate: false, animals: false, plants: false, assemblies: false
-})
-const bioromeTest = ref(false)
+  weather: false,
+  news: false,
+  log: false,
+  analytics: false,
+  gate: false,
+  animals: false,
+  plants: false,
+  assemblies: false,
+});
+const bioromeTest = ref(false);
 
 function toggleTheme() {
-  document.documentElement.dataset.theme = game.currentTheme = game.currentTheme === 'dark' ? 'light' : 'dark'
-  closeSettingsMenu()
+  document.documentElement.dataset.theme = game.currentTheme =
+    game.currentTheme === 'dark' ? 'light' : 'dark';
+  closeSettingsMenu();
 }
 
 function toggleTestMode() {
-  bioromeTest.value = !bioromeTest.value
-  closeSettingsMenu()
+  bioromeTest.value = !bioromeTest.value;
+  closeSettingsMenu();
 }
-
 
 // Enable/disable per phase (matrix)
 const allowedSet = computed(() => {
   if (phase.value === 0) {
-    return new Set(['weather', 'news', 'log', 'analytics']) // analytics enabled, user may open
+    return new Set(['weather', 'news', 'log', 'analytics']); // analytics enabled, user may open
   } else if (phase.value === 1) {
-    return new Set(['weather', 'news', 'log', 'analytics', 'animals', 'plants', 'assemblies'])
-  } else { // phase 2
-    return new Set(['weather', 'news', 'log', 'assemblies', 'gate'])
+    return new Set(['weather', 'news', 'log', 'analytics', 'animals', 'plants', 'assemblies']);
+  } else {
+    // phase 2
+    return new Set(['weather', 'news', 'log', 'assemblies', 'gate']);
   }
-})
+});
 
 // Keep highlights consistent when phase changes
-watch(allowedSet, (allow) => {
-  Object.keys(open).forEach(k => {
-    if (!allow.has(k)) open[k] = false
-  })
-}, {immediate: true})
+watch(
+  allowedSet,
+  (allow) => {
+    Object.keys(open).forEach((k) => {
+      if (!allow.has(k)) open[k] = false;
+    });
+  },
+  { immediate: true }
+);
 
 // Reflect overlay toggles (same event you already emit)
-function onOverlay({target, show}) {
-  if (!(target in open)) return
-  if (typeof show === 'boolean') open[target] = !!show
-  else open[target] = !open[target]
+function onOverlay({ target, show }) {
+  if (!(target in open)) return;
+  if (typeof show === 'boolean') open[target] = !!show;
+  else open[target] = !open[target];
 }
 
 const stateClass = (key) =>
-    allowedSet.value.has(key) ? (open[key] ? 's-active' : 's-idle') : 's-disabled'
-onMounted(() => eventBus.on('overlay', onOverlay))
-onMounted(() => document.addEventListener('click', handleClickOutsideSettings))
-onBeforeUnmount(() => eventBus.off('overlay', onOverlay))
-onBeforeUnmount(() => document.removeEventListener('click', handleClickOutsideSettings))
+  allowedSet.value.has(key) ? (open[key] ? 's-active' : 's-idle') : 's-disabled';
+onMounted(() => eventBus.on('overlay', onOverlay));
+onMounted(() => document.addEventListener('click', handleClickOutsideSettings));
+onBeforeUnmount(() => eventBus.off('overlay', onOverlay));
+onBeforeUnmount(() => document.removeEventListener('click', handleClickOutsideSettings));
 
 function restart() {
-  closeSettingsMenu()
-  clearSavedStores()
-  eventBus.emit('nav', 'start')
-  window.location.reload()
+  closeSettingsMenu();
+  clearSavedStores();
+  eventBus.emit('nav', { area: 'start', skipSave: true, clearStores: true });
+  window.location.reload();
 }
 
 const spinnerOn = ref(false);
 
 function toggleSpinner(on) {
-  spinnerOn.value = on
+  spinnerOn.value = on;
 }
 
 onMounted(() => {
-  eventBus.on('spinner', toggleSpinner)
-  loadAllStores()
-})
+  eventBus.on('spinner', toggleSpinner);
+  loadAllStores();
+});
 
 onBeforeUnmount(() => {
-  eventBus.off('spinner', toggleSpinner)
-})
+  eventBus.off('spinner', toggleSpinner);
+});
 
 /*** TEST MODE ***/
-import {mapStore} from '@/stores/map.js'
-import {makeInstance} from '@/engine/phases/optimizations/biotaFactories.js'
-import {measureTileProperty} from '@/utils/tileHelpers.js'
-import {makeAssembly} from '@/engine/phases/operations/assemblyFactory.js';
+import { mapStore } from '@/stores/map.js';
+import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js';
+import { measureTileProperty } from '@/utils/tileHelpers.js';
+import { makeAssembly } from '@/engine/phases/operations/assemblyFactory.js';
 
-const map = mapStore()
+const map = mapStore();
 
-
-let phaseHandler = null
+let phaseHandler = null;
 
 function getGrid() {
-  return Array.isArray(map.tiles) ? map.tiles : map.tiles?.value
+  return Array.isArray(map.tiles) ? map.tiles : map.tiles?.value;
 }
 
 function addTestEntitiesToTile(row, col) {
-  const tile = getGrid()?.[row]?.[col]
-  tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'))
-  tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'))
-  let testAssembly = makeAssembly('Test Assembly', [{type: 'transport'}, {type: 'battery'}, {type: 'cart'}, {
-    type: 'arm',
-    subtype: 'heavy'
-  }])
-  console.log(testAssembly)
-  tile.assemblies.real.push(testAssembly)
+  const tile = getGrid()?.[row]?.[col];
+  tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'));
+  tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'));
+  let testAssembly = makeAssembly('Test Assembly', [
+    { type: 'transport' },
+    { type: 'battery' },
+    { type: 'cart' },
+    {
+      type: 'arm',
+      subtype: 'heavy',
+    },
+  ]);
+  console.log(testAssembly);
+  tile.assemblies.real.push(testAssembly);
 }
 
 function removeTestEntitiesFromTile(row, col) {
-  const tile = getGrid()?.[row]?.[col]
-  if (Array.isArray(tile.plants.real)) tile.plants.real = tile.plants.real.filter(p => !(p.type === 'tomato' && p.growthStage === 'mature'))
-  if (Array.isArray(tile.animals.real)) tile.animals.real = tile.animals.real.filter(a => !(a.type === 'cow' && a.growthStage === 'heifer'))
-  if (Array.isArray(tile.assemblies.real)) tile.assemblies.real = tile.assemblies.real.filter(a => !(a.name === 'Test Assembly'))
-
+  const tile = getGrid()?.[row]?.[col];
+  if (Array.isArray(tile.plants.real))
+    tile.plants.real = tile.plants.real.filter(
+      (p) => !(p.type === 'tomato' && p.growthStage === 'mature')
+    );
+  if (Array.isArray(tile.animals.real))
+    tile.animals.real = tile.animals.real.filter(
+      (a) => !(a.type === 'cow' && a.growthStage === 'heifer')
+    );
+  if (Array.isArray(tile.assemblies.real))
+    tile.assemblies.real = tile.assemblies.real.filter((a) => !(a.name === 'Test Assembly'));
 }
 
 /* -------- measure everything on a tile -------- */
 
 function measureBlock(blockName, blockObj) {
   for (const key in blockObj) {
-    const prop = blockObj[key]
+    const prop = blockObj[key];
     if (prop && prop.measured && 'env' in prop) {
-      measureTileProperty(prop, `${blockName}.${key}`)
+      measureTileProperty(prop, `${blockName}.${key}`);
     }
   }
 }
 
 function measureBiotaArray(typeName, arr) {
-  if (!Array.isArray(arr)) return
+  if (!Array.isArray(arr)) return;
   for (const item of arr) {
     for (const key in item) {
-      const node = item[key]
+      const node = item[key];
       if (node && node.measured && 'env' in node) {
-        measureTileProperty(node, `${typeName}.${key}`)
+        measureTileProperty(node, `${typeName}.${key}`);
       }
       if (node && typeof node === 'object' && !('measured' in node)) {
         for (const subKey in node) {
-          const sub = node[subKey]
+          const sub = node[subKey];
           if (sub && sub.measured && 'env' in sub) {
-            measureTileProperty(sub, `${typeName}.${key}.${subKey}`)
+            measureTileProperty(sub, `${typeName}.${key}.${subKey}`);
           }
         }
       }
@@ -183,15 +204,15 @@ function measureBiotaArray(typeName, arr) {
 }
 
 function measureAllTilesOnce() {
-  const grid = getGrid()
-  if (!grid) return
+  const grid = getGrid();
+  if (!grid) return;
   for (const row of grid) {
     for (const tile of row) {
-      measureBlock('topography', tile.topography)
-      measureBlock('soil', tile.soil)
-      measureBlock('resources', tile.resources)
-      measureBiotaArray('plants', tile.plants?.real)
-      measureBiotaArray('animals', tile.animals?.real)
+      measureBlock('topography', tile.topography);
+      measureBlock('soil', tile.soil);
+      measureBlock('resources', tile.resources);
+      measureBiotaArray('plants', tile.plants?.real);
+      measureBiotaArray('animals', tile.animals?.real);
     }
   }
 }
@@ -199,348 +220,746 @@ function measureAllTilesOnce() {
 /* -------- phase-driven test mode -------- */
 
 function startTestingSync() {
-  addTestEntitiesToTile(2, 1)
-  measureAllTilesOnce()
+  addTestEntitiesToTile(2, 1);
+  measureAllTilesOnce();
   // handle both empty payloads and payloads that include phase
   phaseHandler = () => {
+    if (game.phase < 1) measureAllTilesOnce();
+  };
 
-    if (game.phase < 1) measureAllTilesOnce()
-  }
-
-  eventBus.on('phase', phaseHandler)
+  eventBus.on('phase', phaseHandler);
 }
 
 function stopTestingSync() {
-  if (phaseHandler) eventBus.off('phase', phaseHandler)
-  phaseHandler = null
-  removeTestEntitiesFromTile(2, 1)
+  if (phaseHandler) eventBus.off('phase', phaseHandler);
+  phaseHandler = null;
+  removeTestEntitiesFromTile(2, 1);
 }
 
 // keep your existing test toggle
-watch(bioromeTest, on => (on ? startTestingSync() : stopTestingSync()), {immediate: true})
-onBeforeUnmount(stopTestingSync)
-
-
+watch(bioromeTest, (on) => (on ? startTestingSync() : stopTestingSync()), { immediate: true });
+onBeforeUnmount(stopTestingSync);
 </script>
 
-
 <template>
-  <div id="controlPanel" :class="currentPhaseLabel+'Background'">
-
-      <div class="subpanel subpanel--menu">
-        <div class="menu-wrap" ref="settingsWrap" @keydown.esc.stop="closeSettingsMenu">
-          <button
-              class="menu-button"
-              type="button"
-              aria-haspopup="true"
-              :aria-expanded="settingsOpen"
-              aria-label="Settings menu"
-              title="Settings"
-              @click.stop="toggleSettingsMenu"
-          >
-            <span aria-hidden="true" class="menu-button__icon">
-              <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                <path
-                    d="M10.32 4.32a1 1 0 0 1 .95-.69h1.45a1 1 0 0 1 .95.69l.3.9a1 1 0 0 0 .76.66l.95.17a1 1 0 0 1 .76.98v1.45a1 1 0 0 0 .29.7l.68.68a1 1 0 0 1 0 1.42l-.68.68a1 1 0 0 0-.29.7v1.45a1 1 0 0 1-.76.98l-.95.17a1 1 0 0 0-.76.66l-.3.9a1 1 0 0 1-.95.69h-1.45a1 1 0 0 1-.95-.69l-.3-.9a1 1 0 0 0-.76-.66l-.95-.17a1 1 0 0 1-.76-.98v-1.45a1 1 0 0 0-.29-.7l-.68-.68a1 1 0 0 1 0-1.42l.68-.68a1 1 0 0 0 .29-.7v-1.45a1 1 0 0 1 .76-.98l.95-.17a1 1 0 0 0 .76-.66l.3-.9Z"
-                    fill="currentColor"
-                />
-                <circle cx="12" cy="12" r="3" fill="currentColor"/>
-              </svg>
-            </span>
-            <span class="visually-hidden">Settings</span>
-          </button>
-          <div class="optionsMenu" role="menu" v-show="settingsOpen">
-            <button role="menuitem" type="button" @click.stop="restart">Restart</button>
-            <button role="menuitem" type="button" @click.stop="closeSettingsMenu">Tutorial Mode</button>
-            <button role="menuitem" type="button"
-                    :class="{ active: bioromeTest }"
-                    @click.stop="toggleTestMode">
-              Testing Mode
-            </button>
-            <button role="menuitem" type="button"
-                    @click.stop="toggleTheme">
-              {{ game.currentTheme === 'light' ? 'Dark' : 'Light' }} Theme
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="subpanel info-panel info-panel--stage">
-        <div class="infoScreen" title="Bioromization stage">
-          <span class="infoScreen__label">Stage</span>
-          <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
-        </div>
-      </div>
-      <div class="subpanel subpanel--layout">
-        <div class="layout-controls">
-          <button
-              class="layout-btn"
-              type="button"
-              title="Standard layout"
-              aria-label="Standard layout"
-              @click.stop="eventBus.emit('layout','single')"
-          >
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <rect x="0.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <rect x="33.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
-                <line x1="14.5" y1="10.5" x2="33.5" y2="10.5"/>
-                <line x1="14.5" y1="20.5" x2="33.5" y2="20.5"/>
-                <line x1="19.5" y1="0.5" x2="19.5" y2="29.5"/>
-                <line x1="24.5" y1="0.5" x2="24.5" y2="29.5"/>
-                <line x1="29.5" y1="0.5" x2="29.5" y2="29.5"/>
-              </g>
+  <div id="controlPanel" :class="currentPhaseLabel + 'Background'">
+    <div class="subpanel subpanel--menu">
+      <div class="menu-wrap" ref="settingsWrap" @keydown.esc.stop="closeSettingsMenu">
+        <button
+          class="menu-button"
+          type="button"
+          aria-haspopup="true"
+          :aria-expanded="settingsOpen"
+          aria-label="Settings menu"
+          title="Settings"
+          @click.stop="toggleSettingsMenu"
+        >
+          <span aria-hidden="true" class="menu-button__icon">
+            <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+              <path
+                d="M10.32 4.32a1 1 0 0 1 .95-.69h1.45a1 1 0 0 1 .95.69l.3.9a1 1 0 0 0 .76.66l.95.17a1 1 0 0 1 .76.98v1.45a1 1 0 0 0 .29.7l.68.68a1 1 0 0 1 0 1.42l-.68.68a1 1 0 0 0-.29.7v1.45a1 1 0 0 1-.76.98l-.95.17a1 1 0 0 0-.76.66l-.3.9a1 1 0 0 1-.95.69h-1.45a1 1 0 0 1-.95-.69l-.3-.9a1 1 0 0 0-.76-.66l-.95-.17a1 1 0 0 1-.76-.98v-1.45a1 1 0 0 0-.29-.7l-.68-.68a1 1 0 0 1 0-1.42l.68-.68a1 1 0 0 0 .29-.7v-1.45a1 1 0 0 1 .76-.98l.95-.17a1 1 0 0 0 .76-.66l.3-.9Z"
+                fill="currentColor"
+              />
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
             </svg>
-            <span class="visually-hidden">Standard layout</span>
-          </button>
-          <button
-              class="layout-btn"
-              type="button"
-              title="Wide planning panels"
-              aria-label="Wide planning panels"
-              @click.stop="eventBus.emit('layout','double')"
-          >
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <rect x="0.5" y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85"/>
-              <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
-                <line x1="28.5" y1="10.5" x2="47.5" y2="10.5"/>
-                <line x1="28.5" y1="20.5" x2="47.5" y2="20.5"/>
-                <line x1="33.5" y1="0.5" x2="33.5" y2="29.5"/>
-                <line x1="38.5" y1="0.5" x2="38.5" y2="29.5"/>
-                <line x1="43.5" y1="0.5" x2="43.5" y2="29.5"/>
-              </g>
-            </svg>
-            <span class="visually-hidden">Wide planning</span>
-          </button>
-          <button
-              class="layout-btn"
-              type="button"
-              title="Focus on panels"
-              aria-label="Focus on panels"
-              @click.stop="eventBus.emit('layout','full')"
-          >
-            <svg width="48" height="30" viewBox="0 0 48 30" fill="none" role="img" aria-hidden="true" focusable="false">
-              <rect x="0.5" y="0.5" width="47" height="29" stroke="currentColor" stroke-width="1" fill="none"/>
-              <rect x="0.5" y="0.5" width="47" height="29" fill="currentColor" fill-opacity="0.85"/>
-            </svg>
-            <span class="visually-hidden">Panel focus</span>
-          </button>
-        </div>
-      </div>
-      <div class="subpanel subpanel--shortcuts">
-        <div class="controlItem controlItem--shortcut">
-          <button id="assemblyStation" type="button" class="app-button" aria-label="Assembly Station"
-                  @click.stop="eventBus.emit('nav', 'assembly')">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <rect x="4.5" y="4.5" width="15" height="15" rx="2.5" ry="2.5" fill="none" stroke="currentColor"
-                    stroke-width="1.5"/>
-              <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <line x1="12" y1="8.5" x2="12" y2="10.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="12" y1="13.2" x2="12" y2="15.5" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="8.5" y1="12" x2="10.8" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="13.2" y1="12" x2="15.5" y2="12" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-            </svg>
-          </button>
-          <div class="app-label">Assembly Station</div>
-        </div>
-        <div class="controlItem controlItem--shortcut">
-          <button id="marketNav" type="button" class="app-button" aria-label="Market"
-                  @click.stop="eventBus.emit('nav', 'market')">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <path d="M6.5 9.2L7.4 18a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1l0.9-8.8" fill="none"
-                    stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-              <path d="M8.5 9.2V7.5a3.5 3.5 0 017 0v1.7" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="9.5" y1="12" x2="14.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <div class="app-label">Market</div>
-        </div>
-
-      </div>
-      <div class="subpanel subpanel--toggles">
-        <div class="controlItem" v-show="allowedSet.has('weather')">
-          <button id="showWeather" type="button" class="app-button"
-                  :class="stateClass('weather')"
-                  aria-label="Weather panel"
-                  @click.stop="eventBus.emit('overlay', { target: 'weather' })">
-
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              <line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="12" y1="19" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="2" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="19" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="4.22" y1="19.78" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="17.66" y1="6.34" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Weather</div>
-        </div>
-        <div class="controlItem" v-show="allowedSet.has('news')">
-          <button id="showNews" type="button" class="app-button"
-                  :class="stateClass('news')"
-                  aria-label="News feed"
-                  @click.stop="eventBus.emit('overlay', { target: 'news' })">
-
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <rect x="4" y="4" width="16" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"
-                    fill="none"/>
-              <line x1="8" y1="9" x2="16.5" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="8" y1="12" x2="16.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="8" y1="15" x2="13.5" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="8" y1="18" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-
-          </button>
-          <div class="app-label">News</div>
-        </div>
-        <div class="control-divider" role="presentation"></div>
-        <div class="controlItem" v-show="allowedSet.has('log')">
-          <button id="showLog" type="button" class="app-button"
-                  :class="stateClass('log')"
-                  aria-label="Event log"
-                  @click.stop="eventBus.emit('overlay', { target: 'log' })">
-
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <circle cx="12" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="12" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="12" cy="16" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Log</div>
-        </div>
-        <div class="controlItem" v-show="allowedSet.has('analytics')">
-          <button id="showAnalytics" type="button" class="app-button"
-                  :class="stateClass('analytics')"
-                  aria-label="Analytics dashboard"
-                  @click.stop="eventBus.emit('overlay', { target: 'analytics' })">
-
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <line x1="5" y1="19" x2="19" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <rect x="7" y="12" width="2.8" height="5" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              <rect x="11" y="9" width="2.8" height="8" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              <rect x="15" y="6" width="2.8" height="11" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Analytics</div>
-        </div>
-        <div class="controlItem" v-show="allowedSet.has('gate')">
-          <button id="showGate" type="button" class="app-button"
-                  :class="stateClass('gate')"
-                  aria-label="Operations gate"
-                  @click.stop="eventBus.emit('overlay', { target: 'gate' })">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <path d="M7 18V12a5 5 0 0110 0v6" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="5" y1="18" x2="19" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="12" y1="13" x2="12" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Gate</div>
-        </div>
-        <div class="control-divider" role="presentation"></div>
-        <div class="controlItem" v-show="allowedSet.has('animals')">
-          <button id="showAnimals" type="button" class="app-button"
-                  :class="stateClass('animals')"
-                  aria-label="Animal planning"
-                  @click.stop="eventBus.emit('overlay', { target: 'animals' })">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <ellipse cx="12" cy="15.5" rx="4" ry="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="8.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="15.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Animals</div>
-        </div>
-        <div class="controlItem" v-show="allowedSet.has('plants')">
-          <button id="showPlants" type="button" class="app-button"
-                  :class="stateClass('plants')"
-                  aria-label="Plant planning"
-                  @click.stop="eventBus.emit('overlay', { target: 'plants' })">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <path d="M7 18c0-6.5 5.5-11 10-11 0 6.5-5.5 11-10 11z" fill="none" stroke="currentColor"
-                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 18c3-3 6-4.5 9.5-5.2" fill="none" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Plants</div>
-        </div>
-        <div class="controlItem" v-show="allowedSet.has('assemblies')">
-          <button id="showActionMenu" type="button" class="app-button"
-                  :class="stateClass('assemblies')"
-                  aria-label="Action menu"
-                  @click.stop="eventBus.emit('overlay', { target: 'assemblies' })">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-              <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <line x1="12" y1="4" x2="12" y2="6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="12" y1="17.5" x2="12" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="4" y1="12" x2="6.5" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="17.5" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="6.8" y1="6.8" x2="8.5" y2="8.5" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="15.5" y1="15.5" x2="17.2" y2="17.2" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="8.5" y1="15.5" x2="6.8" y2="17.2" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-              <line x1="17.2" y1="6.8" x2="15.5" y2="8.5" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round"/>
-            </svg>
-
-          </button>
-          <div class="app-label">Action Menu</div>
-        </div>
-      </div>
-      <div class="subpanel subpanel--info">
-        <div class="infoScreen infoScreen--user" title="Operator and balance">
-          <span class="infoScreen__label">Operator</span>
-          <div class="infoScreen__value infoScreen__value--user">
-            <span class="infoScreen__avatar" aria-hidden="true">{{ userAvatarDisplay }}</span>
-            <div class="infoScreen__details">
-              <span class="infoScreen__name">{{ userName || '—' }}</span>
-              <span class="infoScreen__meta">Balance: {{ formattedmoney }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="infoScreen infoScreen--time" title="Simulation date and phase">
-          <span class="infoScreen__label">Date &amp; Phase</span>
-          <span class="infoScreen__value infoScreen__value--stacked">
-            <span>{{ formatDateLocale(game.currentDate) }}</span>
-            <span class="infoScreen__meta"
-                  :class="currentPhaseLabel + 'Text'">Phase: {{ currentPhaseLabel?.toUpperCase() }}</span>
           </span>
+          <span class="visually-hidden">Settings</span>
+        </button>
+        <div class="optionsMenu" role="menu" v-show="settingsOpen">
+          <button role="menuitem" type="button" @click.stop="restart">Restart</button>
+          <button role="menuitem" type="button" @click.stop="closeSettingsMenu">
+            Tutorial Mode
+          </button>
+          <button
+            role="menuitem"
+            type="button"
+            :class="{ active: bioromeTest }"
+            @click.stop="toggleTestMode"
+          >
+            Testing Mode
+          </button>
+          <button role="menuitem" type="button" @click.stop="toggleTheme">
+            {{ game.currentTheme === 'light' ? 'Dark' : 'Light' }} Theme
+          </button>
         </div>
       </div>
-      <div class="subpanel nextPhaseBg" :class="(spinnerOn) ? 'active' : 'inactive'">
-        <button :title="'Next phase: ' + nextPhaseLabel" class="next-phase-btn" :class="nextPhaseLabel + 'Background'"
-                type="button" @click.stop="eventBus.emit('phase',{})">To {{ nextPhaseLabel }}
+    </div>
+    <div class="subpanel info-panel info-panel--stage">
+      <div class="infoScreen" title="Bioromization stage">
+        <span class="infoScreen__label">Stage</span>
+        <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
+      </div>
+    </div>
+    <div class="subpanel subpanel--layout">
+      <div class="layout-controls">
+        <button
+          class="layout-btn"
+          type="button"
+          title="Standard layout"
+          aria-label="Standard layout"
+          @click.stop="eventBus.emit('layout', 'single')"
+        >
+          <svg
+            width="48"
+            height="30"
+            viewBox="0 0 48 30"
+            fill="none"
+            role="img"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect
+              x="0.5"
+              y="0.5"
+              width="47"
+              height="29"
+              stroke="currentColor"
+              stroke-width="1"
+              fill="none"
+            />
+            <rect x="0.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85" />
+            <rect x="33.5" y="0.5" width="14" height="29" fill="currentColor" fill-opacity="0.85" />
+            <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+              <line x1="14.5" y1="10.5" x2="33.5" y2="10.5" />
+              <line x1="14.5" y1="20.5" x2="33.5" y2="20.5" />
+              <line x1="19.5" y1="0.5" x2="19.5" y2="29.5" />
+              <line x1="24.5" y1="0.5" x2="24.5" y2="29.5" />
+              <line x1="29.5" y1="0.5" x2="29.5" y2="29.5" />
+            </g>
+          </svg>
+          <span class="visually-hidden">Standard layout</span>
+        </button>
+        <button
+          class="layout-btn"
+          type="button"
+          title="Wide planning panels"
+          aria-label="Wide planning panels"
+          @click.stop="eventBus.emit('layout', 'double')"
+        >
+          <svg
+            width="48"
+            height="30"
+            viewBox="0 0 48 30"
+            fill="none"
+            role="img"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect
+              x="0.5"
+              y="0.5"
+              width="47"
+              height="29"
+              stroke="currentColor"
+              stroke-width="1"
+              fill="none"
+            />
+            <rect x="0.5" y="0.5" width="28" height="29" fill="currentColor" fill-opacity="0.85" />
+            <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1" stroke-linecap="square">
+              <line x1="28.5" y1="10.5" x2="47.5" y2="10.5" />
+              <line x1="28.5" y1="20.5" x2="47.5" y2="20.5" />
+              <line x1="33.5" y1="0.5" x2="33.5" y2="29.5" />
+              <line x1="38.5" y1="0.5" x2="38.5" y2="29.5" />
+              <line x1="43.5" y1="0.5" x2="43.5" y2="29.5" />
+            </g>
+          </svg>
+          <span class="visually-hidden">Wide planning</span>
+        </button>
+        <button
+          class="layout-btn"
+          type="button"
+          title="Focus on panels"
+          aria-label="Focus on panels"
+          @click.stop="eventBus.emit('layout', 'full')"
+        >
+          <svg
+            width="48"
+            height="30"
+            viewBox="0 0 48 30"
+            fill="none"
+            role="img"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect
+              x="0.5"
+              y="0.5"
+              width="47"
+              height="29"
+              stroke="currentColor"
+              stroke-width="1"
+              fill="none"
+            />
+            <rect x="0.5" y="0.5" width="47" height="29" fill="currentColor" fill-opacity="0.85" />
+          </svg>
+          <span class="visually-hidden">Panel focus</span>
         </button>
       </div>
     </div>
-
+    <div class="subpanel subpanel--shortcuts">
+      <div class="controlItem controlItem--shortcut">
+        <button
+          id="assemblyStation"
+          type="button"
+          class="app-button"
+          aria-label="Assembly Station"
+          @click.stop="eventBus.emit('nav', 'assembly')"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <rect
+              x="4.5"
+              y="4.5"
+              width="15"
+              height="15"
+              rx="2.5"
+              ry="2.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <line
+              x1="12"
+              y1="8.5"
+              x2="12"
+              y2="10.8"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="12"
+              y1="13.2"
+              x2="12"
+              y2="15.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="8.5"
+              y1="12"
+              x2="10.8"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="13.2"
+              y1="12"
+              x2="15.5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Assembly Station</div>
+      </div>
+      <div class="controlItem controlItem--shortcut">
+        <button
+          id="marketNav"
+          type="button"
+          class="app-button"
+          aria-label="Market"
+          @click.stop="eventBus.emit('nav', 'market')"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <path
+              d="M6.5 9.2L7.4 18a1.2 1.2 0 001.2 1.1h6.8a1.2 1.2 0 001.2-1.1l0.9-8.8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8.5 9.2V7.5a3.5 3.5 0 017 0v1.7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="9.5"
+              y1="12"
+              x2="14.5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Market</div>
+      </div>
+    </div>
+    <div class="subpanel subpanel--toggles">
+      <div class="controlItem" v-show="allowedSet.has('weather')">
+        <button
+          id="showWeather"
+          type="button"
+          class="app-button"
+          :class="stateClass('weather')"
+          aria-label="Weather panel"
+          @click.stop="eventBus.emit('overlay', { target: 'weather' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+            <line
+              x1="12"
+              y1="2"
+              x2="12"
+              y2="5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="12"
+              y1="19"
+              x2="12"
+              y2="22"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="4.22"
+              y1="4.22"
+              x2="6.34"
+              y2="6.34"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="17.66"
+              y1="17.66"
+              x2="19.78"
+              y2="19.78"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="2"
+              y1="12"
+              x2="5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="19"
+              y1="12"
+              x2="22"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="4.22"
+              y1="19.78"
+              x2="6.34"
+              y2="17.66"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="17.66"
+              y1="6.34"
+              x2="19.78"
+              y2="4.22"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Weather</div>
+      </div>
+      <div class="controlItem" v-show="allowedSet.has('news')">
+        <button
+          id="showNews"
+          type="button"
+          class="app-button"
+          :class="stateClass('news')"
+          aria-label="News feed"
+          @click.stop="eventBus.emit('overlay', { target: 'news' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="2"
+              ry="2"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <line
+              x1="8"
+              y1="9"
+              x2="16.5"
+              y2="9"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="8"
+              y1="12"
+              x2="16.5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="8"
+              y1="15"
+              x2="13.5"
+              y2="15"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="8"
+              y1="18"
+              x2="12"
+              y2="18"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">News</div>
+      </div>
+      <div class="control-divider" role="presentation"></div>
+      <div class="controlItem" v-show="allowedSet.has('log')">
+        <button
+          id="showLog"
+          type="button"
+          class="app-button"
+          :class="stateClass('log')"
+          aria-label="Event log"
+          @click.stop="eventBus.emit('overlay', { target: 'log' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <line
+              x1="12"
+              y1="5"
+              x2="12"
+              y2="19"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle cx="12" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="12" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="12" cy="16" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </button>
+        <div class="app-label">Log</div>
+      </div>
+      <div class="controlItem" v-show="allowedSet.has('analytics')">
+        <button
+          id="showAnalytics"
+          type="button"
+          class="app-button"
+          :class="stateClass('analytics')"
+          aria-label="Analytics dashboard"
+          @click.stop="eventBus.emit('overlay', { target: 'analytics' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <line
+              x1="5"
+              y1="19"
+              x2="19"
+              y2="19"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <rect
+              x="7"
+              y="12"
+              width="2.8"
+              height="5"
+              rx="1"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <rect
+              x="11"
+              y="9"
+              width="2.8"
+              height="8"
+              rx="1"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+            <rect
+              x="15"
+              y="6"
+              width="2.8"
+              height="11"
+              rx="1"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Analytics</div>
+      </div>
+      <div class="controlItem" v-show="allowedSet.has('gate')">
+        <button
+          id="showGate"
+          type="button"
+          class="app-button"
+          :class="stateClass('gate')"
+          aria-label="Operations gate"
+          @click.stop="eventBus.emit('overlay', { target: 'gate' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <path
+              d="M7 18V12a5 5 0 0110 0v6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="5"
+              y1="18"
+              x2="19"
+              y2="18"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="12"
+              y1="13"
+              x2="12"
+              y2="18"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Gate</div>
+      </div>
+      <div class="control-divider" role="presentation"></div>
+      <div class="controlItem" v-show="allowedSet.has('animals')">
+        <button
+          id="showAnimals"
+          type="button"
+          class="app-button"
+          :class="stateClass('animals')"
+          aria-label="Animal planning"
+          @click.stop="eventBus.emit('overlay', { target: 'animals' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <ellipse
+              cx="12"
+              cy="15.5"
+              rx="4"
+              ry="3.2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle cx="8.5" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle
+              cx="15.5"
+              cy="10"
+              r="1.6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle cx="10" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="14" cy="7.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+        </button>
+        <div class="app-label">Animals</div>
+      </div>
+      <div class="controlItem" v-show="allowedSet.has('plants')">
+        <button
+          id="showPlants"
+          type="button"
+          class="app-button"
+          :class="stateClass('plants')"
+          aria-label="Plant planning"
+          @click.stop="eventBus.emit('overlay', { target: 'plants' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <path
+              d="M7 18c0-6.5 5.5-11 10-11 0 6.5-5.5 11-10 11z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M7 18c3-3 6-4.5 9.5-5.2"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="12"
+              y1="18"
+              x2="12"
+              y2="22"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Plants</div>
+      </div>
+      <div class="controlItem" v-show="allowedSet.has('assemblies')">
+        <button
+          id="showActionMenu"
+          type="button"
+          class="app-button"
+          :class="stateClass('assemblies')"
+          aria-label="Action menu"
+          @click.stop="eventBus.emit('overlay', { target: 'assemblies' })"
+        >
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <line
+              x1="12"
+              y1="4"
+              x2="12"
+              y2="6.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="12"
+              y1="17.5"
+              x2="12"
+              y2="20"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="4"
+              y1="12"
+              x2="6.5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="17.5"
+              y1="12"
+              x2="20"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="6.8"
+              y1="6.8"
+              x2="8.5"
+              y2="8.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="15.5"
+              y1="15.5"
+              x2="17.2"
+              y2="17.2"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="8.5"
+              y1="15.5"
+              x2="6.8"
+              y2="17.2"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="17.2"
+              y1="6.8"
+              x2="15.5"
+              y2="8.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <div class="app-label">Action Menu</div>
+      </div>
+    </div>
+    <div class="subpanel subpanel--info">
+      <div class="infoScreen infoScreen--user" title="Operator and balance">
+        <span class="infoScreen__label">Operator</span>
+        <div class="infoScreen__value infoScreen__value--user">
+          <span class="infoScreen__avatar" aria-hidden="true">{{ userAvatarDisplay }}</span>
+          <div class="infoScreen__details">
+            <span class="infoScreen__name">{{ userName || '—' }}</span>
+            <span class="infoScreen__meta">Balance: {{ formattedmoney }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="infoScreen infoScreen--time" title="Simulation date and phase">
+        <span class="infoScreen__label">Date &amp; Phase</span>
+        <span class="infoScreen__value infoScreen__value--stacked">
+          <span>{{ formatDateLocale(game.currentDate) }}</span>
+          <span class="infoScreen__meta" :class="currentPhaseLabel + 'Text'"
+            >Phase: {{ currentPhaseLabel?.toUpperCase() }}</span
+          >
+        </span>
+      </div>
+    </div>
+    <div class="subpanel nextPhaseBg" :class="spinnerOn ? 'active' : 'inactive'">
+      <button
+        :title="'Next phase: ' + nextPhaseLabel"
+        class="next-phase-btn"
+        :class="nextPhaseLabel + 'Background'"
+        type="button"
+        @click.stop="eventBus.emit('phase', {})"
+      >
+        To {{ nextPhaseLabel }}
+      </button>
+    </div>
+  </div>
 </template>
-
 
 <style scoped>
 #controlPanel {
@@ -560,7 +979,6 @@ onBeforeUnmount(stopTestingSync)
   min-height: 0;
   box-sizing: border-box;
 }
-
 
 .subpanel {
   position: relative;
@@ -647,7 +1065,9 @@ onBeforeUnmount(stopTestingSync)
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
-  transition: filter 0.2s ease, transform 0.1s ease;
+  transition:
+    filter 0.2s ease,
+    transform 0.1s ease;
 }
 
 .menu-button:hover,
@@ -725,7 +1145,11 @@ onBeforeUnmount(stopTestingSync)
   padding: 0;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .layout-btn:hover,
@@ -743,7 +1167,10 @@ onBeforeUnmount(stopTestingSync)
 
 .layout-btn svg rect,
 .layout-btn svg line {
-  transition: color 0.2s ease, fill 0.2s ease, stroke 0.2s ease;
+  transition:
+    color 0.2s ease,
+    fill 0.2s ease,
+    stroke 0.2s ease;
 }
 
 .controlItem {
@@ -847,7 +1274,6 @@ onBeforeUnmount(stopTestingSync)
   justify-content: center;
 }
 
-
 .info-panel--stage .infoScreen {
   min-width: 120px;
   align-items: center;
@@ -877,9 +1303,11 @@ onBeforeUnmount(stopTestingSync)
   font-weight: 600;
   padding: 1rem;
   cursor: pointer;
-  transition: filter 0.2s ease, transform 0.1s ease;
+  transition:
+    filter 0.2s ease,
+    transform 0.1s ease;
   white-space: nowrap;
-  width:100%;
+  width: 100%;
 }
 
 .next-phase-btn:hover,
@@ -900,6 +1328,4 @@ onBeforeUnmount(stopTestingSync)
   white-space: nowrap;
   border: 0;
 }
-
-
 </style>
