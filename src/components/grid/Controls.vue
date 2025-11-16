@@ -1,14 +1,47 @@
 <script setup>
 import { reactive, computed, onMounted, onBeforeUnmount, watch, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import eventBus from '@/eventBus.js';
 import { gameStore } from '@/stores/game.js';
+import { mapStore } from '@/stores/map.js';
 import { clearSavedStores, loadAllStores } from '@/utils/persistance.js';
 import { formatDateLocale } from '@/utils/formatting.js';
+import {
+  getAllowedPhases,
+  buildStageContext,
+  evaluateStageMilestones,
+  canAdvanceStage as canAdvanceStageForConfig,
+} from '@/utils/stageManager.js';
 
 const game = gameStore();
+const map = mapStore();
+const { stationAssemblies } = storeToRefs(game);
+
 const phase = computed(() => game.phase);
+const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery');
+const allowedPhaseSequence = computed(() => getAllowedPhases(stageLabel.value));
+watch(
+  [allowedPhaseSequence, phase],
+  ([seq, current]) => {
+    if (!seq.length) return;
+    if (!seq.includes(current)) {
+      game.phase = seq[0];
+    }
+  },
+  { immediate: true }
+);
+const normalizedPhaseIndex = computed(() => {
+  const seq = allowedPhaseSequence.value;
+  const idx = seq.indexOf(phase.value);
+  return idx === -1 ? 0 : idx;
+});
 const currentPhaseLabel = computed(() => game.engines[phase.value % game.engines.length]);
-const nextPhaseLabel = computed(() => game.engines[(phase.value + 1) % game.engines.length]);
+const nextPhaseValue = computed(() => {
+  const seq = allowedPhaseSequence.value;
+  if (!seq.length) return phase.value;
+  return seq[(normalizedPhaseIndex.value + 1) % seq.length];
+});
+const nextPhaseLabel = computed(() => game.engines[nextPhaseValue.value % game.engines.length]);
 
 const userName = computed(() => game.userName);
 const userAvatar = computed(() => game.userAvatar);
@@ -22,8 +55,31 @@ const formattedmoney = computed(() => {
     maximumFractionDigits: 0,
   }).format(value);
 });
-const stageLabel = computed(() => game.bioromizationStages[game.bioromizationStage] || 'discovery');
 const userAvatarDisplay = computed(() => userAvatar.value || '👤');
+
+const nextStageName = computed(() => game.bioromizationStages[game.bioromizationStage + 1] || null);
+const nextStageLabelDisplay = computed(() => (nextStageName.value || '').toUpperCase());
+const stageContext = computed(() => buildStageContext(game, map));
+const stageMilestones = computed(() =>
+  evaluateStageMilestones(stageLabel.value, stageContext.value)
+);
+const canAdvanceStage = computed(() => {
+  if (!nextStageName.value) return false;
+  return canAdvanceStageForConfig(stageLabel.value, stageContext.value);
+});
+
+function advanceStage() {
+  if (!canAdvanceStage.value) return;
+  const nextIndex = game.bioromizationStage + 1;
+  if (nextIndex >= game.bioromizationStages.length) return;
+  if (stageLabel.value === 'discovery' && Array.isArray(stationAssemblies.value)) {
+    stationAssemblies.value = stationAssemblies.value.filter((assembly) => !assembly?.starter);
+  }
+  game.bioromizationStage = nextIndex;
+  const nextStageKey = game.bioromizationStages[nextIndex] || 'deployment';
+  const seq = getAllowedPhases(nextStageKey) || [0, 1, 2];
+  game.phase = seq[0] ?? 0;
+}
 
 const settingsOpen = ref(false);
 const settingsWrap = ref(null);
@@ -55,16 +111,10 @@ const open = reactive({
   plants: false,
   assemblies: false,
 });
-const bioromeTest = ref(false);
 
 function toggleTheme() {
   document.documentElement.dataset.theme = game.currentTheme =
     game.currentTheme === 'dark' ? 'light' : 'dark';
-  closeSettingsMenu();
-}
-
-function toggleTestMode() {
-  bioromeTest.value = !bioromeTest.value;
   closeSettingsMenu();
 }
 
@@ -126,119 +176,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   eventBus.off('spinner', toggleSpinner);
 });
-
-/*** TEST MODE ***/
-import { mapStore } from '@/stores/map.js';
-import { makeInstance } from '@/engine/phases/optimizations/biotaFactories.js';
-import { measureTileProperty } from '@/utils/tileHelpers.js';
-import { makeAssembly } from '@/engine/phases/operations/assemblyFactory.js';
-
-const map = mapStore();
-
-let phaseHandler = null;
-
-function getGrid() {
-  return Array.isArray(map.tiles) ? map.tiles : map.tiles?.value;
-}
-
-function addTestEntitiesToTile(row, col) {
-  const tile = getGrid()?.[row]?.[col];
-  tile.plants.real.push(makeInstance('plant', 'tomato', 'mature'));
-  tile.animals.real.push(makeInstance('animal', 'cow', 'heifer'));
-  let testAssembly = makeAssembly('Test Assembly', [
-    { type: 'transport' },
-    { type: 'battery' },
-    { type: 'cart' },
-    {
-      type: 'arm',
-      subtype: 'heavy',
-    },
-  ]);
-  console.log(testAssembly);
-  tile.assemblies.real.push(testAssembly);
-}
-
-function removeTestEntitiesFromTile(row, col) {
-  const tile = getGrid()?.[row]?.[col];
-  if (Array.isArray(tile.plants.real))
-    tile.plants.real = tile.plants.real.filter(
-      (p) => !(p.type === 'tomato' && p.growthStage === 'mature')
-    );
-  if (Array.isArray(tile.animals.real))
-    tile.animals.real = tile.animals.real.filter(
-      (a) => !(a.type === 'cow' && a.growthStage === 'heifer')
-    );
-  if (Array.isArray(tile.assemblies.real))
-    tile.assemblies.real = tile.assemblies.real.filter((a) => !(a.name === 'Test Assembly'));
-}
-
-/* -------- measure everything on a tile -------- */
-
-function measureBlock(blockName, blockObj) {
-  for (const key in blockObj) {
-    const prop = blockObj[key];
-    if (prop && prop.measured && 'env' in prop) {
-      measureTileProperty(prop, `${blockName}.${key}`);
-    }
-  }
-}
-
-function measureBiotaArray(typeName, arr) {
-  if (!Array.isArray(arr)) return;
-  for (const item of arr) {
-    for (const key in item) {
-      const node = item[key];
-      if (node && node.measured && 'env' in node) {
-        measureTileProperty(node, `${typeName}.${key}`);
-      }
-      if (node && typeof node === 'object' && !('measured' in node)) {
-        for (const subKey in node) {
-          const sub = node[subKey];
-          if (sub && sub.measured && 'env' in sub) {
-            measureTileProperty(sub, `${typeName}.${key}.${subKey}`);
-          }
-        }
-      }
-    }
-  }
-}
-
-function measureAllTilesOnce() {
-  const grid = getGrid();
-  if (!grid) return;
-  for (const row of grid) {
-    for (const tile of row) {
-      measureBlock('topography', tile.topography);
-      measureBlock('soil', tile.soil);
-      measureBlock('resources', tile.resources);
-      measureBiotaArray('plants', tile.plants?.real);
-      measureBiotaArray('animals', tile.animals?.real);
-    }
-  }
-}
-
-/* -------- phase-driven test mode -------- */
-
-function startTestingSync() {
-  addTestEntitiesToTile(2, 1);
-  measureAllTilesOnce();
-  // handle both empty payloads and payloads that include phase
-  phaseHandler = () => {
-    if (game.phase < 1) measureAllTilesOnce();
-  };
-
-  eventBus.on('phase', phaseHandler);
-}
-
-function stopTestingSync() {
-  if (phaseHandler) eventBus.off('phase', phaseHandler);
-  phaseHandler = null;
-  removeTestEntitiesFromTile(2, 1);
-}
-
-// keep your existing test toggle
-watch(bioromeTest, (on) => (on ? startTestingSync() : stopTestingSync()), { immediate: true });
-onBeforeUnmount(stopTestingSync);
 </script>
 
 <template>
@@ -270,14 +207,6 @@ onBeforeUnmount(stopTestingSync);
           <button role="menuitem" type="button" @click.stop="closeSettingsMenu">
             Tutorial Mode
           </button>
-          <button
-            role="menuitem"
-            type="button"
-            :class="{ active: bioromeTest }"
-            @click.stop="toggleTestMode"
-          >
-            Testing Mode
-          </button>
           <button role="menuitem" type="button" @click.stop="toggleTheme">
             {{ game.currentTheme === 'light' ? 'Dark' : 'Light' }} Theme
           </button>
@@ -289,6 +218,20 @@ onBeforeUnmount(stopTestingSync);
         <span class="infoScreen__label">Stage</span>
         <span class="infoScreen__value">{{ stageLabel?.toUpperCase() }}</span>
       </div>
+      <button v-if="canAdvanceStage" type="button" class="stage-advance-btn" @click="advanceStage">
+        Advance to {{ nextStageLabelDisplay }}
+      </button>
+      <ul class="stage-milestones" v-if="stageMilestones.length">
+        <li v-for="milestone in stageMilestones" :key="milestone.id">
+          <span :class="['milestone-status', { complete: milestone.completed }]">
+            {{ milestone.completed ? '✓' : '○' }}
+          </span>
+          <div class="milestone-text">
+            <span>{{ milestone.label }}</span>
+            <small>{{ milestone.current }} / {{ milestone.target }}</small>
+          </div>
+        </li>
+      </ul>
     </div>
     <div class="subpanel subpanel--layout">
       <div class="layout-controls">
@@ -1233,6 +1176,63 @@ onBeforeUnmount(stopTestingSync);
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+}
+
+.stage-advance-btn {
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--engine-optimizations, #16a34a) 20%, transparent);
+  color: inherit;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.stage-milestones {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stage-milestones li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.milestone-status {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+.milestone-status.complete {
+  background: color-mix(in srgb, var(--engine-operations, #2563eb) 35%, transparent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.milestone-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.milestone-text small {
+  opacity: 0.7;
+  font-size: 0.7rem;
 }
 
 .infoScreen__value--user {

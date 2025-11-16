@@ -16,6 +16,7 @@ import { loadAllStores, saveAllStores } from '@/utils/persistance.js';
 import News from '@/components/menus/News.vue';
 import { produceReport } from '@/engine/phases/analytics/produceReport.js';
 import updateGame from '@/engine/simulationUpdate/updateGame.js';
+import { getAllowedPhases } from '@/utils/stageManager.js';
 // TODO => Add coverage % mechanic to plants, and adjust seed and seedling prices to coverage, as well as yield.
 const game = gameStore();
 const currentPhaseLabel = computed(() => game.engines[game.phase % game.engines.length]);
@@ -157,7 +158,12 @@ function switchLane(key) {
 function handlePhaseChange() {
   eventBus.emit('spinner', true);
   const engines = game.engines;
-  const next = (((game.phase + 1) % engines.length) + engines.length) % engines.length;
+  const stageKey = game.bioromizationStages[game.bioromizationStage] || 'discovery';
+  const allowedSeq = getAllowedPhases(stageKey) || [0, 1, 2];
+  const idx = allowedSeq.indexOf(game.phase);
+  const next = allowedSeq.length
+    ? allowedSeq[(idx + 1) % allowedSeq.length]
+    : (((game.phase + 1) % engines.length) + engines.length) % engines.length;
 
   const on = (target) => eventBus.emit('overlay', { target, show: true, enable: true });
   const off = (target) => eventBus.emit('overlay', { target, show: false, enable: true });
@@ -222,6 +228,14 @@ function handlePhaseChange() {
 
   game.phase = next;
   saveAllStores();
+
+  if (allowedSeq.length === 1 && allowedSeq[0] === 2) {
+    setTimeout(async () => {
+      await updateGame();
+      produceReport();
+    }, 1);
+  }
+
   setTimeout(() => {
     eventBus.emit('spinner', false);
   }, 1000);

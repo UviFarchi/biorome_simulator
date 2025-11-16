@@ -60,6 +60,7 @@ async function startGame() {
   terrainGeneration.value = false;
   eventBus.emit('nav', 'map');
   await nextTick();
+  game.phase = 2;
   eventBus.emit('phase', {});
 }
 </script>

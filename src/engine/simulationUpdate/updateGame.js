@@ -5,6 +5,7 @@ import { marketFlux } from '@/engine/simulationUpdate/marketFlux.js';
 import ecosystemEvents from '@/engine/simulationUpdate/ecosystemEvents.js';
 import applyStageChanges from '@/engine/simulationUpdate/applyStageChanges.js';
 import eventBus from '@/eventBus.js';
+import { runDailyMeasurements } from '@/engine/measurements/runDailyMeasurements.js';
 
 const now = () => (performance?.now ? performance.now() : Date.now());
 const yieldUI = () => new Promise((r) => setTimeout(r, 1)); // or: () => nextTick()5
@@ -56,6 +57,10 @@ export default async function () {
   await step('applyStageChanges', applyStageChanges);
   await step('applyEffects', applyEffects);
   await step('marketFlux', marketFlux);
+
+  await step('autoMeasurements', async () => {
+    runDailyMeasurements(currentDate);
+  });
 
   const total = now() - t0;
   console.log(

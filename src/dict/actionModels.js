@@ -1,4 +1,27 @@
 export const actionModels = {
+  survey_tile: {
+    id: 'survey_tile',
+    displayName: 'Survey Tile',
+    description: 'Capture LiDAR and optical data to unlock a tile for operations.',
+    categories: ['Survey'],
+    requires: ['scanLidar3d', 'captureImage'],
+    parameterOrder: [],
+    parameters: {},
+    requirements: {
+      functions: [
+        {
+          id: 'scanLidar3d',
+          label: 'LiDAR Sweep',
+          params: [],
+        },
+        {
+          id: 'captureImage',
+          label: 'Capture Imagery',
+          params: [],
+        },
+      ],
+    },
+  },
   irrigate_drip: {
     id: 'irrigate_drip',
     displayName: 'Drip Irrigation',

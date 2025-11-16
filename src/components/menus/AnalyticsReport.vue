@@ -15,122 +15,221 @@ import weatherDays from '@/components/menus/blocks/WeatherDays.vue';
 
 const game = gameStore();
 
-const sectionsList = computed(() => [
-  {
-    key: 'dataMissing',
-    title: 'Data missing',
-    subcomponents: [
-      {
-        type: 'simpleTable',
-        id: 'dataMissing.summary',
-        title: 'Summary',
-        data: game.analyticsReport?.dataMissing?.summarySimpleTable?.rows || [],
-        headers: game.analyticsReport?.dataMissing?.summarySimpleTable?.headers || [
-          'Metric',
-          'Value',
-        ],
-      },
-      {
-        type: 'expandableTable',
-        id: 'dataMissing.tiles',
-        title: 'Tiles',
-        data: game.analyticsReport?.dataMissing?.tilesExpandable || null,
-      },
-    ],
-  },
+const report = computed(() => game.analyticsReport || {});
 
-  {
-    key: 'weather',
-    title: 'Weather',
-    subcomponents: [
-      {
-        type: 'weatherDays',
-        id: 'weather.history',
-        title: 'Weather History',
-        data: game.analyticsReport?.weather?.history || [],
-      },
-      {
-        type: 'weatherDays',
-        id: 'weather.forecast',
-        title: 'Weather Forecast',
-        data: game.analyticsReport?.weather?.forecast || [],
-      },
-      {
-        type: 'simpleTable',
-        id: 'weather.events',
-        title: 'Active weather events',
-        headers: ['Event', 'Days remaining'],
-        data: (game.currentEvents?.weather || []).map((ev) => [
-          ev?.headline || ev?.id || '—',
-          ev?.remaining ?? '—',
-        ]),
-      },
-    ],
-  },
+const sectionsList = computed(() => {
+  const weather = report.value.weather || {};
+  const market = report.value.market || {};
+  const ecology = report.value.ecology || {};
+  const tileDiff = report.value.tileDiff || {};
+  const resourceUse = report.value.resourceUse || {};
+  const relationships = report.value.relationships || {};
 
-  {
-    key: 'market',
-    title: 'Market',
-    subcomponents: [
-      {
-        type: 'simpleTable',
-        id: 'market.events',
-        title: 'Active market events',
-        headers: ['Event', 'Days remaining'],
-        data: (game.currentEvents?.market || game.analyticsReport?.market?.events || []).map(
-          (ev) => [ev?.headline || ev?.id || '—', ev?.remaining ?? '—']
-        ),
-      },
-    ],
-  },
-
-  {
-    key: 'ecology',
-    title: 'Ecological events',
-    subcomponents: [
-      {
-        type: 'simpleTable',
-        id: 'ecology.events',
-        title: 'Active ecological events',
-        headers: ['Event', 'Days remaining'],
-        data: (
-          game.currentEvents?.ecology ||
-          game.currentEvents?.ecosystem ||
-          game.analyticsReport?.ecology?.events ||
-          []
-        ).map((ev) => [ev?.headline || ev?.id || '—', ev?.remaining ?? '—']),
-      },
-    ],
-  },
-
-  {
-    key: 'tileDiff',
-    title: 'Tile-by-tile diff',
-    subcomponents: [
-      {
-        type: 'simpleTable',
-        id: 'tileDiff.overview',
-        title: 'Overview',
-        headers: ['Metric', 'Value'],
-        data: [['Not implemented', '—']],
-      },
-    ],
-  },
-
-  {
-    key: 'resourceUse',
-    title: 'Resource use',
-    subcomponents: [
-      {
-        type: 'simpleTable',
-        id: 'resourceUse.today',
-        title: 'Today',
-        headers: ['Metric', 'Value'],
-        data: [['Not implemented', '—']],
-      },
-    ],
-  },
-]);
+  return [
+    {
+      key: 'dataMissing',
+      title: 'Data missing',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'dataMissing.summary',
+          title: 'Summary',
+          data: report.value.dataMissing?.summarySimpleTable?.rows || [],
+          headers: report.value.dataMissing?.summarySimpleTable?.headers || ['Metric', 'Value'],
+        },
+        {
+          type: 'expandableTable',
+          id: 'dataMissing.tiles',
+          title: 'Tiles',
+          data: report.value.dataMissing?.tilesExpandable || null,
+        },
+      ],
+    },
+    {
+      key: 'weather',
+      title: 'Weather',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'weather.summary',
+          title: 'Summary',
+          headers: weather.summarySimpleTable?.headers || ['Metric', 'Value'],
+          data: weather.summarySimpleTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'weather.anomalies',
+          title: 'Anomalies',
+          headers: weather.anomaliesTable?.headers || ['Signal', 'Delta'],
+          data: weather.anomaliesTable?.rows || [],
+        },
+        {
+          type: 'weatherDays',
+          id: 'weather.history',
+          title: 'Weather history',
+          data: weather.historyDays || [],
+        },
+        {
+          type: 'weatherDays',
+          id: 'weather.forecast',
+          title: 'Forecast',
+          data: weather.forecastDays || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'weather.events',
+          title: 'Active weather events',
+          headers: ['Event', 'Days remaining'],
+          data: (report.value.weather?.eventsRows || []).map((ev) => [
+            ev?.headline || ev?.id || '—',
+            ev?.remaining ?? '—',
+          ]),
+        },
+      ],
+    },
+    {
+      key: 'market',
+      title: 'Market',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'market.summary',
+          title: 'Summary',
+          headers: market.summarySimpleTable?.headers || ['Metric', 'Value'],
+          data: market.summarySimpleTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'market.offers',
+          title: 'Open offers',
+          headers: market.offersTable?.headers || ['Offer', 'Qty', 'Price', 'Expires'],
+          data: market.offersTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'market.contracts',
+          title: 'Active contracts',
+          headers: market.contractsTable?.headers || ['Contract', 'Qty', 'Due', 'Price', 'Status'],
+          data: market.contractsTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'market.resources',
+          title: 'Base resources',
+          headers: market.baseResourcesTable?.headers || [
+            'Resource',
+            'Unit',
+            'Base price',
+            'Shelf life',
+          ],
+          data: market.baseResourcesTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'market.events',
+          title: 'Market events',
+          headers: market.eventsSimpleTable?.headers || ['Event', 'Days remaining'],
+          data: market.eventsSimpleTable?.rows || [],
+        },
+      ],
+    },
+    {
+      key: 'ecology',
+      title: 'Ecological state',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'ecology.summary',
+          title: 'Summary',
+          headers: ecology.summarySimpleTable?.headers || ['Metric', 'Value'],
+          data: ecology.summarySimpleTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'ecology.alerts',
+          title: 'Alerts',
+          headers: ecology.alertsTable?.headers || ['Tile', 'Type', 'Detail'],
+          data: ecology.alertsTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'ecology.events',
+          title: 'Ecological events',
+          headers: ecology.eventsSimpleTable?.headers || ['Event', 'Days remaining'],
+          data: ecology.eventsSimpleTable?.rows || [],
+        },
+      ],
+    },
+    {
+      key: 'tileDiff',
+      title: 'Tile-by-tile diff',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'tileDiff.overview',
+          title: 'Overview',
+          headers: tileDiff.overviewSimpleTable?.headers || ['Metric', 'Value'],
+          data: tileDiff.overviewSimpleTable?.rows || [],
+        },
+        {
+          type: 'expandableTable',
+          id: 'tileDiff.tiles',
+          title: 'Largest gaps',
+          data: tileDiff.tilesExpandable || null,
+        },
+      ],
+    },
+    {
+      key: 'resourceUse',
+      title: 'Resource use',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'resourceUse.today',
+          title: 'Today',
+          headers: resourceUse.todaySimpleTable?.headers || [
+            'Resource',
+            'Current',
+            'Optimized',
+            'Δ',
+          ],
+          data: resourceUse.todaySimpleTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'resourceUse.trend',
+          title: 'Trend',
+          headers: resourceUse.trend7dSimpleTable?.headers || ['Date'],
+          data: resourceUse.trend7dSimpleTable?.rows || [],
+        },
+      ],
+    },
+    {
+      key: 'relationships',
+      title: 'System relationships',
+      subcomponents: [
+        {
+          type: 'simpleTable',
+          id: 'relationships.summary',
+          title: 'Relationships in range',
+          headers: relationships.summaryTable?.headers || [
+            'Relationship',
+            'In-range',
+            'Avg deviation',
+          ],
+          data: relationships.summaryTable?.rows || [],
+        },
+        {
+          type: 'simpleTable',
+          id: 'relationships.edges',
+          title: 'Top deviations',
+          headers: relationships.edgesTable?.headers || ['Tile', 'Relationship', 'Value', 'Status'],
+          data: relationships.edgesTable?.rows || [],
+        },
+      ],
+    },
+  ];
+});
 
 const subcomponents = {
   simpleTable,

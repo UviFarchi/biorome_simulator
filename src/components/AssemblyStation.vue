@@ -5,11 +5,30 @@ import eventBus from '@/eventBus.js';
 import { moduleTypes } from '@/dict/moduleModels.js';
 import { actionModels } from '@/dict/actionModels.js';
 import { gameStore } from '@/stores/game.js';
+import { mapStore } from '@/stores/map.js';
+import { makeAssembly } from '@/engine/phases/operations/assemblyFactory.js';
+import { mapModuleToRole, classifyAssembly } from '@/engine/relationships/moduleRoles.js';
 
 const numberFormatter = new Intl.NumberFormat('en-US');
 
 const game = gameStore();
 const { money, ownedModules, stationAssemblies } = storeToRefs(game);
+const map = mapStore();
+const stageKey = computed(() => {
+  const stages = game.bioromizationStages || [];
+  return stages[game.bioromizationStage] || 'discovery';
+});
+const canDeployAssemblies = computed(() => stageKey.value !== 'design');
+const statsState = computed(() => game.stats?.value || {});
+const deploymentWarnings = computed(() => {
+  if (stageKey.value !== 'deployment') return [];
+  const warnings = [];
+  if (!statsState.value.cccDeployed)
+    warnings.push('Deploy a CCC assembly (computer + communications) before other builds.');
+  if (!statsState.value.stationHubDeployed)
+    warnings.push('Deploy an Assembly Station assembly before other builds.');
+  return warnings;
+});
 
 if (!ownedModules.value) {
   ownedModules.value = { station: [], assemblies: [] };
@@ -31,6 +50,7 @@ const moduleCards = computed(() =>
 );
 
 const currentAssembly = ref([]);
+const newAssemblyName = ref('');
 
 const stationInventory = computed(() => ownedModules.value?.station ?? []);
 const assemblyInventory = computed(() => ownedModules.value?.assemblies ?? []);
@@ -190,6 +210,21 @@ function isActionExpanded(actionKey) {
 
 const totalActionCount = computed(() => Object.keys(actionModels || {}).length);
 
+const selectedTile = computed(() => {
+  const raw = map.selectedTile?.value ?? map.selectedTile;
+  if (raw && typeof raw.row === 'number' && typeof raw.col === 'number') {
+    return raw;
+  }
+  return null;
+});
+
+const selectedTileLabel = computed(() => {
+  if (!selectedTile.value) {
+    return 'No tile selected';
+  }
+  return `Row ${selectedTile.value.row + 1}, Col ${selectedTile.value.col + 1}`;
+});
+
 function selectModule(moduleKey) {
   selectedModuleKey.value = moduleKey;
 }
@@ -263,7 +298,135 @@ function addModuleToAssembly(module) {
   const [key] = stationList.splice(stationIndex, 1);
   assemblyList.push(key);
 
-  currentAssembly.value.push(module);
+  currentAssembly.value.push({ ...module, role: mapModuleToRole(module) });
+}
+
+function resetAssemblyWorkspace() {
+  currentAssembly.value = [];
+  if (ownedModules.value && Array.isArray(ownedModules.value.assemblies)) {
+    ownedModules.value.assemblies = [];
+  }
+}
+
+function clearCurrentAssembly() {
+  resetAssemblyWorkspace();
+}
+
+function toModuleSnapshot(module) {
+  if (!module) return null;
+  return {
+    key: module.key,
+    type: module.type,
+    subtype: module.subtype ?? null,
+    name: module.name,
+    role: mapModuleToRole(module),
+  };
+}
+
+function canDeployAssemblyInstance(assembly) {
+  if (stageKey.value !== 'deployment') return true;
+  const stats = statsState.value;
+  const classification = classifyAssembly(assembly);
+  const needsCcc = !stats.cccDeployed;
+  const needsStation = !stats.stationHubDeployed;
+  if (needsCcc && classification.isCCC) return true;
+  if (needsStation && classification.isAssemblyStation) return true;
+  if (needsCcc || needsStation) return false;
+  return true;
+}
+
+function saveCurrentAssembly() {
+  if (!currentAssembly.value.length) {
+    return;
+  }
+
+  const modulesPayload = currentAssembly.value
+    .map((module) => toModuleSnapshot(module))
+    .filter(Boolean);
+  if (!modulesPayload.length) {
+    return;
+  }
+
+  if (stageKey.value === 'discovery') {
+    const hasTransport = modulesPayload.some((module) => module.type === 'transport');
+    if (!hasTransport) {
+      console.warn(
+        '[AssemblyStation] Discovery stage requires mobile assemblies with transport modules.'
+      );
+      return;
+    }
+  }
+
+  if (stageKey.value === 'deployment') {
+    const hasComputer = modulesPayload.some((module) => module.role === 'computer');
+    const hasComms = modulesPayload.some((module) => module.role === 'communications');
+    const hasTool = modulesPayload.some((module) => module.role === 'tool');
+    if (!hasComputer || !hasComms || !hasTool) {
+      console.warn(
+        '[AssemblyStation] Deployment stage requires assemblies with computer, communications, and tooling modules.'
+      );
+      return;
+    }
+  }
+
+  const baseName = newAssemblyName.value.trim();
+  const name = baseName || `Assembly ${stationAssemblyEntries.value.length + 1}`;
+  const assembly = makeAssembly(name, modulesPayload);
+  assembly.modules = modulesPayload;
+  assembly.built = true;
+  assembly.deployed = false;
+  assembly.origin = 'player';
+  stationAssemblies.value.push(assembly);
+  if (game.stats?.value) {
+    game.stats.value.assembliesSaved = (game.stats.value.assembliesSaved || 0) + 1;
+  }
+  newAssemblyName.value = '';
+  resetAssemblyWorkspace();
+}
+
+function deployAssembly(assembly) {
+  if (!assembly) {
+    return;
+  }
+  const target = selectedTile.value;
+  if (!target) {
+    console.warn('[AssemblyStation] Select a tile on the map before deploying.');
+    return;
+  }
+  if (!target.assemblies) {
+    target.assemblies = { real: [], optimized: [] };
+  }
+  if (!Array.isArray(target.assemblies.real)) {
+    target.assemblies.real = [];
+  }
+
+  if (stageKey.value === 'deployment' && !canDeployAssemblyInstance(assembly)) {
+    console.warn(
+      '[AssemblyStation] Deploy CCC and Assembly Station assemblies before other builds.'
+    );
+    return;
+  }
+
+  const payload = Array.isArray(assembly.modules)
+    ? assembly.modules.map((module) => ({ ...module }))
+    : [];
+  const deployedInstance = makeAssembly(assembly.name, payload);
+  deployedInstance.modules = payload;
+  deployedInstance.deployed = true;
+  deployedInstance.origin = assembly.origin || 'player';
+  target.assemblies.real.push(deployedInstance);
+  assembly.deployed = true;
+  assembly.lastDeployedTile = { row: target.row, col: target.col, at: Date.now() };
+  if (game.stats?.value) {
+    game.stats.value.assembliesDeployed = (game.stats.value.assembliesDeployed || 0) + 1;
+    const classification = classifyAssembly(assembly);
+    if (classification.isCCC) {
+      game.stats.value.cccDeployed = 1;
+    }
+    if (classification.isAssemblyStation) {
+      game.stats.value.stationHubDeployed = 1;
+    }
+  }
 }
 
 function humanize(text) {
@@ -537,6 +700,30 @@ function formatObject(value) {
                 </ul>
               </template>
               <p v-else class="requirements-empty">No modules assigned.</p>
+              <div class="station-assembly-controls">
+                <p class="selected-tile-hint">Deploy target: {{ selectedTileLabel }}</p>
+                <button
+                  type="button"
+                  class="btn secondary"
+                  :disabled="
+                    !selectedTile ||
+                    entry.assembly.deployed ||
+                    !canDeployAssemblies ||
+                    !canDeployAssemblyInstance(entry.assembly)
+                  "
+                  @click="deployAssembly(entry.assembly)"
+                >
+                  {{
+                    canDeployAssemblies
+                      ? entry.assembly.deployed
+                        ? 'Deployed'
+                        : !canDeployAssemblyInstance(entry.assembly)
+                          ? 'Awaiting CCC / Station deployment'
+                          : 'Deploy to Selected Tile'
+                      : 'Unavailable in design stage'
+                  }}
+                </button>
+              </div>
             </div>
           </article>
         </div>
@@ -552,7 +739,10 @@ function formatObject(value) {
             No modules in the current assembly yet. Buy and add modules from the catalog to get
             started.
           </p>
-          <div v-else class="assembly-grid">
+          <div v-if="deploymentWarnings.length" class="deployment-warnings">
+            <p v-for="warning in deploymentWarnings" :key="warning">⚠️ {{ warning }}</p>
+          </div>
+          <div v-if="currentAssembly.length" class="assembly-grid">
             <article
               v-for="entry in currentAssemblySummary"
               :key="entry.module.key"
@@ -588,6 +778,27 @@ function formatObject(value) {
                 </div>
               </dl>
             </article>
+          </div>
+          <div class="assembly-actions" v-if="currentAssembly.length">
+            <input
+              v-model="newAssemblyName"
+              type="text"
+              class="assembly-name-input"
+              placeholder="Assembly name"
+            />
+            <div class="assembly-action-buttons">
+              <button type="button" class="btn" @click="clearCurrentAssembly">
+                Clear Workspace
+              </button>
+              <button
+                type="button"
+                class="btn primary"
+                :disabled="!currentAssembly.length"
+                @click="saveCurrentAssembly"
+              >
+                Save Assembly
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -888,6 +1099,18 @@ function formatObject(value) {
   gap: 1rem;
 }
 
+.deployment-warnings {
+  background: color-mix(in srgb, var(--color-warning, #f97316) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning, #f97316) 35%, transparent);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.deployment-warnings p {
+  margin: 0.25rem 0;
+}
+
 .assembly-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -1182,6 +1405,66 @@ function formatObject(value) {
     var(--metrics-delta-bg, rgba(148, 163, 184, 0.12)) 60%,
     transparent
   );
+}
+
+.assembly-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.assembly-name-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.assembly-action-buttons,
+.station-assembly-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: var(--engine-operations, #2563eb);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn.secondary {
+  background: color-mix(in srgb, var(--color-border) 20%, transparent);
+}
+
+.station-assembly-controls {
+  margin-top: 0.75rem;
+  justify-content: space-between;
+}
+
+.selected-tile-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
 .function-title {

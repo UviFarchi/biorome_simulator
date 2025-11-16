@@ -5,6 +5,7 @@ import { gameStore } from '@/stores/game.js';
 import { actionModels } from '@/dict/actionModels.js';
 import assemblyEffects from '@/engine/effects/actionEffects.js';
 import { handleAction } from '@/engine/phases/operations/handleAction.js';
+import { isActionAllowed } from '@/utils/stageManager.js';
 
 const map = mapStore();
 const game = gameStore();
@@ -16,12 +17,21 @@ const expandedCategories = reactive({});
 const parameterState = reactive({});
 const parameterTouched = reactive({});
 
+const stageKey = computed(() => {
+  const stages = game.bioromizationStages || [];
+  return stages[game.bioromizationStage] || 'discovery';
+});
+
 const currentTile = computed(() => {
   const selected = map.selectedTile;
   return selected && typeof selected === 'object' && 'value' in selected
     ? selected.value
     : selected;
 });
+
+function isActionEnabled(actionKey) {
+  return isActionAllowed(stageKey.value, actionKey);
+}
 
 const currentPhase = computed(() => Number(game.phase ?? 0));
 
@@ -354,6 +364,9 @@ function findActionEntry(actionKey) {
 function addActionToTile(category, actionKey) {
   const tile = currentTile.value;
   if (!tile) return;
+  if (!isActionAllowed(stageKey.value, actionKey)) {
+    return;
+  }
 
   const entry = findActionEntry(actionKey);
   if (!entry) return;
@@ -488,7 +501,7 @@ function shouldShowParameterError(actionKey, field) {
                 <button
                   type="button"
                   class="action-title"
-                  :disabled="!currentTile"
+                  :disabled="!currentTile || !isActionEnabled(action.key)"
                   @click="addActionToTile(group.key, action.key)"
                 >
                   {{ action.name }}

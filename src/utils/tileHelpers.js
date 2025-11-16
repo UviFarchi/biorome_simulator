@@ -3,6 +3,8 @@ import { measurementExpiration } from '@/dict/measurementExpiration.js';
 import { plantTypes } from '@/dict/plantModels.js';
 import { animalTypes } from '@/dict/animalModels.js';
 import { formatDateTime, roundN } from '@/utils/formatting.js';
+import { registerMeasurement } from '@/engine/measurements/measurementScheduler.js';
+
 const MAX_HISTORY_LENGTH = 100; // retain up to 100 past entries
 
 const types = {
@@ -63,6 +65,7 @@ function measureTileProperty(propertyObj, propertyKey) {
 
   // Mark as freshly collected
   prevMeasured.collect = false;
+  registerMeasurement(propertyObj, propertyKey, prevMeasured.date);
 }
 
 function getAdjacentTiles(tile, tilesGrid) {

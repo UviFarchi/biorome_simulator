@@ -68,7 +68,7 @@ function addAnimalToTile(animalType, growthStage) {
               <span class="phase-price">
                 <span>
                   {{
-                    market.priceCatalog.animals[animal.type].stagePrices[growthStage] || 'No price'
+                    market.priceCatalog.animals[animal.type]?.stagePrices[growthStage] || 'No price'
                   }}
                 </span>
               </span>

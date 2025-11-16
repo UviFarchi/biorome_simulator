@@ -13,22 +13,30 @@ export const gameStore = defineStore('gameStore', () => {
   const analyticsReport = ref({});
   const stationAssemblies = ref([
     {
-      id: 'af97e85f-4696-4ff2-8f43-3b3e742b94c2',
+      id: 'survey-wing-drone',
       modules: [
-        { type: 'transport', subtype: 'ground' },
-        { type: 'arm', subtype: 'medium' },
-        { type: 'tool', subtype: 'seeder' },
-        { type: 'tool', subtype: 'borer' },
+        { type: 'transport', subtype: 'flying', role: 'transport' },
+        { type: 'sensor', subtype: 'lidar3d', role: 'sensor' },
+        { type: 'camera', subtype: 'camera_rgb', role: 'sensor' },
       ],
-      name: 'Seed Planter',
+      name: 'Surveyor Wing',
       deployed: false,
       built: true,
-      moves: 1,
+      moves: 2,
       actions: 1,
       orders: [],
+      description: 'Fixed-wing reconnaissance drone equipped with LiDAR and optical cameras.',
+      starter: true,
     },
   ]);
   const ownedModules = ref({ station: [], assemblies: [] });
+  const stats = ref({
+    reportsGenerated: 0,
+    assembliesSaved: 0,
+    assembliesDeployed: 0,
+    cccDeployed: 0,
+    stationHubDeployed: 0,
+  });
   const stageChangeCalendar = [];
   const startDate = ref(formatDate(new Date()));
   const currentTurn = ref(0);
@@ -72,5 +80,6 @@ export const gameStore = defineStore('gameStore', () => {
     stationAssemblies,
     analyticsReport,
     ownedModules,
+    stats,
   };
 });
