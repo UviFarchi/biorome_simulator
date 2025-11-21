@@ -1,11 +1,15 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import eventBus from '@/eventBus.js';
 import { gameStore } from '@/stores/game.js';
 import generate from '@/engine/terrain/generate.js';
 import { hasSavedState, loadAllStores, saveAllStores } from '@/utils/persistance.js';
+import { mapStore } from '@/stores/map.js';
 
 const game = gameStore();
+const map = mapStore();
+
+const TOTAL_AREA_HA = 100;
 
 const terrainGeneration = ref(false);
 const resuming = ref(false);
@@ -24,7 +28,36 @@ const avatarOptions = [
   { emoji: '🌵', label: 'Cactus' },
 ];
 const avatar = ref(avatarOptions[0].emoji);
-const gridSize = ref(game.size);
+
+const resolutionOptions = [
+  {
+    size: 10,
+    label: '10 × 10 grid',
+    description: '1 ha tiles for the highest fidelity during discovery.',
+  },
+  {
+    size: 5,
+    label: '5 × 5 grid',
+    description: '4 ha tiles that cover more area per action.',
+  },
+].map((option) => {
+  const tileCount = option.size * option.size;
+  const tileAreaHa = TOTAL_AREA_HA / tileCount;
+  return { ...option, tileCount, tileAreaHa };
+});
+const allowedGridSizes = resolutionOptions.map((option) => option.size);
+
+function resolveGridSize(candidate) {
+  const numeric = Number(candidate);
+  return allowedGridSizes.includes(numeric) ? numeric : allowedGridSizes[0];
+}
+
+const gridSize = ref(resolveGridSize(game.size));
+const selectedResolution = computed(
+  () => resolutionOptions.find((option) => option.size === gridSize.value) ?? resolutionOptions[0]
+);
+const totalTiles = computed(() => selectedResolution.value.tileCount);
+const tileAreaHa = computed(() => selectedResolution.value.tileAreaHa);
 
 onMounted(async () => {
   if (hasSavedState()) {
@@ -42,8 +75,9 @@ onMounted(async () => {
 async function startGame() {
   game.userName = (name.value || '').trim();
   game.userAvatar = (avatar.value || '').trim();
-  const selectedSize = Math.min(20, Math.max(1, +gridSize.value || 1));
+  const selectedSize = resolveGridSize(gridSize.value);
   game.size = selectedSize;
+  map.resetTiles(selectedSize);
 
   terrainGeneration.value = true;
   await nextTick();
@@ -62,6 +96,11 @@ async function startGame() {
   await nextTick();
   game.phase = 2;
   eventBus.emit('phase', {});
+}
+
+function formatArea(value) {
+  if (Number.isInteger(value)) return value.toString();
+  return value.toFixed(2);
 }
 </script>
 
@@ -100,21 +139,36 @@ async function startGame() {
       </div>
 
       <div class="form-field">
-        <label for="gridSize" class="text-bold">Grid size (tiles per side)</label>
-        <div class="slider-wrap">
-          <input
-            id="gridSize"
-            v-model.number="gridSize"
-            type="range"
-            min="1"
-            max="20"
-            step="1"
-            aria-valuemin="1"
-            aria-valuemax="20"
-            :aria-valuenow="gridSize"
-          />
-          <span class="slider-value">{{ gridSize }}</span>
+        <span class="text-bold">Map resolution</span>
+        <p class="field-hint">
+          The simulation always covers {{ TOTAL_AREA_HA }} ha. Choose tile resolution.
+        </p>
+        <div class="resolution-options">
+          <label
+            v-for="option in resolutionOptions"
+            :key="option.size"
+            class="resolution-card"
+            :class="{ 'resolution-card--selected': option.size === gridSize }"
+          >
+            <input
+              type="radio"
+              name="gridResolution"
+              :value="option.size"
+              v-model.number="gridSize"
+              :aria-label="option.label"
+            />
+            <div class="resolution-card__header">
+              <span class="resolution-card__label">{{ option.label }}</span>
+              <span class="resolution-card__tiles">{{ option.tileCount }} tiles</span>
+            </div>
+            <p class="resolution-card__meta">{{ formatArea(option.tileAreaHa) }} ha per tile</p>
+            <p class="resolution-card__description">{{ option.description }}</p>
+          </label>
         </div>
+        <p class="resolution-summary">
+          Selected grid: {{ totalTiles }} tiles · {{ formatArea(tileAreaHa) }} ha each ·
+          {{ TOTAL_AREA_HA }} ha total.
+        </p>
       </div>
       <button type="submit" class="btn btn--start start-btn" :disabled="!name">
         Enter console
@@ -173,6 +227,12 @@ async function startGame() {
   gap: 0.45rem;
 }
 
+.field-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
+}
+
 .start-form input,
 .start-form select {
   width: 100%;
@@ -201,20 +261,73 @@ async function startGame() {
   accent-color: var(--color-accent);
 }
 
-.slider-wrap {
+.resolution-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.resolution-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+  background: color-mix(in srgb, var(--color-background) 95%, transparent);
   display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.resolution-card input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.resolution-card__header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.slider-wrap input[type='range'] {
-  flex: 1;
-}
-
-.slider-value {
-  min-width: 2ch;
+.resolution-card__label {
   font-weight: 600;
-  text-align: right;
+}
+
+.resolution-card__tiles {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--color-text) 65%, var(--color-background));
+}
+
+.resolution-card__meta {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.resolution-card__description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--color-text) 60%, var(--color-background));
+}
+
+.resolution-card--selected {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-border));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+.resolution-card:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
+
+.resolution-summary {
+  margin: 0;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--color-text) 70%, var(--color-background));
 }
 
 .start-btn {
